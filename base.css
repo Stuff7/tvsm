@@ -1,0 +1,143 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway|Livvic&display=swap);
+
+html {
+	--darker-bg: #111111;
+	--dark-bg: #313131;
+	--dim-bg: #515151;
+	--normal-bg: #C1C1C1;
+	--light-bg: #D1D1D1;
+
+	--darker-c1: #111111;
+	--dark-c1: #313131;
+	--dim-c1: #515151;
+	--normal-c1: #C1C1C1;
+	--light-c1: #D1D1D1;
+}
+body {
+	background-color: #19171C;
+}
+* {
+	box-sizing: border-box;
+	color: #FAFAFA;
+	font: 16px "Raleway";
+	padding: 0;
+	margin: 0;
+	scrollbar-color: var(--dark-bg) var(--darker-bg);
+	scrollbar-width: thin;
+}
+*::selection {
+	background-color: var(--normal-bg);
+}
+*::-webkit-scrollbar {
+	background-color: var(--darker-bg);
+	width: 4px;
+}
+*::-webkit-scrollbar-thumb { background-color: var(--dark-bg) }
+ul {
+	list-style: none;
+}
+.no-select {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.fullwidth {
+	width: 100%;
+	box-sizing: border-box;
+}
+.row {
+	flex-direction: column;
+}
+.context-menu {
+	position: absolute;
+	background-color: rgba(51, 51, 51, 0.66);
+	z-index: 999;
+}
+
+input, textarea, button, [type=submit] {
+	background-color: #6441A4;
+	border: 1px solid transparent;
+}
+button:hover, [type=submit]:hover,
+button:active, [type=submit]:active {
+	outline: none !important;
+	box-shadow: 0 0 6px -2px #7D5BBE !important;
+	background-color: #8461C4;
+}
+input, textarea {
+	padding:  24px;
+	background-color: #202020;
+}
+input:focus, input:active, button:focus, textarea:active, textarea:focus {
+	outline: none !important;
+}
+.input-wrapper {
+	display: flex;
+	padding: 1% 4% 0 4%;
+	justify-content: space-evenly;
+}
+.input-wrapper div {
+	position: relative;
+	width: 100%;
+}
+.input-wrapper label {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select:none;
+	user-select: none;
+	cursor: text;
+	pointer-events: none;
+	background-color: transparent;
+	position: absolute;
+	left: 3%;
+	top: 30%;
+	color: #505050;
+	transition: top .15s;
+}
+.input-wrapper input:focus ~ label, .input-wrapper input:valid ~ label,
+.input-wrapper textarea:focus ~ label, .input-wrapper textarea:valid ~ label {
+	background-color: #19171C;
+	color: #7D5BBE;
+	top: -22% !important;
+}
+.input-wrapper input:focus, .input-wrapper input:valid,
+.input-wrapper textarea:focus, .input-wrapper textarea:valid {
+	box-shadow: 0 0 6px -2px #7D5BBE !important;
+	background-color: #19171C;
+	border: 1px solid #7D5BBE;
+}
+.input-wrapper input:invalid, .input-wrapper textarea:invalid {
+	box-shadow: none;
+}
+.input-wrapper input, .input-wrapper button {
+	width: 100%;
+	height: 100%;
+}
+
+@media(max-width: 1140px) {
+	* {
+		font-size: 12px;
+	}
+	.input-wrapper label {
+		visibility: hidden;
+	}
+	.input-wrapper label:after {
+		visibility: visible;
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	.input-wrapper input:focus ~ label:after, .input-wrapper input:valid ~ label:after,
+	.input-wrapper textarea:focus ~ label:after, .input-wrapper textarea:valid ~ label:after {
+		background-color: #19171C;
+		top: -2% !important;
+	}
+	input, textarea {
+		padding: 12px;
+	}
+	.input-wrapper {
+		padding: 1% 1% 0 1%;
+	}
+}
