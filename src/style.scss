@@ -1,0 +1,103 @@
+@use "./components/SearchInput.scss";
+@use "./misc.scss";
+@use "./font.scss";
+
+@include font.load-font(
+  "icon",
+  $font-type: "woff2",
+  $italic: false,
+  $replace: (
+    100: "Regular", 200: "Regular", 300: "Regular", 400: "Regular",
+    500: "Regular", 600: "Regular", 700: "Regular", 800: "Regular", 900: "Regular"
+  )
+);
+
+@include font.load-font("VictorMono", $font-family: "Victor Mono", $replace: (800: "Bold", 900: "Bold"));
+
+:root {
+  --color-bg: linear-gradient(to bottom right, #081010, #2f0f2f, #091111 120%);
+  --color-dark: #222;
+  --color-light: #ddd;
+  --color-accent: #ffd400;
+  --spacing-nm: 0.5em;
+  --radius-nm: 0.3em;
+}
+
+*, *::before, *::after {
+  font-family: "Victor Mono", "SF Mono", "Roboto Mono", "Menlo", "Consolas", "Liberation Mono", "Courier New", monospace;
+  box-sizing: border-box;
+  line-height: normal;
+
+  @include misc.scrollbar(var(--color-accent));
+}
+
+body, :root {
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+
+  &, main {
+    min-height: 100%;
+    background: var(--color-bg);
+    background-attachment: fixed;
+    color: var(--color-light);
+  }
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+strong {
+  color: var(--color-accent);
+}
+
+sub {
+  font-size: 0.5em;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+input {
+  font-size: 18px;
+}
+
+button {
+  cursor: pointer;
+  padding: var(--spacing-nm);
+  font-size: 18px;
+  border: 0;
+  border-radius: var(--radius-nm);
+  font-weight: 500;
+  background: var(--color-light);
+  color: var(--color-dark);
+
+  &:hover {
+    background: var(--color-accent);
+  }
+}
+
+h1, h2, h3, h4, h5, h6, label, button {
+  text-align: center;
+  margin: 0;
+}
+
+i {
+  font-family: icon;
+  font-style: normal;
+}
+
+.toast-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: all;
+  }
+}
