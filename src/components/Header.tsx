@@ -1,5 +1,5 @@
 import jsx from "jsx";
-import TvShowFilter from "./TvShowFilter";
+import TvShowFilter from "~/components/TvShowFilter";
 
 export default function Header() {
   return (
