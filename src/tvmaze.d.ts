@@ -102,7 +102,7 @@ export type Episode = {
   url: string;
   name: string;
   season: number;
-  number: number;
+  number: Option<number>;
   type: PreviousepisodeType;
   airdate: string;
   airtime: Airtime;

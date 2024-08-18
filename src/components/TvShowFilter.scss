@@ -1,0 +1,36 @@
+label.tv-show-filter {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-nm);
+  color: var(--color-light);
+  border: 1px dashed transparent;
+  padding: var(--spacing-nm) calc(var(--spacing-nm)*1.5);
+  gap: var(--spacing-nm);
+
+  transition: background 250ms, color 250ms, padding 250ms, border 250ms;
+
+  i {
+    opacity: 0.5;
+  }
+
+  &:has(input:focus) {
+    color: var(--color-accent);
+    padding-inline: 1em;
+    border-color: currentColor;
+    background: #141414;
+
+    i {
+      opacity: 1.0;
+    }
+  }
+
+  input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: currentColor;
+    border-radius: var(--radius-nm);
+    font-size: 18px;
+  }
+}

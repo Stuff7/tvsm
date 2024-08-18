@@ -71,33 +71,73 @@ header.search-input {
     width: 95%;
     left: 2.5%;
 
+    display: grid;
+    grid-template-columns: 1fr auto 1fr 1fr auto;
+    gap: 1px;
+    border-radius: var(--radius-nm);
+
     &.empty {
       display: none;
     }
 
     li {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr 1fr auto;
+      display: contents;
 
-      &:hover {
-        background: #fff4;
+      .status i::before {
+        white-space: pre;
+      }
+
+      &[data-status="Running"] {
+        color: #cbffcb;
+
+        .status i::before {
+          content: " ";
+        }
+      }
+
+      &[data-status="Ended"] {
+        color: #fff09d;
+
+        .status i::before {
+          content: " ";
+        }
+      }
+
+      &[data-status="TBD"] {
+        color: #f3f3f3;
+
+        .status i::before {
+          content: " ";
+        }
+      }
+
+      &[data-status="In Dev"] {
+        color: #c5ffff;
+
+        .status i::before {
+          content: " ";
+        }
       }
 
       span {
-        border: 0px solid #fff4;
-        border-width: 0 1px 1px 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: var(--spacing-nm);
+
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
         padding: 0.2em 0.5em;
-
-        &:last-child {
-          border-right-width: 0;
-        }
+        box-shadow: 0 0 1px var(--color-dark);
       }
 
-      &:last-child span {
-        border-bottom-width: 0;
+      &:hover span {
+        background: #fff4;
+      }
+
+      &.selected span {
+        background: #fff6;
       }
     }
   }

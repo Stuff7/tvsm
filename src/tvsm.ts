@@ -11,6 +11,7 @@ export async function findShows(search: string): Promise<TvShowPreview[]> {
   }
 
   return r.data.map(r => ({
+    id: r.show.id,
     name: r.show.name,
     premiered: r.show.premiered ? new Date(r.show.premiered) : undefined,
     network: toNetwork(r.show),
@@ -60,6 +61,7 @@ function fetchJSON<T>(endpoint: string, embed = false): Promise<Result<T>> {
 
 function toTvShow(show: TvMaze.ShowResponse): TvShow {
   return {
+    id: show.id,
     name: show.name,
     rating: show.rating.average || undefined,
     status: STATUS[show.status],
@@ -77,7 +79,7 @@ function toNetwork(show: TvMaze.Show): string {
 
 function toEpisode(ep: TvMaze.Episode): Episode {
   return {
-    number: ep.number,
+    number: ep.number || 0,
     season: ep.season,
     released: new Date(ep.airstamp),
   };
@@ -91,6 +93,7 @@ const STATUS: Record<TvMaze.Status, Status> = {
 };
 
 export type TvShowPreview = {
+  id: number,
   name: string,
   premiered: Option<Date>,
   network: string,
@@ -99,6 +102,7 @@ export type TvShowPreview = {
 };
 
 export type TvShow = {
+  id: number,
   name: string,
   nextEp: Option<Episode>,
   prevEp: Option<Episode>,
@@ -109,7 +113,7 @@ export type TvShow = {
   rating: Option<number>,
 };
 
-type Episode = {
+export type Episode = {
   season: number,
   number: number,
   released: Date,

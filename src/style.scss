@@ -1,4 +1,7 @@
+@use "./components/Header.scss";
 @use "./components/SearchInput.scss";
+@use "./components/TvShowFilter.scss";
+@use "./components/TvShowList.scss";
 @use "./misc.scss";
 @use "./font.scss";
 
@@ -12,7 +15,7 @@
   )
 );
 
-@include font.load-font("VictorMono", $font-family: "Victor Mono", $replace: (800: "Bold", 900: "Bold"));
+@include font.load-font("VictorMono", $font-family: "Victor Mono", $replace: (800: "Bold", 900: "Bold"), $italic: false);
 
 :root {
   --color-bg: linear-gradient(to bottom right, #081010, #2f0f2f, #091111 120%);
@@ -31,10 +34,15 @@
   @include misc.scrollbar(var(--color-accent));
 }
 
+*::selection {
+  background-color: var(--color-accent);
+  color: var(--color-dark);
+}
+
 body, :root {
   margin: 0;
   padding: 0;
-  font-size: 18px;
+  font-size: 16px;
 
   &, main {
     min-height: 100%;
@@ -54,8 +62,8 @@ strong {
   color: var(--color-accent);
 }
 
-sub {
-  font-size: 0.5em;
+em {
+  font-size: 0.9em;
   font-weight: 300;
   opacity: 0.9;
 }

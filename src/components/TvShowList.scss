@@ -1,0 +1,140 @@
+ul.tv-show-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #0005;
+  width: 100%;
+  left: 2.5%;
+
+  display: grid;
+  grid-template-columns: 1fr repeat(6, auto);
+  gap: 1px;
+  border-radius: var(--radius-nm);
+
+  &.empty {
+    display: none;
+  }
+
+  li {
+    display: contents;
+    --status-color: var(--color-light);
+    color: var(--status-color);
+
+    &.header {
+      font-weight: bold;
+
+      span {
+        user-select: none;
+      }
+
+      i {
+        transition: rotate 250ms;
+        &.descending {
+          rotate: 180deg;
+        }
+      }
+    }
+
+    .status i::before {
+      white-space: pre;
+    }
+
+    &[data-status="Running"] {
+      --status-color: #cbffcb;
+
+      .status i::before {
+        content: " ";
+      }
+    }
+
+    &[data-status="Ended"] {
+      --status-color: #fff09d;
+
+      .status i::before {
+        content: " ";
+      }
+    }
+
+    &[data-status="TBD"] {
+      --status-color: #f3f3f3;
+
+      .status i::before {
+        content: " ";
+      }
+    }
+
+    &[data-status="In Dev"] {
+      --status-color: #c5ffff;
+
+      .status i::before {
+        content: " ";
+      }
+    }
+
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      position: relative;
+      width: 4em;
+      height: 0.5em;
+      background: var(--color-light);
+      border-radius: var(--radius-nm);
+
+      div {
+        position: absolute;
+        background: var(--status-color);
+        width: var(--percent);
+        height: 100%;
+        border-radius: var(--radius-nm);
+      }
+
+      i {
+        position: absolute;
+        left: var(--percent);
+        text-shadow: 0px 0px 5px var(--color-dark);
+        translate: -50% 0;
+      }
+    }
+
+    span {
+      display: grid;
+      align-items: center;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0.2em 0.5em;
+      box-shadow: 0 0 1px #555;
+
+      &:not(.horizontal) {
+        grid-template-columns: auto 1fr;
+        gap: var(--spacing-nm);
+      }
+
+      &.horizontal {
+        grid-template-rows: 1fr 1fr;
+        font-size: 0.8em;
+      }
+
+      strong {
+        color: var(--status-color);
+      }
+
+      em {
+        font-style: normal;
+        font-size: 1em;
+      }
+
+      &:hover {
+        background: #fff4;
+      }
+    }
+
+    &:not(.header):hover span {
+      background: #fff4;
+    }
+
+    &.selected span {
+      background: #fff6;
+    }
+  }
+}

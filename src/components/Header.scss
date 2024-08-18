@@ -1,0 +1,25 @@
+.header {
+  position: relative;
+  width: 100%;
+  font-size: 18px;
+  padding: var(--spacing-nm);
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  color: var(--color-light);
+  align-items: center;
+  gap: var(--spacing-nm);
+
+  p {
+    padding: var(--spacing-nm);
+    font-weight: bold;
+    color: var(--color-accent);
+    margin: 0;
+    text-transform: full-width;
+  }
+
+  div {
+    height: 100%;
+    border-right: 2px solid #fff4;
+    border-radius: var(--radius-nm);
+  }
+}
