@@ -1,0 +1,59 @@
+.dialog {
+  position: relative;
+  font: 16px monospace;
+  border-radius: var(--spacing-nm);
+  box-shadow: 0px 0px 0px var(--radius-nm) #5556;
+  overflow: hidden;
+  background: #000A;
+  color: var(--color-light);
+  backdrop-filter: blur(6px);
+
+  width: fit-content;
+  max-width: 33vw;
+
+  --content-size: 1fr;
+  --transition-duration: 300ms;
+  display: grid;
+  grid-template-rows: min-content var(--content-size);
+  transition: grid-template-rows var(--transition-duration);
+
+  .header {
+    cursor: grab;
+    padding: var(--radius-nm);
+    font-weight: 700;
+    display: grid;
+    grid-template-columns: 1fr auto;
+
+    &, & ~ .content {
+      box-shadow: 0px 0px 0px 1px #5556;
+    }
+
+    &.dragging {
+      cursor: grabbing;
+    }
+
+    button {
+      background: transparent;
+      color: currentColor;
+      padding: var(--radius-nm);
+    }
+  }
+
+  .content {
+    margin: 0;
+    padding: 12px;
+    overflow: auto;
+    max-height: 70vh;
+    transition: padding var(--transition-duration);
+    outline: 0;
+    border: 0;
+  }
+
+  &.minimized {
+    --content-size: 0fr;
+
+    .content {
+      padding-block: 0;
+    }
+  }
+}

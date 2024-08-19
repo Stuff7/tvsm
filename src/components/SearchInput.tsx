@@ -2,7 +2,7 @@ import jsx, { reactive, ref } from "jsx";
 import For from "jsx/components/For";
 import * as Storage from "~/storage";
 import { findShowByID, findShows, TvShowPreview } from "~/tvsm";
-import { debounced, formatDate, formatOption } from "~/utils";
+import { debounced, formatDate, formatOption, isAnyInputFocused } from "~/utils";
 
 type SearchInputProps = {
   text: string,
@@ -29,7 +29,8 @@ export default function SearchInput(props: SearchInputProps) {
     else if (e.key === "Escape") {
       input.value?.blur();
     }
-    else if (!focused.value && e.key === "/") {
+    else if (!isAnyInputFocused() && e.key === "/") {
+      e.preventDefault();
       input.value?.focus();
     }
   }

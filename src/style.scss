@@ -1,5 +1,7 @@
+@use "./components/Dialog.scss";
 @use "./components/Header.scss";
 @use "./components/SearchInput.scss";
+@use "./components/TvShowSearch.scss";
 @use "./components/TvShowFilter.scss";
 @use "./components/TvShowList.scss";
 @use "./misc.scss";
@@ -22,6 +24,7 @@
   --color-dark: #222;
   --color-light: #ddd;
   --color-accent: #ffd400;
+  --color-accent-secondary: #ffa700;
   --spacing-nm: 0.5em;
   --radius-nm: 0.3em;
 }
@@ -42,7 +45,7 @@
 body, :root {
   margin: 0;
   padding: 0;
-  font-size: 16px;
+  font-size: 14px;
 
   &, main {
     min-height: 100%;
@@ -58,31 +61,27 @@ main {
   gap: 1rem;
 }
 
-strong {
-  color: var(--color-accent);
-}
-
 em {
+  font-style: normal;
   font-size: 0.9em;
   font-weight: 300;
   opacity: 0.9;
 }
 
-input {
-  font-size: 18px;
-}
-
 button {
   cursor: pointer;
   padding: var(--spacing-nm);
-  font-size: 18px;
   border: 0;
   border-radius: var(--radius-nm);
   font-weight: 500;
-  background: var(--color-light);
+  background: linear-gradient(to top right, var(--color-accent) 1%, var(--color-accent-secondary));
   color: var(--color-dark);
 
   &:hover {
+    background: var(--color-accent-secondary);
+  }
+
+  &:active {
     background: var(--color-accent);
   }
 }
@@ -97,7 +96,13 @@ i {
   font-style: normal;
 }
 
-.toast-container {
+.divider {
+  height: 100%;
+  border-right: 2px solid #fff4;
+  border-radius: var(--radius-nm);
+}
+
+[data-layer=modals] {
   position: fixed;
   top: 0;
   left: 0;

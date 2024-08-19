@@ -1,10 +1,10 @@
 import jsx, { reactive, ref, watchOnly } from "jsx";
 import { showList } from "~/storage";
+import { isAnyInputFocused } from "~/utils";
 
 export const filteredShows = reactive([...showList]);
 
 export default function TvShowFilter() {
-  const focused = ref(false);
   const input = ref<HTMLInputElement | null>(null);
   const nameFilter = ref("");
 
@@ -12,7 +12,8 @@ export default function TvShowFilter() {
     if (e.key === "Escape") {
       input.value?.blur();
     }
-    else if (!focused.value && e.key.toUpperCase() === "F") {
+    else if (!isAnyInputFocused() && e.key.toUpperCase() === "F") {
+      e.preventDefault();
       input.value?.focus();
     }
   }
@@ -47,8 +48,6 @@ export default function TvShowFilter() {
         ref={input}
         bind:value={nameFilter}
         on:input={filterByName}
-        on:focus={() => focused.value = true}
-        on:blur={() => focused.value = false}
         placeholder="Filter shows by name"
       />
     </label>

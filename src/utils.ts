@@ -14,6 +14,62 @@ export function debounced<T extends unknown[]>(fn: (...params: T) => void, ms = 
   });
 }
 
+export function isAnyInputFocused() {
+  const activeElement = document.activeElement;
+
+  if (!activeElement) {
+    return false;
+  }
+
+  if (activeElement instanceof HTMLInputElement) {
+    return isTextInput(activeElement.type);
+  }
+
+  if (activeElement instanceof HTMLTextAreaElement) {
+    return true;
+  }
+
+  if (activeElement instanceof HTMLSelectElement) {
+    return true;
+  }
+
+  if (activeElement instanceof HTMLElement && activeElement.isContentEditable) {
+    return true;
+  }
+
+  return false;
+}
+
+function isTextInput(inputType: string) {
+  switch (inputType) {
+    case "button":
+    case "checkbox":
+    case "color":
+    case "file":
+    case "hidden":
+    case "image":
+    case "radio":
+    case "range":
+    case "reset":
+    case "submit":
+      return false;
+    default:
+      return true;
+  }
+}
+
+export type MouseTouchEvent = MouseEvent | TouchEvent;
+
+export function getCursorPosition(e: MouseTouchEvent) {
+  if (window.TouchEvent && e instanceof TouchEvent) {
+    const touch = e.touches[0];
+
+    return touch;
+  }
+
+  return e as MouseEvent;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Fn = (...args: any[]) => any;
 

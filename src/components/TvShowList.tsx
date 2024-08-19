@@ -1,5 +1,4 @@
 import jsx, { computed, ref } from "jsx";
-import If from "jsx/components/If";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { showList as fullShowList } from "~/storage";
@@ -95,20 +94,18 @@ export default function TvShowList() {
           <span class:status><i />{show.status}</span>
           <span><i></i>{padNum(show.seasons, 2)}</span>
           <span class:horizontal={show.rating != null}>
-            <If cond={show.rating != null}>
-              <div
-                class:progress-bar
-                var:percent={`${(show.rating || 0) / 10 * 100}%`}
-              >
-                <div />
-                <i></i>
-              </div>
-            </If>
+            <div
+              class:progress-bar
+              var:percent={`${(show.rating || 0) / 10 * 100}%`}
+              $if={show.rating != null}
+            >
+              <div />
+              <i></i>
+            </div>
             <em>{formatOption(show.rating)}</em>
           </span>
         </li>
-      )
-      } />
+      )} />
     </ul>
   );
 }

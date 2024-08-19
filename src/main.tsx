@@ -1,13 +1,10 @@
-import jsx, { ref } from "jsx";
+import jsx from "jsx";
 import TvShowList from "./components/TvShowList";
 import Header from "./components/Header";
-import SearchInput from "./components/SearchInput";
 
-const search = ref("");
-
-document.body.append(
+document.body.append(<div data-layer="modals" />);
+document.body.prepend(
   <main>
-    <SearchInput text={search.value} />
     <Header />
     <TvShowList />
   </main>,
