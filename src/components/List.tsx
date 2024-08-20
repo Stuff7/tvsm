@@ -1,8 +1,8 @@
-import jsx, { computed, ref } from "jsx";
+import jsx, { computed, ref, watch } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { showList as fullShowList } from "~/storage";
-import { filteredShows as showList } from "~/components/TvShowFilter";
+import { filteredShows as showList } from "~/components/Filter";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, padNum } from "~/utils";
 import { TvShow } from "~/tvsm";
 
@@ -40,8 +40,10 @@ function cmp<T>(a: Option<T>, b: Option<T>, reverse = false) {
   return reverse ? -ret : ret;
 }
 
-export default function TvShowList() {
+export default function List() {
   const sortKey = ref("");
+
+  watch(() => console.log(selected.value));
 
   function sortBy(...keys: KeysDeep<TvShow>[]) {
     const key = keys.join(".");

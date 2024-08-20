@@ -1,11 +1,11 @@
 import jsx from "jsx";
-import TvShowList from "./components/TvShowList";
-import Header from "./components/Header";
+import List from "~/components/List";
+import Header from "~/components/Header";
 
 document.body.append(<div data-layer="modals" />);
 document.body.prepend(
   <main>
     <Header />
-    <TvShowList />
+    <List />
   </main>,
 );

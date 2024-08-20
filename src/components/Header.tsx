@@ -1,8 +1,8 @@
 import jsx from "jsx";
 import { showList } from "~/storage";
-import TvShowFilter from "~/components/TvShowFilter";
-import TvShowSearch, { addShow } from "./TvShowSearch";
-import { selected } from "./TvShowList";
+import Filter from "~/components/Filter";
+import Search, { addShow } from "./Search";
+import { selected } from "./List";
 
 export default function Header() {
   function removeShow() {
@@ -33,7 +33,7 @@ export default function Header() {
     <header class:header>
       <p>TVSM</p>
       <div class:divider />
-      <TvShowSearch />
+      <Search />
       <div class:divider />
       <button
         class:icon-btn
@@ -54,7 +54,7 @@ export default function Header() {
         <i></i>
       </button>
       <div class:divider />
-      <TvShowFilter />
+      <Filter />
     </header>
   );
 }

@@ -4,7 +4,7 @@ import { isAnyInputFocused } from "~/utils";
 
 export const filteredShows = reactive([...showList]);
 
-export default function TvShowFilter() {
+export default function Filter() {
   const input = ref<HTMLInputElement | null>(null);
   const nameFilter = ref("");
 

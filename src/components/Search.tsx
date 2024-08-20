@@ -5,7 +5,7 @@ import { findShowByID, findShows, TvShowPreview } from "~/tvsm";
 import { debounced, formatDate, formatOption, isAnyInputFocused } from "~/utils";
 import Dialog from "./Dialog";
 
-export default function TvShowSearch() {
+export default function Search() {
   const visible = ref(false);
   const text = ref("");
   const shows = reactive<TvShowPreview[]>([]);
