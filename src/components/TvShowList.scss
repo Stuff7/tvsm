@@ -15,10 +15,16 @@ ul.tv-show-list {
     display: none;
   }
 
-  li {
+  label {
     display: contents;
     --status-color: var(--color-light);
     color: var(--status-color);
+    position: relative;
+
+    [type=checkbox] {
+      position: absolute;
+      display: none;
+    }
 
     &.header {
       font-weight: bold;
@@ -133,8 +139,12 @@ ul.tv-show-list {
       background: #fff4;
     }
 
-    &.selected span {
-      background: #fff6;
+    &:has(:checked) span {
+      background: #4974;
+    }
+
+    &:not(.header):has(:checked):hover span {
+      background: #4c64;
     }
   }
 }

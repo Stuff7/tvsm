@@ -24,7 +24,13 @@
   --color-dark: #222;
   --color-light: #ddd;
   --color-accent: #ffd400;
-  --color-accent-secondary: #ffa700;
+  --color-accent-2: #ffa700;
+  --color-danger: #ff7a7a;
+  --color-danger-2: #ff4a9a;
+  --color-ok: #83cae6;
+  --color-ok-2: #83ca86;
+  --color-disabled: #a5a5a5;
+  --color-disabled-2: #cbcbcb;
   --spacing-nm: 0.5em;
   --radius-nm: 0.3em;
 }
@@ -74,20 +80,32 @@ button {
   border: 0;
   border-radius: var(--radius-nm);
   font-weight: 500;
-  background: linear-gradient(to top right, var(--color-accent) 1%, var(--color-accent-secondary));
-  color: var(--color-dark);
+  --button-fg: var(--color-dark);
+  --button-bg: var(--color-accent);
+  --button-bg-2: var(--color-accent-2);
+  background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
+  color: var(--button-fg);
 
   &:hover {
-    background: var(--color-accent-secondary);
+    background: var(--button-bg-2);
   }
 
   &:active {
-    background: var(--color-accent);
+    background: var(--button-bg);
+  }
+
+  &:disabled {
+    background: linear-gradient(to top right, var(--color-disabled) 1%, var(--color-disabled-2));
+    cursor: not-allowed;
+    opacity: 0.7;
+
+    &:active {
+      pointer-events: none;
+    }
   }
 }
 
-h1, h2, h3, h4, h5, h6, label, button {
-  text-align: center;
+h1, h2, h3, h4, h5, h6, p {
   margin: 0;
 }
 
@@ -100,6 +118,14 @@ i {
   height: 100%;
   border-right: 2px solid #fff4;
   border-radius: var(--radius-nm);
+}
+
+.icon-btn {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 [data-layer=modals] {

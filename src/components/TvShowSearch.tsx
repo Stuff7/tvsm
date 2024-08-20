@@ -34,17 +34,6 @@ export default function TvShowSearch() {
     }
   }
 
-  async function addShow(id: number) {
-    const show = await findShowByID(id);
-
-    if (!show) {
-      console.warn("Show with id", id, "not found");
-      return;
-    }
-
-    Storage.local.insert(show);
-  }
-
   function onMount() {
     document.body.addEventListener("keydown", keyListener);
   }
@@ -106,4 +95,15 @@ export default function TvShowSearch() {
       </Dialog>
     </>
   );
+}
+
+export async function addShow(id: number) {
+  const show = await findShowByID(id);
+
+  if (!show) {
+    console.warn("Show with id", id, "not found");
+    return;
+  }
+
+  Storage.local.insert(show);
 }

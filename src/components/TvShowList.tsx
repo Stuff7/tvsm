@@ -17,6 +17,7 @@ const HEADERS = [
 ];
 
 const showCountDigits = computed(() => showList.length.toString().length);
+export const selected = ref(new Set<number>);
 
 function formatIdx(i: number) {
   return padNum(i, showCountDigits.value);
@@ -57,16 +58,22 @@ export default function TvShowList() {
     };
   }
 
-  function removeShow(id: number) {
-    const idx = fullShowList.findIndex(s => s.id === id);
-    if (idx !== -1) {
-      fullShowList.splice(idx, 1);
-    }
+  function selectShow(id: number) {
+    return function (this: HTMLInputElement) {
+      if (this.checked) {
+        selected.value.add(id);
+      }
+      else {
+        selected.value.delete(id);
+      }
+      // eslint-disable-next-line no-self-assign
+      selected.value = selected.value;
+    };
   }
 
   return (
     <ul class:tv-show-list class:empty={showList.length === 0}>
-      <li class:header>
+      <label class:header>
         <FixedFor each={HEADERS} do={([title, keys]) => (
           <span on:click={sortBy(...keys)}>
             <i class:descending={sortKey.value === `${keys.join(".")}-desc`}>
@@ -75,11 +82,11 @@ export default function TvShowList() {
             <strong>{title}</strong>
           </span>
         )} />
-      </li>
+      </label>
       <For each={showList} do={(show, i) => (
-        <li data-status={show.status}>
+        <label data-status={show.status}>
+          <input type="checkbox" on:change={selectShow(show.id)} checked={selected.value.has(show.id)} />
           <span>
-            <button on:click={() => removeShow(show.id)}></button>
             {formatIdx(i.value + 1)} {show.name}
           </span>
           <span class:horizontal>
@@ -104,7 +111,7 @@ export default function TvShowList() {
             </div>
             <em>{formatOption(show.rating)}</em>
           </span>
-        </li>
+        </label>
       )} />
     </ul>
   );
