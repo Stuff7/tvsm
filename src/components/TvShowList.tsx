@@ -47,11 +47,11 @@ export default function TvShowList() {
 
     return () => {
       if (sortKey.value === key) {
-        showList.sort((a, b) => cmp(getDeep(a, ...keys), getDeep(b, ...keys), true));
+        fullShowList.sort((a, b) => cmp(getDeep(a, ...keys), getDeep(b, ...keys), true));
         sortKey.value = `${key}-desc`;
       }
       else {
-        showList.sort((a, b) => cmp(getDeep(a, ...keys), getDeep(b, ...keys)));
+        fullShowList.sort((a, b) => cmp(getDeep(a, ...keys), getDeep(b, ...keys)));
         sortKey.value = key;
       }
     };

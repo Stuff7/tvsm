@@ -4,19 +4,23 @@ import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type DialogProps = {
   $if?: boolean,
-  x: number,
-  y: number,
+  x?: number,
+  y?: number,
+  draggable?: boolean,
+  center?: boolean,
 };
 
-export default function Dialog(props: DialogProps, ...children: JSX.Element[]) {
-  const cursor = reactive({ x: props.x, y: props.y });
-  const cursorStart = reactive({ x: props.x, y: props.y });
-  const cursorEnd = reactive({ x: props.x, y: props.y });
+export default function Dialog(props: DialogProps) {
+  const cursor = reactive({ x: props.x || 0, y: props.y || 0 });
+  const cursorStart = reactive({ x: cursor.x, y: cursor.y });
+  const cursorEnd = reactive({ x: cursor.x, y: cursor.y });
   const dragging = ref(false);
-  const header = ref<HTMLElement | null>(null);
-  const content = ref<HTMLElement | null>(null);
 
   function startDrag(e: MouseTouchEvent) {
+    if (!props.draggable) {
+      return;
+    }
+
     if (!(
       e.target instanceof HTMLButtonElement ||
       e.target instanceof HTMLInputElement
@@ -45,10 +49,6 @@ export default function Dialog(props: DialogProps, ...children: JSX.Element[]) {
     cursor.y = cursorEnd.y + pos.pageY - cursorStart.y;
   }
 
-  function findSlot(name: string): Option<HTMLElement> {
-    return children.find(c => c instanceof HTMLElement && c.slot === name);
-  }
-
   function stopDrag() {
     dragging.value = false;
     cursorEnd.x = cursor.x;
@@ -60,16 +60,6 @@ export default function Dialog(props: DialogProps, ...children: JSX.Element[]) {
     window.addEventListener("touchend", stopDrag);
     window.addEventListener("mousemove", drag);
     window.addEventListener("mouseup", stopDrag);
-
-    const headerSlot = findSlot("header");
-    if (header.value && headerSlot) {
-      header.value.prepend(headerSlot);
-    }
-
-    const contentSlot = findSlot("content");
-    if (content.value && contentSlot) {
-      content.value.append(contentSlot);
-    }
   }
 
   function onDestroy() {
@@ -83,24 +73,29 @@ export default function Dialog(props: DialogProps, ...children: JSX.Element[]) {
     <Portal to="[data-layer=modals]">
       <div
         class:dialog
-        $if={props.$if}
+        class:draggable={!!props.draggable}
+        class:center={!!props.center}
+        $if={!!props.$if}
         on:mount={onMount}
         on:unmount={onDestroy}
-        style:left={`${cursor.x}px`}
-        style:top={`${cursor.y}px`}
+        var:x={`${cursor.x}px`}
+        var:y={`${cursor.y}px`}
       >
         <header
-          ref={header}
           class:header
           class:dragging={dragging.value}
           on:mousedown={startDrag}
           on:touchstart={startDrag}
         >
+          <slot name="header" />
           <button on:click={() => props.$if = false}>
             <i></i>
           </button>
         </header>
-        <article ref={content} class:content />
+        <article class:content>
+          <slot name="content" />
+        </article>
+        <slot />
       </div>
     </Portal >
   );
