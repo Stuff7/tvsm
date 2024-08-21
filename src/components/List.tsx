@@ -1,10 +1,11 @@
-import jsx, { computed, ref, watch } from "jsx";
+import jsx, { computed, ref } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { showList as fullShowList } from "~/storage";
 import { filteredShows as showList } from "~/components/Filter";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, padNum } from "~/utils";
 import { TvShow } from "~/tvsm";
+import Tooltip from "./Tooltip";
 
 const HEADERS = [
   ["Name", ["name"]] as const,
@@ -42,8 +43,23 @@ function cmp<T>(a: Option<T>, b: Option<T>, reverse = false) {
 
 export default function List() {
   const sortKey = ref("");
+  const ctrlPressed = ref(false);
 
-  watch(() => console.log(selected.value));
+  function keyListener(e: KeyboardEvent) {
+    if (e.ctrlKey !== ctrlPressed.value) {
+      ctrlPressed.value = e.ctrlKey;
+    }
+  }
+
+  function onMount() {
+    document.body.addEventListener("keydown", keyListener);
+    document.body.addEventListener("keyup", keyListener);
+  }
+
+  function onDestroy() {
+    document.body.removeEventListener("keypress", keyListener);
+    document.body.removeEventListener("keyup", keyListener);
+  }
 
   function sortBy(...keys: KeysDeep<TvShow>[]) {
     const key = keys.join(".");
@@ -74,7 +90,12 @@ export default function List() {
   }
 
   return (
-    <ul class:tv-show-list class:empty={showList.length === 0}>
+    <ul
+      class:tv-show-list
+      class:empty={showList.length === 0}
+      on:mount={onMount}
+      on:unmount={onDestroy}
+    >
       <label class:header>
         <FixedFor each={HEADERS} do={([title, keys]) => (
           <span on:click={sortBy(...keys)}>
@@ -87,6 +108,14 @@ export default function List() {
       </label>
       <For each={showList} do={(show, i) => (
         <label data-status={show.status}>
+          <Tooltip $if={ctrlPressed.value}>
+            <div
+              class:show-search-preview-img
+              style:background-image={show.image && `url(${show.image})`}
+            >
+              <em $if={!show.image}>{show.name}</em>
+            </div>
+          </Tooltip>
           <input type="checkbox" on:change={selectShow(show.id)} checked={selected.value.has(show.id)} />
           <span>
             {formatIdx(i.value + 1)} {show.name}

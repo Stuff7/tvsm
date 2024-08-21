@@ -17,6 +17,7 @@ export async function findShows(search: string): Promise<TvShowPreview[]> {
     network: toNetwork(r.show),
     status: STATUS[r.show.status],
     rating: r.show.rating.average || undefined,
+    image: r.show.image?.medium,
   }));
 }
 
@@ -70,6 +71,7 @@ function toTvShow(show: TvMaze.ShowResponse): TvShow {
     prevEp: show._embedded.previousepisode && toEpisode(show._embedded.previousepisode),
     seasons: show._embedded.seasons.length,
     premiered: show.premiered ? new Date(show.premiered) : undefined,
+    image: show.image?.medium,
   };
 }
 
@@ -99,6 +101,7 @@ export type TvShowPreview = {
   network: string,
   status: string,
   rating: Option<number>,
+  image: Option<string>,
 };
 
 export type TvShow = {
@@ -111,6 +114,7 @@ export type TvShow = {
   status: Status,
   seasons: number,
   rating: Option<number>,
+  image: Option<string>,
 };
 
 export type Episode = {

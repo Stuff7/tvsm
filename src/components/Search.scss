@@ -54,6 +54,16 @@ label.show-search {
   }
 }
 
+.show-search-preview-img {
+  width: 210px;
+  height: 295px;
+  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-nm);
+}
+
 ul.show-search-results {
   list-style: none;
   margin: 0;

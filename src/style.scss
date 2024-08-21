@@ -1,3 +1,4 @@
+@use "./components/Tooltip.scss";
 @use "./components/Dialog.scss";
 @use "./components/Header.scss";
 @use "./components/Search.scss";
@@ -127,7 +128,7 @@ i {
   align-items: center;
 }
 
-[data-layer=modals] {
+[data-layer] {
   position: fixed;
   top: 0;
   left: 0;
@@ -135,7 +136,7 @@ i {
   height: 100vh;
   pointer-events: none;
 
-  & > * {
+  &:not([data-layer=tooltips]) > * {
     pointer-events: all;
   }
 }

@@ -85,7 +85,7 @@ export type ShowMatch = Show & {
 };
 
 export type ShowResponse = Show & {
-  image: Image;
+  image: Option<Image>;
   _links: SingleSearchLinks;
   _embedded: Embedded;
 };

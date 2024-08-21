@@ -1,5 +1,6 @@
 import jsx, { reactive, ref } from "jsx";
 import Portal from "jsx/components/Portal";
+import Transition from "jsx/components/Transition";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type DialogProps = {
@@ -71,32 +72,33 @@ export default function Dialog(props: DialogProps) {
 
   return (
     <Portal to="[data-layer=modals]">
-      <div
-        class:dialog
-        class:draggable={!!props.draggable}
-        class:center={!!props.center}
-        $if={!!props.$if}
-        on:mount={onMount}
-        on:unmount={onDestroy}
-        var:x={`${cursor.x}px`}
-        var:y={`${cursor.y}px`}
-      >
-        <header
-          class:header
-          class:dragging={dragging.value}
-          on:mousedown={startDrag}
-          on:touchstart={startDrag}
+      <Transition $if={!!props.$if} name="pop">
+        <div
+          class:dialog
+          class:draggable={!!props.draggable}
+          class:center={!!props.center}
+          on:mount={onMount}
+          on:unmount={onDestroy}
+          var:x={`${cursor.x}px`}
+          var:y={`${cursor.y}px`}
         >
-          <slot name="header" />
-          <button on:click={() => props.$if = false}>
-            <i></i>
-          </button>
-        </header>
-        <article class:content>
-          <slot name="content" />
-        </article>
-        <slot />
-      </div>
+          <header
+            class:header
+            class:dragging={dragging.value}
+            on:mousedown={startDrag}
+            on:touchstart={startDrag}
+          >
+            <slot name="header" />
+            <button on:click={() => props.$if = false}>
+              <i></i>
+            </button>
+          </header>
+          <article class:content>
+            <slot name="content" />
+          </article>
+          <slot />
+        </div>
+      </Transition>
     </Portal >
   );
 }

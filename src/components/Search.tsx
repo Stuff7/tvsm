@@ -4,6 +4,7 @@ import * as Storage from "~/storage";
 import { findShowByID, findShows, TvShowPreview } from "~/tvsm";
 import { debounced, formatDate, formatOption, isAnyInputFocused } from "~/utils";
 import Dialog from "./Dialog";
+import Tooltip from "./Tooltip";
 
 export default function Search() {
   const visible = ref(false);
@@ -71,7 +72,7 @@ export default function Search() {
         <label slot="header" class:show-search>
           <i></i>
           <input
-            ref={input}
+            $ref={input}
             value={text.value}
             on:input={onInput}
             placeholder="Search shows"
@@ -84,6 +85,14 @@ export default function Search() {
               data-status={show.status}
               class:selected={selectedIdx.value === i.value}
             >
+              <Tooltip>
+                <div
+                  class:show-search-preview-img
+                  style:background-image={show.image && `url(${show.image})`}
+                >
+                  <em $if={!show.image}>{show.name}</em>
+                </div>
+              </Tooltip>
               <span><i></i>{show.name}</span>
               <span><i></i>{formatDate(show.premiered)}</span>
               <span><i></i>{show.network}</span>

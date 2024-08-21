@@ -3,6 +3,7 @@ import { showList } from "~/storage";
 import Filter from "~/components/Filter";
 import Search, { addShow } from "./Search";
 import { selected } from "./List";
+import Tooltip from "./Tooltip";
 
 export default function Header() {
   function removeShow() {
@@ -43,6 +44,7 @@ export default function Header() {
         var:button-bg-2="var(--color-danger-2)"
       >
         <i></i>
+        <Tooltip>Delete selected shows</Tooltip>
       </button>
       <button
         class:icon-btn
@@ -52,6 +54,7 @@ export default function Header() {
         var:button-bg-2="var(--color-ok-2)"
       >
         <i></i>
+        <Tooltip>Update selected shows</Tooltip>
       </button>
       <div class:divider />
       <Filter />
