@@ -1,6 +1,7 @@
 .header {
   position: relative;
   width: 100%;
+  flex: 0;
   padding: var(--spacing-nm);
   display: grid;
   grid-template-columns: repeat(7, auto) 1fr;

@@ -4,12 +4,15 @@ ul.tv-show-list {
   padding: 0;
   background: #0005;
   width: 100%;
-  left: 2.5%;
 
   display: grid;
   grid-template-columns: 1fr repeat(6, auto);
   gap: 1px;
   border-radius: var(--radius-nm);
+
+  &.is-selecting {
+    user-select: none;
+  }
 
   &.empty {
     display: none;
@@ -19,7 +22,6 @@ ul.tv-show-list {
     display: contents;
     --status-color: var(--color-light);
     color: var(--status-color);
-    position: relative;
 
     [type=checkbox] {
       position: absolute;

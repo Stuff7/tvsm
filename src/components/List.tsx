@@ -1,4 +1,4 @@
-import jsx, { computed, ref } from "jsx";
+import jsx, { computed, ref, watchOnly } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { showList as fullShowList } from "~/storage";
@@ -41,9 +41,15 @@ function cmp<T>(a: Option<T>, b: Option<T>, reverse = false) {
   return reverse ? -ret : ret;
 }
 
+const TouchEnter = new CustomEvent("touchenter");
+
 export default function List() {
   const sortKey = ref("");
   const ctrlPressed = ref(false);
+  const originalSelection = new Set<number>;
+  const isAreaSelecting = ref(false);
+  const areaStart = ref(0);
+  const areaEnd = ref(0);
 
   function keyListener(e: KeyboardEvent) {
     if (e.ctrlKey !== ctrlPressed.value) {
@@ -52,14 +58,85 @@ export default function List() {
   }
 
   function onMount() {
-    document.body.addEventListener("keydown", keyListener);
-    document.body.addEventListener("keyup", keyListener);
+    window.addEventListener("keydown", keyListener);
+    window.addEventListener("keyup", keyListener);
+    window.addEventListener("mouseup", endAreaSelection);
+    window.addEventListener("touchend", endAreaSelection);
+    window.addEventListener("touchmove", triggerTouchEnter);
+    document.body.addEventListener("touchstart", disableMobileScroll, { passive: false });
   }
 
   function onDestroy() {
-    document.body.removeEventListener("keypress", keyListener);
-    document.body.removeEventListener("keyup", keyListener);
+    window.removeEventListener("keypress", keyListener);
+    window.removeEventListener("keyup", keyListener);
+    window.removeEventListener("mouseup", endAreaSelection);
+    window.removeEventListener("touchend", endAreaSelection);
+    window.removeEventListener("touchmove", triggerTouchEnter);
+    document.body.removeEventListener("touchstart", disableMobileScroll);
   }
+
+  function triggerTouchEnter(e: TouchEvent) {
+    const p = e.touches[0];
+    const elem = document.elementFromPoint(p.clientX, p.clientY);
+
+    if (!elem) { return }
+
+    let parent = elem.parentElement;
+    while (parent && !(parent instanceof HTMLLabelElement)) {
+      parent = parent?.parentElement;
+    }
+
+    parent?.dispatchEvent(TouchEnter);
+  }
+
+  function disableMobileScroll(e: Event) {
+    if (isAreaSelecting.value) {
+      e.preventDefault();
+    }
+  }
+
+  function startAreaSelection(idx: number) {
+    originalSelection.clear();
+    selected.value.forEach(s => originalSelection.add(s));
+    areaStart.value = idx;
+    isAreaSelecting.value = true;
+  }
+
+  function setAreaEnd(idx: number) {
+    if (isAreaSelecting.value) {
+      areaEnd.value = idx;
+    }
+  }
+
+  function endAreaSelection() {
+    originalSelection.clear();
+    isAreaSelecting.value = false;
+  }
+
+  watchOnly([areaEnd], () => {
+    if (!isAreaSelecting.value) { return }
+
+    const selectedArea = new Set(originalSelection);
+
+    let start = areaStart.value;
+    let end = areaEnd.value;
+
+    if (start > end) {
+      [start, end] = [end, start];
+    }
+
+    for (let i = start; i <= end; i++) {
+      const id = showList[i].id;
+      if (selectedArea.has(id)) {
+        selectedArea.delete(id);
+      }
+      else {
+        selectedArea.add(id);
+      }
+    }
+
+    selected.value = selectedArea;
+  });
 
   function sortBy(...keys: KeysDeep<TvShow>[]) {
     const key = keys.join(".");
@@ -93,6 +170,7 @@ export default function List() {
     <ul
       class:tv-show-list
       class:empty={showList.length === 0}
+      class:is-selecting={isAreaSelecting.value}
       on:mount={onMount}
       on:unmount={onDestroy}
     >
@@ -107,7 +185,13 @@ export default function List() {
         )} />
       </label>
       <For each={showList} do={(show, i) => (
-        <label data-status={show.status}>
+        <label
+          data-status={show.status}
+          on:mousedown={() => startAreaSelection(i.value)}
+          on:touchstart={() => startAreaSelection(i.value)}
+          on:mouseover={() => setAreaEnd(i.value)}
+          on:touchenter={() => setAreaEnd(i.value)}
+        >
           <Tooltip $if={ctrlPressed.value}>
             <div
               class:show-search-preview-img
