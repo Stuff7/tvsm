@@ -45,6 +45,7 @@ export default function Filter() {
     <label class:tv-show-filter on:unmount={onDestroy}>
       <i></i>
       <input
+        class:delegated
         $ref={input}
         bind:value={nameFilter}
         on:input={filterByName}

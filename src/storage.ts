@@ -31,3 +31,19 @@ export const local: StorageAPI = {
 };
 
 export const showList = reactive(local.load());
+
+if (!showList.length && location.search) {
+  const url = new URL(location.href);
+  const testData = url.searchParams.get("showList");
+
+  if (testData) {
+    try {
+      const data = parseShowList(testData);
+      showList.length = 0;
+      showList.push(...data);
+    }
+    catch (e) {
+      console.warn("Failed to load test data");
+    }
+  }
+}

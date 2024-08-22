@@ -9,16 +9,16 @@ export default function Header() {
   function removeShow() {
     if (!selected.value.size) { return }
 
-    selected.value.forEach(id => {
-      selected.value.delete(id);
+    const refSelected = selected.value;
+    refSelected.forEach(id => {
+      refSelected.delete(id);
       const idx = showList.findIndex(s => s.id === id);
       if (idx !== -1) {
         showList.splice(idx, 1);
       }
     });
 
-    // eslint-disable-next-line no-self-assign
-    selected.value = selected.value;
+    selected.value = refSelected;
   }
 
   function updateShow() {
@@ -31,7 +31,7 @@ export default function Header() {
   }
 
   return (
-    <header class:header>
+    <header class:tvsm-header>
       <p>TVSM</p>
       <div class:divider />
       <Search />

@@ -14,6 +14,23 @@ export function debounced<T extends unknown[]>(fn: (...params: T) => void, ms = 
   });
 }
 
+export function optionCmp<T>(a: Option<T>, b: Option<T>, reverse = false) {
+  if (a === b) {
+    return 0;
+  }
+
+  if (a == null) {
+    return 1;
+  }
+
+  if (b == null) {
+    return -1;
+  }
+
+  const ret = a < b ? -1 : 1;
+  return reverse ? -ret : ret;
+}
+
 export function isAnyInputFocused() {
   const activeElement = document.activeElement;
 

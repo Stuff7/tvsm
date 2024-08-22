@@ -23,7 +23,9 @@ export default function Search() {
       selectedIdx.value = selectedIdx.value === 0 ? shows.length - 1 : selectedIdx.value - 1;
     }
     else if (e.key === "Enter") {
-      addShow(shows[selectedIdx.value].id);
+      if (selectedIdx.value < shows.length) {
+        addShow(shows[selectedIdx.value].id);
+      }
     }
     else if (e.key === "Escape") {
       visible.value = false;
