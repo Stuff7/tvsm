@@ -1,4 +1,4 @@
-import jsx, { Fragment, reactive, ref } from "jsx";
+import jsx, { Fragment, ref } from "jsx";
 import For from "jsx/components/For";
 import * as Storage from "~/storage";
 import { findShowByID, findShows, TvShowPreview } from "~/tvsm";
@@ -7,33 +7,33 @@ import Dialog from "./Dialog";
 import Tooltip from "./Tooltip";
 
 export default function Search() {
-  const visible = ref(false);
-  const text = ref("");
-  const shows = reactive<TvShowPreview[]>([]);
-  const selectedIdx = ref(0);
-  const input = ref<HTMLInputElement | null>(null);
+  const [visible, setVisible] = ref(false);
+  const [text, setText] = ref("");
+  const [shows, setShows] = ref<TvShowPreview[]>([]);
+  const [selectedIdx, setSelectedIdx] = ref(0);
+  const [input, setInput] = ref<HTMLInputElement | null>(null);
 
   function keyListener(e: KeyboardEvent) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      selectedIdx.value = (selectedIdx.value + 1) % shows.length;
+      setSelectedIdx((selectedIdx() + 1) % shows().length);
     }
     else if (e.key === "ArrowUp") {
       e.preventDefault();
-      selectedIdx.value = selectedIdx.value === 0 ? shows.length - 1 : selectedIdx.value - 1;
+      setSelectedIdx(selectedIdx() === 0 ? shows.length - 1 : selectedIdx() - 1);
     }
     else if (e.key === "Enter") {
-      if (selectedIdx.value < shows.length) {
-        addShow(shows[selectedIdx.value].id);
+      if (selectedIdx() < shows().length) {
+        addShow(shows()[selectedIdx()].id);
       }
     }
     else if (e.key === "Escape") {
-      visible.value = false;
+      setVisible(false);
     }
     else if (!isAnyInputFocused() && e.key === "/") {
       e.preventDefault();
-      visible.value = true;
-      input.value?.focus();
+      setVisible(true);
+      input()?.focus();
     }
   }
 
@@ -46,12 +46,11 @@ export default function Search() {
   }
 
   const search = debounced(async () => {
-    shows.length = 0;
-    (await findShows(text.value)).forEach((s, i) => shows[i] = s);
+    setShows(await findShows(text()));
   }, 300);
 
   function onInput(this: HTMLInputElement) {
-    text.value = this.value;
+    setText(this.value);
     search();
   }
 
@@ -59,7 +58,7 @@ export default function Search() {
     <>
       <button
         class:add-show
-        on:click={() => visible.value = !visible.value}
+        on:click={() => setVisible(!visible())}
         on:mount={onMount}
         on:unmount={onDestroy}
       >
@@ -68,38 +67,38 @@ export default function Search() {
         <strong>Add Show <em>[/]</em></strong>
       </button>
       <Dialog
-        $if={visible.value}
+        $if={visible()}
         center
       >
         <label slot="header" class:show-search>
           <i></i>
           <input
-            $ref={input}
-            value={text.value}
+            $ref={setInput}
+            value={text()}
             on:input={onInput}
             placeholder="Search shows"
           />
         </label>
         <ul slot="content" class:show-search-results>
-          <em $if={!!text.value && !shows.length}>No results</em>
-          <For each={shows} do={(show, i) => (
+          <em $if={!!text() && !shows().length}>No results</em>
+          <For each={shows()} do={(show, i) => (
             <li
-              data-status={show.status}
-              class:selected={selectedIdx.value === i.value}
+              data-status={show().status}
+              class:selected={selectedIdx() === i}
             >
               <Tooltip>
                 <div
                   class:show-search-preview-img
-                  style:background-image={show.image && `url(${show.image})`}
+                  style:background-image={show().image && `url(${show().image})`}
                 >
-                  <em $if={!show.image}>{show.name}</em>
+                  <em $if={!show().image}>{show().name}</em>
                 </div>
               </Tooltip>
-              <span><i></i>{show.name}</span>
-              <span><i></i>{formatDate(show.premiered)}</span>
-              <span><i></i>{show.network}</span>
-              <span class:status><i />{show.status}</span>
-              <span><i></i>{formatOption(show.rating)}</span>
+              <span><i></i>{show().name}</span>
+              <span><i></i>{formatDate(show().premiered)}</span>
+              <span><i></i>{show().network}</span>
+              <span class:status><i />{show().status}</span>
+              <span><i></i>{formatOption(show().rating)}</span>
             </li>
           )} />
         </ul>

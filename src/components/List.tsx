@@ -1,8 +1,8 @@
-import jsx, { computed, ref, watchOnly } from "jsx";
+import jsx, { ref, watchOnly } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
-import { showList as fullShowList } from "~/storage";
-import { filteredShows as showList } from "~/components/Filter";
+import { changes, setShowList } from "~/storage";
+import { filteredShows, filteredShows as showList } from "~/components/Filter";
 import Tooltip from "~/components/Tooltip";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, optionCmp, padNum } from "~/utils";
 import { TvShow } from "~/tvsm";
@@ -17,20 +17,20 @@ const HEADERS = [
   ["Rating", ["rating"]] as const,
 ];
 
-const showCountDigits = computed(() => showList.length.toString().length);
-export const selected = ref(new Set<number>);
+const showCountDigits = () => showList().length.toString().length;
+export const [selected, setSelected] = ref(new Set<number>);
 
 function formatIdx(i: number) {
-  return padNum(i, showCountDigits.value);
+  return padNum(i, showCountDigits());
 }
 
 export default function List() {
-  const sortKey = ref("");
-  const ctrlPressed = ref(false);
+  const [sortKey, setSortKey] = ref("");
+  const [ctrlPressed, setCtrlPressed] = ref(false);
   const originalSelection = new Set<number>;
-  const isAreaSelecting = ref(false);
-  const areaStart = ref(0);
-  const areaEnd = ref(0);
+  const [isAreaSelecting, setIsAreaSelecting] = ref(false);
+  const [areaStart, setAreaStart] = ref(0);
+  const [areaEnd, setAreaEnd] = ref(0);
 
   function onMount() {
     window.addEventListener("keydown", keyListener);
@@ -45,8 +45,8 @@ export default function List() {
   }
 
   function keyListener(e: KeyboardEvent) {
-    if (e.ctrlKey !== ctrlPressed.value) {
-      ctrlPressed.value = e.ctrlKey;
+    if (e.ctrlKey !== ctrlPressed()) {
+      setCtrlPressed(e.ctrlKey);
     }
   }
 
@@ -54,73 +54,74 @@ export default function List() {
     const key = keys.join(".");
 
     return () => {
-      if (sortKey.value === key) {
-        fullShowList.sort((a, b) => optionCmp(getDeep(a, ...keys), getDeep(b, ...keys), true));
-        sortKey.value = `${key}-desc`;
+      if (sortKey() === key) {
+        setShowList.byRef(list => list.sort((a, b) => optionCmp(getDeep(a, ...keys), getDeep(b, ...keys), true)));
+        setSortKey(`${key}-desc`);
       }
       else {
-        fullShowList.sort((a, b) => optionCmp(getDeep(a, ...keys), getDeep(b, ...keys)));
-        sortKey.value = key;
+        setShowList.byRef(list => list.sort((a, b) => optionCmp(getDeep(a, ...keys), getDeep(b, ...keys))));
+        setSortKey(key);
       }
     };
   }
 
-  function selectShow(id: number) {
+  function selectShow(idx: number) {
     return function () {
-      const refSelected = selected.value;
-      if (selected.value.has(id)) {
-        refSelected.delete(id);
-      }
-      else {
-        refSelected.add(id);
-      }
-      selected.value = refSelected;
+      const id = filteredShows()[idx].id;
+      setSelected.byRef(selected => {
+        if (selected.has(id)) {
+          selected.delete(id);
+        }
+        else {
+          selected.add(id);
+        }
+      });
     };
   }
 
   function toggleSelectAll() {
-    const refSelected = selected.value;
-    if (refSelected.size === showList.length) {
-      refSelected.clear();
-    }
-    else {
-      showList.forEach(s => refSelected.add(s.id));
-    }
-    selected.value = refSelected;
+    setSelected.byRef(selected => {
+      if (selected.size === showList().length) {
+        selected.clear();
+      }
+      else {
+        showList().forEach(s => selected.add(s.id));
+      }
+    });
   }
 
   function startAreaSelection(idx: number) {
     originalSelection.clear();
-    selected.value.forEach(s => originalSelection.add(s));
-    areaStart.value = idx;
-    isAreaSelecting.value = true;
+    selected().forEach(s => originalSelection.add(s));
+    setAreaStart(idx);
+    setIsAreaSelecting(true);
   }
 
-  function setAreaEnd(idx: number) {
-    if (isAreaSelecting.value) {
-      areaEnd.value = idx;
+  function updAreaEnd(idx: number) {
+    if (isAreaSelecting()) {
+      setAreaEnd(idx);
     }
   }
 
   function endAreaSelection() {
     originalSelection.clear();
-    isAreaSelecting.value = false;
+    setIsAreaSelecting(false);
   }
 
   watchOnly([areaEnd], () => {
-    if (!isAreaSelecting.value) { return }
+    if (!isAreaSelecting()) { return }
 
     const selectedArea = new Set(originalSelection);
 
-    let start = areaStart.value;
-    let end = areaEnd.value;
+    let start = areaStart();
+    let end = areaEnd();
 
     if (start > end) {
       [start, end] = [end, start];
     }
 
     for (let i = start; i <= end; i++) {
-      const id = showList[i].id;
+      const id = showList()[i].id;
       if (selectedArea.has(id)) {
         selectedArea.delete(id);
       }
@@ -129,73 +130,137 @@ export default function List() {
       }
     }
 
-    selected.value = selectedArea;
+    setSelected(selectedArea);
   });
 
   return (
     <ul
       class:tv-show-list
-      class:empty={showList.length === 0}
-      class:is-selecting={isAreaSelecting.value}
+      class:empty={showList().length === 0}
+      class:is-selecting={isAreaSelecting()}
       on:mount={onMount}
       on:unmount={onDestroy}
     >
       <li class:header>
-        <FixedFor each={HEADERS} do={([title, keys]) => (
-          <button class:list-cell on:click={sortBy(...keys)}>
-            <i class:descending={sortKey.value === `${keys.join(".")}-desc`}>
-              {sortKey.value.startsWith(keys.join(".")) ? "" : ""}
-            </i>
-            <strong>{title}</strong>
-          </button>
-        )} />
+        <FixedFor each={HEADERS} do={(header) => {
+          const [title, keys] = header();
+
+          return (
+            <button class:list-cell on:click={sortBy(...keys)}>
+              <i class:descending={sortKey() === `${keys.join(".")}-desc`}>
+                {sortKey().startsWith(keys.join(".")) ? "" : ""}
+              </i>
+              <strong>{title}</strong>
+            </button>
+          );
+        }} />
       </li>
-      <For each={showList} do={(show, i) => (
+      <For each={showList()} do={(show, i) => (
         <li
-          data-status={show.status}
-          class:selected={selected.value.has(show.id)}
-          on:click={selectShow(show.id)}
-          on:mousedown={(e) => e.button === 0 && startAreaSelection(i.value)}
-          on:mouseover={() => setAreaEnd(i.value)}
+          data-status={show().status}
+          class:selected={selected().has(show().id)}
+          on:click={selectShow(i)}
+          on:mousedown={(e) => e.button === 0 && startAreaSelection(i)}
+          on:mouseover={() => updAreaEnd(i)}
           on:dblclick={toggleSelectAll}
           aria-disabled
         >
-          <Tooltip $if={ctrlPressed.value}>
+          <Tooltip $if={ctrlPressed()}>
             <div
               class:show-search-preview-img
-              style:background-image={show.image && `url(${show.image})`}
+              style:background-image={show().image && `url(${show().image})`}
             >
-              <em $if={!show.image}>{show.name}</em>
+              <em $if={!show().image}>{show().name}</em>
             </div>
           </Tooltip>
-          <span class:list-cell>
+          <ListCell show={show()} key="name">
             <button class:row-nav aria-hidden />
-            {formatIdx(i.value + 1)} {show.name}
-          </span>
-          <span class:list-cell class:horizontal>
-            <strong>{formatEp(show.prevEp)}</strong>
-            <em>{formatDate(show.prevEp?.released)}</em>
-          </span>
-          <span class:list-cell class:horizontal>
-            <strong>{formatEp(show.nextEp)}</strong>
-            <em>{formatDate(show.nextEp?.released)}</em>
-          </span>
-          <span class:list-cell><i></i>{show.network}</span>
-          <span class:list-cell class:status><i />{show.status}</span>
-          <span class:list-cell><i></i>{padNum(show.seasons, 2)}</span>
-          <span class:list-cell class:horizontal={show.rating != null}>
+            {formatIdx(i + 1)} {show().name}
+          </ListCell>
+          <EpisodeCell show={show()} key="prevEp" />
+          <EpisodeCell show={show()} key="nextEp" />
+          <ListCell show={show()} key="network"><i></i>{show().network}</ListCell>
+          <ListCell show={show()} key="status"><i />{show().status}</ListCell>
+          <ListCell show={show()} key="seasons"><i></i>{padNum(show().seasons, 2)}</ListCell>
+          <ListCell show={show()} key="rating" horizontal={show().rating != null}>
             <div
               class:progress-bar
-              var:percent={`${(show.rating || 0) / 10 * 100}%`}
-              $if={show.rating != null}
+              var:percent={`${(show().rating || 0) / 10 * 100}%`}
+              $if={show().rating != null}
             >
               <div />
               <i></i>
             </div>
-            <em>{formatOption(show.rating)}</em>
-          </span>
+            <em>{formatOption(show().rating)}</em>
+          </ListCell>
         </li>
       )} />
     </ul>
+  );
+}
+
+type ListCellProps = {
+  show: TvShow,
+  key: keyof Pick<TvShow, "name" | "network" | "status" | "seasons" | "rating">,
+  horizontal?: boolean,
+};
+
+function ListCell(props: ListCellProps) {
+  const change = () => changes()[props.show.id];
+
+  return (
+    <span class:list-cell class:status={props.key === "status"} class:horizontal={!!props.horizontal}>
+      <slot />
+      <mark $if={!!change()?.paths.includes(props.key)}>
+        <Tooltip>
+          Changed from {change()?.a?.[props.key]} to {change()?.b?.[props.key]}
+        </Tooltip>
+        <i></i>
+      </mark>
+    </span>
+  );
+}
+
+type EpisodeCellProps = {
+  show: TvShow,
+  key: "prevEp" | "nextEp",
+};
+
+function EpisodeCell(props: EpisodeCellProps) {
+  const ep = () => props.show[props.key];
+  const change = () => changes()[props.show.id];
+
+  function epNumsChanged(p: string) {
+    return p === props.key || (p.startsWith(props.key) && (p.endsWith("number") || p.endsWith("season")));
+  }
+
+  function epDateChanged(p: string) {
+    return p === props.key || (p.startsWith(props.key) && p.endsWith("released"));
+  }
+
+  return (
+    <span class:list-cell class:horizontal>
+      <strong>{formatEp(ep())}</strong>
+      <em>{formatDate(ep()?.released)}</em>
+      <mark $if={!!change()?.paths.some(p => p.startsWith(props.key))}>
+        <Tooltip>
+          <p $if={!!change()?.paths.some(epNumsChanged)}>
+            Changed from {formatEp(
+              change()?.a?.[props.key],
+            )} to {formatEp(
+              change()?.b?.[props.key],
+            )}
+          </p>
+          <p $if={!!change()?.paths.some(epDateChanged)}>
+            Changed from {formatDate(
+              change()?.a?.[props.key]?.released,
+            )} to {formatDate(
+              change()?.b?.[props.key]?.released,
+            )}
+          </p>
+        </Tooltip>
+        <i></i>
+      </mark>
+    </span>
   );
 }

@@ -1,4 +1,4 @@
-import { Episode } from "~/tvsm";
+import { Episode, TvShow } from "~/tvsm";
 
 export function debounced<T extends unknown[]>(fn: (...params: T) => void, ms = 0) {
   let timeoutID = -1;
@@ -129,4 +129,40 @@ export function padNum(n: number, len: number) {
 
 export function formatEp<T>(ep: Option<Episode>): T | string {
   return ep ? `S${padNum(ep.season, 2)}E${padNum(ep.number, 2)}` : NA;
+}
+
+export type ObjectCmpResult<A extends object, B extends object = A> = {
+  a: A,
+  b: B,
+  paths: string[],
+};
+
+export function objCmp<A extends object, B extends object>(
+  a: A,
+  b: B,
+  path = "",
+  paths: string[] = [],
+): ObjectCmpResult<A, B> {
+  const keys1 = Object.keys(a);
+  const keys2 = Object.keys(b);
+
+  const allKeys = new Set([...keys1, ...keys2]);
+
+  for (const key of allKeys) {
+    const newPath = path ? `${path}.${key}` : key;
+
+    if (a[key] instanceof Date && b[key] instanceof Date) {
+      if (a[key].getTime() !== b[key].getTime()) {
+        paths.push(newPath);
+      }
+    }
+    else if (typeof a[key] === "object" && typeof b[key] === "object") {
+      objCmp(a[key], b[key], newPath, paths);
+    }
+    else if (a[key] !== b[key]) {
+      paths.push(newPath);
+    }
+  }
+
+  return { a, b, paths };
 }

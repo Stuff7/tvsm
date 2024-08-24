@@ -1,4 +1,4 @@
-import jsx, { computed, Fragment, reactive, ref, watchOnly } from "jsx";
+import jsx, { Fragment, reactive, ref, watch, watchOnly } from "jsx";
 import Portal from "jsx/components/Portal";
 import Transition from "jsx/components/Transition";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
@@ -20,22 +20,24 @@ window.addEventListener("mousemove", trackMouse);
 window.addEventListener("touchmove", trackMouse);
 
 export default function Tooltip(props: TooltipProps) {
-  const mouse = ref(realtimeMouse);
+  const [mouse, setMouse] = ref(realtimeMouse);
   const translation = reactive({ x: "1rem", y: "1rem" });
-  const hovering = ref(false);
-  const tooltip = ref<HTMLDivElement | null>(null);
-  const tooltipLayer = ref<Element | null>(null);
+  const [hovering, setHovering] = ref(false);
+  const [tooltip, setTooltip] = ref<HTMLDivElement | null>(null);
+  const [tooltipLayer, setTooltipLayer] = ref<Element | null>(null);
+  const [visible, setVisible] = ref(false);
 
-  const visible = computed(() => {
+  watch(() => {
     if (props.disableHover) {
-      return props.$if;
+      setVisible(props.$if || false);
+      return;
     }
 
-    return hovering.value && (props.$if ?? true);
+    setVisible(hovering() && (props.$if ?? true));
   });
 
   watchOnly([visible], () => {
-    if (visible.value) {
+    if (visible()) {
       trackMouse();
     }
   });
@@ -45,19 +47,19 @@ export default function Tooltip(props: TooltipProps) {
     if (this.parentElement) {
       parent = this.parentElement;
     }
-    else if (tooltipLayer.value) {
-      parent = tooltipLayer.value;
+    else if (tooltipLayer()) {
+      parent = tooltipLayer()!;
     }
     else {
       parent = document.body;
     }
 
     function hover() {
-      hovering.value = true;
+      setHovering(true);
     }
 
     function unhover() {
-      hovering.value = false;
+      setHovering(false);
     }
 
     function addEvents() {
@@ -76,7 +78,8 @@ export default function Tooltip(props: TooltipProps) {
     }
 
     parent.addEventListener("unmount", () => {
-      visible.value = hovering.value = props.$if = false;
+      setHovering(false);
+      setVisible(false);
     });
 
     this.remove();
@@ -84,12 +87,14 @@ export default function Tooltip(props: TooltipProps) {
 
   function trackMouse() {
     requestAnimationFrame(() => {
-      if (!tooltip.value || !tooltipLayer.value) { return }
+      const tooltipElem = tooltip();
+      const tooltipLayerElem = tooltipLayer();
+      if (!tooltipElem || !tooltipLayerElem) { return }
 
-      const layerRight = tooltipLayer.value.clientWidth;
-      const layerBottom = tooltipLayer.value.clientHeight;
-      const tooltipRight = tooltip.value.clientWidth + realtimeMouse.x + 14;
-      const tooltipBottom = tooltip.value.clientHeight + realtimeMouse.y + 14;
+      const layerRight = tooltipLayerElem.clientWidth;
+      const layerBottom = tooltipLayerElem.clientHeight;
+      const tooltipRight = tooltipElem.clientWidth + realtimeMouse.x + 14;
+      const tooltipBottom = tooltipElem.clientHeight + realtimeMouse.y + 14;
 
       if (tooltipRight >= layerRight) {
         translation.x = "calc(-100% - 1rem)";
@@ -104,7 +109,7 @@ export default function Tooltip(props: TooltipProps) {
         translation.y = "1rem";
       }
 
-      mouse.value = realtimeMouse;
+      setMouse(realtimeMouse);
     });
   }
 
@@ -120,13 +125,13 @@ export default function Tooltip(props: TooltipProps) {
 
   return (
     <>
-      <Portal $ref={tooltipLayer.value} to="[data-layer=tooltips]">
-        <Transition $if={visible.value} name="pop">
+      <Portal $ref={setTooltipLayer} to="[data-layer=tooltips]">
+        <Transition $if={visible()} name="pop">
           <div
             class:tooltip
-            $ref={tooltip}
-            var:x={`${mouse.value.x}px`}
-            var:y={`${mouse.value.y}px`}
+            $ref={setTooltip}
+            var:x={`${mouse().x}px`}
+            var:y={`${mouse().y}px`}
             var:pos-x={translation.x}
             var:pos-y={translation.y}
             on:mount={onMount}

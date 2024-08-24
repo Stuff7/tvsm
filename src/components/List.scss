@@ -123,6 +123,26 @@ ul.tv-show-list {
       white-space: nowrap;
       padding: 0.2em var(--spacing-nm);
       box-shadow: 0 0 1px #555;
+      position: relative;
+
+      mark {
+        width: fit-content;
+        padding: 0 var(--radius-nm);
+        border-radius: var(--radius-nm);
+        cursor: help;
+        aspect-ratio: 1/1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 0.7em;
+      }
+
+      &:has(mark) {
+        border: 2px dashed var(--color-danger-2);
+      }
 
       &:not(.horizontal) {
         grid-template-columns: auto 1fr;

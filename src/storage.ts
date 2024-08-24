@@ -1,5 +1,6 @@
-import { reactive } from "jsx";
+import { ref } from "jsx";
 import { TvShow } from "~/tvsm";
+import { objCmp, ObjectCmpResult } from "./utils";
 
 type StorageAPI = {
   load(): TvShow[],
@@ -19,28 +20,42 @@ function parseShowList(src: string): TvShow[] {
   });
 }
 
+type Changes = Partial<Record<number, ObjectCmpResult<TvShow>>>;
+
+export const [changes, setChanges] = ref<Changes>({});
+
 const localStorageKey = "TVSM__showList";
 export const local: StorageAPI = {
   load() {
     return parseShowList(localStorage.getItem(localStorageKey) || "[]");
   },
   insert(show) {
-    showList.push(show);
-    localStorage.setItem(localStorageKey, JSON.stringify(showList));
+    const list = showList();
+    const idx = list.findIndex(s => s.id === show.id);
+    if (idx !== -1) {
+      setChanges.byRef(changes => changes[show.id] = objCmp(list[idx], show));
+      setShowList.byRef(list => list[idx] = show);
+    }
+    else {
+      setShowList.byRef(list => list.push(show));
+    }
+
+    localStorage.setItem(localStorageKey, JSON.stringify(showList()));
   },
 };
 
-export const showList = reactive(local.load());
+export const [showList, setShowList] = ref(local.load());
+console.log(setShowList);
 
-if (!showList.length && location.search) {
+const list = showList();
+if (!list.length && location.search) {
   const url = new URL(location.href);
   const testData = url.searchParams.get("showList");
 
   if (testData) {
     try {
       const data = parseShowList(testData);
-      showList.length = 0;
-      showList.push(...data);
+      setShowList(data);
     }
     catch (e) {
       console.warn("Failed to load test data");

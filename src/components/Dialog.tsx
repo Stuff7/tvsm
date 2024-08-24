@@ -15,7 +15,7 @@ export default function Dialog(props: DialogProps) {
   const cursor = reactive({ x: props.x || 0, y: props.y || 0 });
   const cursorStart = reactive({ x: cursor.x, y: cursor.y });
   const cursorEnd = reactive({ x: cursor.x, y: cursor.y });
-  const dragging = ref(false);
+  const [dragging, setDragging] = ref(false);
 
   function startDrag(e: MouseTouchEvent) {
     if (!props.draggable) {
@@ -33,7 +33,7 @@ export default function Dialog(props: DialogProps) {
       return;
     }
 
-    dragging.value = true;
+    setDragging(true);
 
     const pos = getCursorPosition(e);
     cursorStart.x = pos.pageX;
@@ -43,7 +43,7 @@ export default function Dialog(props: DialogProps) {
   }
 
   function drag(e: MouseTouchEvent) {
-    if (!dragging.value) { return }
+    if (!dragging()) { return }
 
     const pos = getCursorPosition(e);
     cursor.x = cursorEnd.x + pos.pageX - cursorStart.x;
@@ -51,7 +51,7 @@ export default function Dialog(props: DialogProps) {
   }
 
   function stopDrag() {
-    dragging.value = false;
+    setDragging(false);
     cursorEnd.x = cursor.x;
     cursorEnd.y = cursor.y;
   }
@@ -84,7 +84,7 @@ export default function Dialog(props: DialogProps) {
         >
           <header
             class:header
-            class:dragging={dragging.value}
+            class:dragging={dragging()}
             on:mousedown={startDrag}
             on:touchstart={startDrag}
           >

@@ -1,20 +1,20 @@
-import jsx, { reactive, ref, watchOnly } from "jsx";
+import jsx, { ref, watchOnly } from "jsx";
 import { showList } from "~/storage";
 import { isAnyInputFocused } from "~/utils";
 
-export const filteredShows = reactive([...showList]);
+export const [filteredShows, setFilteredShows] = ref([...showList()]);
 
 export default function Filter() {
-  const input = ref<HTMLInputElement | null>(null);
-  const nameFilter = ref("");
+  const [input, setInput] = ref<HTMLInputElement | null>(null);
+  const [nameFilter, setNameFilter] = ref("");
 
   function keyListener(e: KeyboardEvent) {
     if (e.key === "Escape") {
-      input.value?.blur();
+      input()?.blur();
     }
     else if (!isAnyInputFocused() && e.key.toUpperCase() === "F") {
       e.preventDefault();
-      input.value?.focus();
+      input()?.focus();
     }
   }
 
@@ -29,16 +29,13 @@ export default function Filter() {
   watchOnly([showList], filterByName);
 
   function filterByName() {
-    filteredShows.length = showList.length;
-    showList.forEach((s, i) => filteredShows[i] = s);
-
-    if (!nameFilter.value) { return }
-
-    for (let i = filteredShows.length - 1; i >= 0; i--) {
-      if (!filteredShows[i].name.includes(nameFilter.value)) {
-        filteredShows.splice(i, 1);
-      }
+    const search = nameFilter();
+    if (!search) {
+      setFilteredShows([...showList()]);
+      return;
     }
+
+    setFilteredShows(showList().filter(s => s.name.includes(search)));
   }
 
   return (
@@ -46,8 +43,8 @@ export default function Filter() {
       <i></i>
       <input
         class:delegated
-        $ref={input}
-        bind:value={nameFilter}
+        $ref={setInput}
+        bind:value={[nameFilter, setNameFilter]}
         on:input={filterByName}
         placeholder="Filter shows by name"
       />

@@ -1,33 +1,29 @@
 import jsx from "jsx";
-import { showList } from "~/storage";
+import { showList, setShowList } from "~/storage";
 import Filter from "~/components/Filter";
 import Search, { addShow } from "./Search";
-import { selected } from "./List";
+import { selected, setSelected } from "./List";
 import Tooltip from "./Tooltip";
 
 export default function Header() {
   function removeShow() {
-    if (!selected.value.size) { return }
+    if (!selected().size) { return }
 
-    const refSelected = selected.value;
-    refSelected.forEach(id => {
-      refSelected.delete(id);
-      const idx = showList.findIndex(s => s.id === id);
-      if (idx !== -1) {
-        showList.splice(idx, 1);
-      }
+    setSelected.byRef(selected => {
+      selected.forEach(id => {
+        selected.delete(id);
+        const idx = showList().findIndex(s => s.id === id);
+        if (idx !== -1) {
+          setShowList.byRef(list => list.splice(idx, 1));
+        }
+      });
     });
-
-    selected.value = refSelected;
   }
 
   function updateShow() {
-    if (!selected.value.size) { return }
+    if (!selected().size) { return }
 
-    selected.value.forEach(addShow);
-
-    // eslint-disable-next-line no-self-assign
-    selected.value = selected.value;
+    selected().forEach(addShow);
   }
 
   return (
@@ -38,7 +34,7 @@ export default function Header() {
       <div class:divider />
       <button
         class:icon-btn
-        disabled={!selected.value.size}
+        disabled={!selected().size}
         on:click={removeShow}
         var:button-bg="var(--color-danger)"
         var:button-bg-2="var(--color-danger-2)"
@@ -48,7 +44,7 @@ export default function Header() {
       </button>
       <button
         class:icon-btn
-        disabled={!selected.value.size}
+        disabled={!selected().size}
         on:click={updateShow}
         var:button-bg="var(--color-ok)"
         var:button-bg-2="var(--color-ok-2)"
