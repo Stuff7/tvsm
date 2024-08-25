@@ -5,16 +5,16 @@ import { isAnyInputFocused } from "~/utils";
 export const [filteredShows, setFilteredShows] = ref([...showList()]);
 
 export default function Filter() {
-  const [input, setInput] = ref<HTMLInputElement | null>(null);
+  let input!: HTMLInputElement;
   const [nameFilter, setNameFilter] = ref("");
 
   function keyListener(e: KeyboardEvent) {
     if (e.key === "Escape") {
-      input()?.blur();
+      input.blur();
     }
     else if (!isAnyInputFocused() && e.key.toUpperCase() === "F") {
       e.preventDefault();
-      input()?.focus();
+      input.focus();
     }
   }
 
@@ -43,7 +43,7 @@ export default function Filter() {
       <i></i>
       <input
         class:delegated
-        $ref={setInput}
+        $ref={input}
         bind:value={[nameFilter, setNameFilter]}
         on:input={filterByName}
         placeholder="Filter shows by name"

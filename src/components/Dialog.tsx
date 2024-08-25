@@ -89,7 +89,7 @@ export default function Dialog(props: DialogProps) {
             on:touchstart={startDrag}
           >
             <slot name="header" />
-            <button on:click={() => props.$if = false}>
+            <button class:close-btn on:click={() => props.$if = false}>
               <i></i>
             </button>
           </header>

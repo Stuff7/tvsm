@@ -1,4 +1,8 @@
-import { Episode, TvShow } from "~/tvsm";
+import { Episode } from "~/tvsm";
+
+export function delayCall<T>(fn: () => T, delay = 300) {
+  return new Promise(res => setTimeout(async () => res(await fn()), delay));
+}
 
 export function debounced<T extends unknown[]>(fn: (...params: T) => void, ms = 0) {
   let timeoutID = -1;

@@ -23,9 +23,10 @@ export default function Tooltip(props: TooltipProps) {
   const [mouse, setMouse] = ref(realtimeMouse);
   const translation = reactive({ x: "1rem", y: "1rem" });
   const [hovering, setHovering] = ref(false);
-  const [tooltip, setTooltip] = ref<HTMLDivElement | null>(null);
-  const [tooltipLayer, setTooltipLayer] = ref<Element | null>(null);
   const [visible, setVisible] = ref(false);
+
+  let tooltip!: HTMLDivElement;
+  let tooltipLayer!: Element;
 
   watch(() => {
     if (props.disableHover) {
@@ -47,8 +48,8 @@ export default function Tooltip(props: TooltipProps) {
     if (this.parentElement) {
       parent = this.parentElement;
     }
-    else if (tooltipLayer()) {
-      parent = tooltipLayer()!;
+    else if (tooltipLayer) {
+      parent = tooltipLayer;
     }
     else {
       parent = document.body;
@@ -87,14 +88,10 @@ export default function Tooltip(props: TooltipProps) {
 
   function trackMouse() {
     requestAnimationFrame(() => {
-      const tooltipElem = tooltip();
-      const tooltipLayerElem = tooltipLayer();
-      if (!tooltipElem || !tooltipLayerElem) { return }
-
-      const layerRight = tooltipLayerElem.clientWidth;
-      const layerBottom = tooltipLayerElem.clientHeight;
-      const tooltipRight = tooltipElem.clientWidth + realtimeMouse.x + 14;
-      const tooltipBottom = tooltipElem.clientHeight + realtimeMouse.y + 14;
+      const layerRight = tooltipLayer.clientWidth;
+      const layerBottom = tooltipLayer.clientHeight;
+      const tooltipRight = tooltip.clientWidth + realtimeMouse.x + 14;
+      const tooltipBottom = tooltip.clientHeight + realtimeMouse.y + 14;
 
       if (tooltipRight >= layerRight) {
         translation.x = "calc(-100% - 1rem)";
@@ -125,11 +122,11 @@ export default function Tooltip(props: TooltipProps) {
 
   return (
     <>
-      <Portal $ref={setTooltipLayer} to="[data-layer=tooltips]">
+      <Portal $ref={tooltipLayer} to="[data-layer=tooltips]">
         <Transition $if={visible()} name="pop">
           <div
             class:tooltip
-            $ref={setTooltip}
+            $ref={tooltip}
             var:x={`${mouse().x}px`}
             var:y={`${mouse().y}px`}
             var:pos-x={translation.x}

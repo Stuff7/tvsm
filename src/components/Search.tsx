@@ -1,39 +1,56 @@
-import jsx, { Fragment, ref } from "jsx";
+import jsx, { Fragment, reactive, ref } from "jsx";
 import For from "jsx/components/For";
 import * as Storage from "~/storage";
 import { findShowByID, findShows, TvShowPreview } from "~/tvsm";
-import { debounced, formatDate, formatOption, isAnyInputFocused } from "~/utils";
+import { debounced, delayCall, formatDate, formatOption, isAnyInputFocused } from "~/utils";
 import Dialog from "./Dialog";
 import Tooltip from "./Tooltip";
+import FixedFor from "jsx/components/FixedFor";
+import useSelection from "~/useSelection";
+
+const HEADERS = [
+  "Name",
+  "Released",
+  "Network",
+  "Status",
+  "Rating",
+];
+
+function initSearch() {
+  let list: string | null;
+  if (location.search && (list = new URL(location.href).searchParams.get("searchList"))) {
+    return Storage.parseShowList<TvShowPreview>(list);
+  }
+
+  return [];
+}
 
 export default function Search() {
-  const [visible, setVisible] = ref(false);
+  const visible = reactive({ value: false });
   const [text, setText] = ref("");
-  const [shows, setShows] = ref<TvShowPreview[]>([]);
-  const [selectedIdx, setSelectedIdx] = ref(0);
-  const [input, setInput] = ref<HTMLInputElement | null>(null);
+  const [shows, setShows] = ref<TvShowPreview[]>(initSearch());
+  const [selected, setSelected] = ref(new Set<number>);
+
+  const {
+    mountSelect,
+    destroySelect,
+    selectIdx,
+    selectAll,
+    isAreaSelecting,
+    startAreaSelect,
+    doAreaSelect,
+  } = useSelection([selected, setSelected], shows);
+
+  let input!: HTMLInputElement;
 
   function keyListener(e: KeyboardEvent) {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIdx((selectedIdx() + 1) % shows().length);
-    }
-    else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIdx(selectedIdx() === 0 ? shows.length - 1 : selectedIdx() - 1);
-    }
-    else if (e.key === "Enter") {
-      if (selectedIdx() < shows().length) {
-        addShow(shows()[selectedIdx()].id);
-      }
-    }
-    else if (e.key === "Escape") {
-      setVisible(false);
+    if (e.key === "Escape") {
+      visible.value = false;
     }
     else if (!isAnyInputFocused() && e.key === "/") {
       e.preventDefault();
-      setVisible(true);
-      input()?.focus();
+      visible.value = true;
+      input.focus();
     }
   }
 
@@ -47,6 +64,7 @@ export default function Search() {
 
   const search = debounced(async () => {
     setShows(await findShows(text()));
+    setSelected.byRef(selected => selected.clear());
   }, 300);
 
   function onInput(this: HTMLInputElement) {
@@ -54,11 +72,17 @@ export default function Search() {
     search();
   }
 
+  async function addShows() {
+    for (const id of selected()) {
+      await delayCall(async () => await addShow(id));
+    }
+  }
+
   return (
     <>
       <button
         class:add-show
-        on:click={() => setVisible(!visible())}
+        on:click={() => visible.value = !visible.value}
         on:mount={onMount}
         on:unmount={onDestroy}
       >
@@ -66,25 +90,44 @@ export default function Search() {
         <div class:divider />
         <strong>Add Show <em>[/]</em></strong>
       </button>
-      <Dialog
-        $if={visible()}
-        center
-      >
+      <Dialog $if={visible.value} center>
         <label slot="header" class:show-search>
           <i></i>
           <input
-            $ref={setInput}
+            $ref={input}
             value={text()}
             on:input={onInput}
             placeholder="Search shows"
+            spellcheck={false}
           />
+          <button
+            $if={!!selected().size}
+            var:button-bg="var(--color-ok)"
+            var:button-bg-2="var(--color-ok-2)"
+            on:click={addShows}
+          >Add <strong>{selected().size}</strong> show/s</button>
         </label>
-        <ul slot="content" class:show-search-results>
-          <em $if={!!text() && !shows().length}>No results</em>
+        <ul
+          slot="content"
+          class:table-list
+          class:show-search-results
+          class:is-selecting={isAreaSelecting()}
+          class:empty={!shows().length}
+          on:mount={mountSelect}
+          on:unmount={destroySelect}
+        >
+          <FixedFor each={HEADERS} do={(name) => (
+            <li class:header>{name()}</li>
+          )} />
+          <li $if={!!text() && !shows().length}><em>No results</em></li>
           <For each={shows()} do={(show, i) => (
             <li
               data-status={show().status}
-              class:selected={selectedIdx() === i}
+              class:selected={selected().has(show().id)}
+              on:click={selectIdx(i)}
+              on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
+              on:mouseover={() => doAreaSelect(i)}
+              on:dblclick={selectAll}
             >
               <Tooltip>
                 <div
@@ -94,11 +137,11 @@ export default function Search() {
                   <em $if={!show().image}>{show().name}</em>
                 </div>
               </Tooltip>
-              <span><i></i>{show().name}</span>
-              <span><i></i>{formatDate(show().premiered)}</span>
-              <span><i></i>{show().network}</span>
-              <span class:status><i />{show().status}</span>
-              <span><i></i>{formatOption(show().rating)}</span>
+              <span class:list-cell><button class:active-hidden aria-hidden />{show().name}</span>
+              <span class:list-cell>{formatDate(show().premiered)}</span>
+              <span class:list-cell>{show().network}</span>
+              <span class:list-cell class:status><i />{show().status}</span>
+              <span class:list-cell><i></i>{formatOption(show().rating)}</span>
             </li>
           )} />
         </ul>

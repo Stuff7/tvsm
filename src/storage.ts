@@ -1,5 +1,5 @@
 import { ref } from "jsx";
-import { TvShow } from "~/tvsm";
+import { TvShow, TvShowPreview } from "~/tvsm";
 import { objCmp, ObjectCmpResult } from "./utils";
 
 type StorageAPI = {
@@ -11,7 +11,7 @@ function isDateField(k: string) {
   return k === "premiered" || k === "released";
 }
 
-function parseShowList(src: string): TvShow[] {
+export function parseShowList<T extends TvShow | TvShowPreview>(src: string): T[] {
   return JSON.parse(src, (k, v) => {
     if (isDateField(k) && typeof v === "string") {
       return new Date(v);
@@ -54,8 +54,7 @@ if (!list.length && location.search) {
 
   if (testData) {
     try {
-      const data = parseShowList(testData);
-      setShowList(data);
+      setShowList(parseShowList(testData));
     }
     catch (e) {
       console.warn("Failed to load test data");

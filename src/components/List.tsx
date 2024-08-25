@@ -1,11 +1,12 @@
-import jsx, { ref, watchOnly } from "jsx";
+import jsx, { ref } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { changes, setShowList } from "~/storage";
-import { filteredShows, filteredShows as showList } from "~/components/Filter";
+import { filteredShows as showList } from "~/components/Filter";
 import Tooltip from "~/components/Tooltip";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, optionCmp, padNum } from "~/utils";
 import { TvShow } from "~/tvsm";
+import useSelection from "~/useSelection";
 
 const HEADERS = [
   ["Name", ["name"]] as const,
@@ -27,21 +28,26 @@ function formatIdx(i: number) {
 export default function List() {
   const [sortKey, setSortKey] = ref("");
   const [ctrlPressed, setCtrlPressed] = ref(false);
-  const originalSelection = new Set<number>;
-  const [isAreaSelecting, setIsAreaSelecting] = ref(false);
-  const [areaStart, setAreaStart] = ref(0);
-  const [areaEnd, setAreaEnd] = ref(0);
+  const {
+    mountSelect,
+    destroySelect,
+    isAreaSelecting,
+    selectIdx,
+    selectAll,
+    startAreaSelect,
+    doAreaSelect,
+  } = useSelection([selected, setSelected], showList);
 
   function onMount() {
     window.addEventListener("keydown", keyListener);
     window.addEventListener("keyup", keyListener);
-    window.addEventListener("mouseup", endAreaSelection);
+    mountSelect();
   }
 
   function onDestroy() {
     window.removeEventListener("keypress", keyListener);
     window.removeEventListener("keyup", keyListener);
-    window.removeEventListener("mouseup", endAreaSelection);
+    destroySelect();
   }
 
   function keyListener(e: KeyboardEvent) {
@@ -65,76 +71,9 @@ export default function List() {
     };
   }
 
-  function selectShow(idx: number) {
-    return function () {
-      const id = filteredShows()[idx].id;
-      setSelected.byRef(selected => {
-        if (selected.has(id)) {
-          selected.delete(id);
-        }
-        else {
-          selected.add(id);
-        }
-      });
-    };
-  }
-
-  function toggleSelectAll() {
-    setSelected.byRef(selected => {
-      if (selected.size === showList().length) {
-        selected.clear();
-      }
-      else {
-        showList().forEach(s => selected.add(s.id));
-      }
-    });
-  }
-
-  function startAreaSelection(idx: number) {
-    originalSelection.clear();
-    selected().forEach(s => originalSelection.add(s));
-    setAreaStart(idx);
-    setIsAreaSelecting(true);
-  }
-
-  function updAreaEnd(idx: number) {
-    if (isAreaSelecting()) {
-      setAreaEnd(idx);
-    }
-  }
-
-  function endAreaSelection() {
-    originalSelection.clear();
-    setIsAreaSelecting(false);
-  }
-
-  watchOnly([areaEnd], () => {
-    if (!isAreaSelecting()) { return }
-
-    const selectedArea = new Set(originalSelection);
-
-    let start = areaStart();
-    let end = areaEnd();
-
-    if (start > end) {
-      [start, end] = [end, start];
-    }
-
-    for (let i = start; i <= end; i++) {
-      const id = showList()[i].id;
-      if (selectedArea.has(id)) {
-        selectedArea.delete(id);
-      }
-      else {
-        selectedArea.add(id);
-      }
-    }
-
-    setSelected(selectedArea);
-  });
-
   return (
     <ul
+      class:table-list
       class:tv-show-list
       class:empty={showList().length === 0}
       class:is-selecting={isAreaSelecting()}
@@ -159,10 +98,10 @@ export default function List() {
         <li
           data-status={show().status}
           class:selected={selected().has(show().id)}
-          on:click={selectShow(i)}
-          on:mousedown={(e) => e.button === 0 && startAreaSelection(i)}
-          on:mouseover={() => updAreaEnd(i)}
-          on:dblclick={toggleSelectAll}
+          on:click={selectIdx(i)}
+          on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
+          on:mouseover={() => doAreaSelect(i)}
+          on:dblclick={selectAll}
           aria-disabled
         >
           <Tooltip $if={ctrlPressed()}>
@@ -174,7 +113,7 @@ export default function List() {
             </div>
           </Tooltip>
           <ListCell show={show()} key="name">
-            <button class:row-nav aria-hidden />
+            <button class:active-hidden aria-hidden />
             {formatIdx(i + 1)} {show().name}
           </ListCell>
           <EpisodeCell show={show()} key="prevEp" />
