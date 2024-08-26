@@ -19,6 +19,11 @@ ul.table-list {
     --status-color: var(--color-light);
     color: var(--status-color);
 
+    &:has([disabled]) span {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
     &.header {
       font-weight: bold;
 

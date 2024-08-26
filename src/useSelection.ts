@@ -28,11 +28,23 @@ export default function useSelection([selected, setSelected]: Ref<Set<number>>, 
     };
   }
 
-  function selectAll(e: Event) {
+  function selectAll(e: Event, filtered?: Set<number>) {
     e.preventDefault();
     setSelected.byRef(selected => {
       if (selected.size === list().length) {
         selected.clear();
+      }
+      else if (filtered) {
+        if (list().every(s => selected.has(s.id) || filtered.has(s.id))) {
+          selected.clear();
+        }
+        else {
+          list().forEach(s => {
+            if (!filtered.has(s.id)) {
+              selected.add(s.id);
+            }
+          });
+        }
       }
       else {
         list().forEach(s => selected.add(s.id));

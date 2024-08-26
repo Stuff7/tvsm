@@ -29,6 +29,7 @@ export default function Search() {
   const visible = reactive({ value: false });
   const [text, setText] = ref("");
   const [shows, setShows] = ref<TvShowPreview[]>(initSearch());
+  const [added, setAdded] = ref(new Set<number>);
   const [selected, setSelected] = ref(new Set<number>);
 
   const {
@@ -65,6 +66,15 @@ export default function Search() {
   const search = debounced(async () => {
     setShows(await findShows(text()));
     setSelected.byRef(selected => selected.clear());
+
+    setAdded.byRef(added => {
+      added.clear();
+      shows().forEach(a => {
+        if (Storage.showList().some(b => a.id === b.id)) {
+          added.add(a.id);
+        }
+      });
+    });
   }, 300);
 
   function onInput(this: HTMLInputElement) {
@@ -104,6 +114,7 @@ export default function Search() {
             $if={!!selected().size}
             var:button-bg="var(--color-ok)"
             var:button-bg-2="var(--color-ok-2)"
+            style:padding-block="0.07em"
             on:click={addShows}
           >Add <strong>{selected().size}</strong> show/s</button>
         </label>
@@ -127,7 +138,7 @@ export default function Search() {
               on:click={selectIdx(i)}
               on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
               on:mouseover={() => doAreaSelect(i)}
-              on:dblclick={selectAll}
+              on:dblclick={(e) => selectAll(e, added())}
             >
               <Tooltip>
                 <div
@@ -137,7 +148,10 @@ export default function Search() {
                   <em $if={!show().image}>{show().name}</em>
                 </div>
               </Tooltip>
-              <span class:list-cell><button class:active-hidden aria-hidden />{show().name}</span>
+              <span class:list-cell>
+                <button class:active-hidden disabled={added().has(show().id)} aria-hidden />
+                {show().name}
+              </span>
               <span class:list-cell>{formatDate(show().premiered)}</span>
               <span class:list-cell>{show().network}</span>
               <span class:list-cell class:status><i />{show().status}</span>

@@ -2,7 +2,7 @@ import jsx, { ref, watchOnly } from "jsx";
 import { showList } from "~/storage";
 import { isAnyInputFocused } from "~/utils";
 
-export const [filteredShows, setFilteredShows] = ref([...showList()]);
+export const [filtered, setFiltered] = ref(new Set<number>);
 
 export default function Filter() {
   let input!: HTMLInputElement;
@@ -30,12 +30,32 @@ export default function Filter() {
 
   function filterByName() {
     const search = nameFilter();
+    const list = filtered();
+
     if (!search) {
-      setFilteredShows([...showList()]);
+      if (list.size) {
+        list.clear();
+        setFiltered(list);
+      }
       return;
     }
 
-    setFilteredShows(showList().filter(s => s.name.includes(search)));
+    let changed = false;
+    showList().forEach(s => {
+      const isMatch = s.name.includes(search);
+      if (isMatch && list.has(s.id)) {
+        list.delete(s.id);
+        changed = true;
+      }
+      else if(!isMatch && !list.has(s.id)) {
+        list.add(s.id);
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      setFiltered(list);
+    }
   }
 
   return (

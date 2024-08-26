@@ -10,15 +10,7 @@ export async function findShows(search: string): Promise<TvShowPreview[]> {
     return [];
   }
 
-  return r.data.map(r => ({
-    id: r.show.id,
-    name: r.show.name,
-    premiered: r.show.premiered ? new Date(r.show.premiered) : undefined,
-    network: toNetwork(r.show),
-    status: STATUS[r.show.status],
-    rating: r.show.rating.average || undefined,
-    image: r.show.image?.medium,
-  }));
+  return r.data.map(r => toTvShowPreview(r.show));
 }
 
 export async function findSingleShow(search: string): Promise<Option<TvShow>> {
@@ -44,6 +36,15 @@ export async function findShowByID(id: number): Promise<Option<TvShow>> {
   return r.data && toTvShow(r.data);
 }
 
+export function deserializeTvShow<T extends TvShowPreview | TvShowPreview[]>(src: string): T {
+  return JSON.parse(src, (k, v) => {
+    if ((k === "premiered" || k === "released") && typeof v === "string") {
+      return new Date(v);
+    }
+    return v;
+  });
+}
+
 const API = "https://api.tvmaze.com";
 const EMBED = "embed[]=nextepisode&embed[]=previousepisode&embed[]=seasons&embed[]=episodes";
 function fetchJSON<T>(endpoint: string, embed = false): Promise<Result<T>> {
@@ -60,19 +61,25 @@ function fetchJSON<T>(endpoint: string, embed = false): Promise<Result<T>> {
   });
 }
 
-function toTvShow(show: TvMaze.ShowResponse): TvShow {
-  return {
-    id: show.id,
-    name: show.name,
-    rating: show.rating.average || undefined,
-    status: STATUS[show.status],
-    network: toNetwork(show),
-    nextEp: show._embedded.nextepisode && toEpisode(show._embedded.nextepisode),
-    prevEp: show._embedded.previousepisode && toEpisode(show._embedded.previousepisode),
-    seasons: show._embedded.seasons.length,
-    premiered: show.premiered ? new Date(show.premiered) : undefined,
-    image: show.image?.medium,
-  };
+function toTvShowPreview(show: TvMaze.ShowMatch, out = {} as TvShowPreview): TvShowPreview {
+  out.id = show.id;
+  out.name = show.name;
+  out.premiered = show.premiered ? new Date(show.premiered) : undefined;
+  out.network = toNetwork(show);
+  out.status = STATUS[show.status];
+  out.rating = show.rating.average || undefined;
+  out.image = show.image?.medium;
+
+  return out;
+}
+
+function toTvShow(show: TvMaze.ShowResponse, out = {} as TvShow): TvShow {
+  toTvShowPreview(show, out);
+  out.nextEp = show._embedded.nextepisode && toEpisode(show._embedded.nextepisode);
+  out.prevEp = show._embedded.previousepisode && toEpisode(show._embedded.previousepisode);
+  out.seasons = show._embedded.seasons.length;
+
+  return out;
 }
 
 function toNetwork(show: TvMaze.Show): string {
@@ -104,17 +111,10 @@ export type TvShowPreview = {
   image: Option<string>,
 };
 
-export type TvShow = {
-  id: number,
-  name: string,
+export type TvShow = TvShowPreview & {
   nextEp: Option<Episode>,
   prevEp: Option<Episode>,
-  premiered: Option<Date>,
-  network: string,
-  status: Status,
   seasons: number,
-  rating: Option<number>,
-  image: Option<string>,
 };
 
 export type Episode = {

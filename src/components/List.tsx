@@ -1,11 +1,11 @@
-import jsx, { ref } from "jsx";
+import jsx, { ref, watchOnly } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
-import { changes, setShowList } from "~/storage";
-import { filteredShows as showList } from "~/components/Filter";
+import { changes, showList, setShowList } from "~/storage";
+import { filtered } from "~/components/Filter";
 import Tooltip from "~/components/Tooltip";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, optionCmp, padNum } from "~/utils";
-import { TvShow } from "~/tvsm";
+import { TvShow, TvShowPreview } from "~/tvsm";
 import useSelection from "~/useSelection";
 
 const HEADERS = [
@@ -23,6 +23,18 @@ export const [selected, setSelected] = ref(new Set<number>);
 
 function formatIdx(i: number) {
   return padNum(i, showCountDigits());
+}
+
+function sortList<T extends TvShowPreview>(reverse: boolean, a: T, b: T, ...keys: KeysDeep<T>[]) {
+  if (filtered().has(a.id)) {
+    return 1;
+  }
+
+  if (filtered().has(b.id)) {
+    return -1;
+  }
+
+  return optionCmp(getDeep(a, ...keys), getDeep(b, ...keys), reverse);
 }
 
 export default function List() {
@@ -60,16 +72,21 @@ export default function List() {
     const key = keys.join(".");
 
     return () => {
-      if (sortKey() === key) {
-        setShowList.byRef(list => list.sort((a, b) => optionCmp(getDeep(a, ...keys), getDeep(b, ...keys), true)));
-        setSortKey(`${key}-desc`);
-      }
-      else {
-        setShowList.byRef(list => list.sort((a, b) => optionCmp(getDeep(a, ...keys), getDeep(b, ...keys))));
-        setSortKey(key);
-      }
+      setSortKey(sortKey() !== key ? key : `${key}-desc`);
     };
   }
+
+  function sort(): boolean {
+    const key = sortKey();
+    const isAscending = !key.endsWith("-desc");
+    const keys = (isAscending ? key : key.slice(0, key.length - 5)).split(".") as KeysDeep<TvShow>[];
+
+    setShowList.byRef(list => list.sort((a, b) => sortList(isAscending, a, b, ...keys)));
+
+    return isAscending;
+  }
+
+  watchOnly([filtered, sortKey], sort);
 
   return (
     <ul
@@ -101,7 +118,7 @@ export default function List() {
           on:click={selectIdx(i)}
           on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
           on:mouseover={() => doAreaSelect(i)}
-          on:dblclick={selectAll}
+          on:dblclick={(e) => selectAll(e, filtered())}
           aria-disabled
         >
           <Tooltip $if={ctrlPressed()}>
@@ -113,7 +130,7 @@ export default function List() {
             </div>
           </Tooltip>
           <ListCell show={show()} key="name">
-            <button class:active-hidden aria-hidden />
+            <button class:active-hidden disabled={filtered().has(show().id)} aria-hidden />
             {formatIdx(i + 1)} {show().name}
           </ListCell>
           <EpisodeCell show={show()} key="prevEp" />
