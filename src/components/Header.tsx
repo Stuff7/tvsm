@@ -1,4 +1,4 @@
-import jsx from "jsx";
+import jsx, { ref } from "jsx";
 import { showList, setShowList } from "~/storage";
 import Filter from "~/components/Filter";
 import Search, { addShow } from "./Search";
@@ -6,6 +6,9 @@ import { selected, setSelected } from "./List";
 import Tooltip from "./Tooltip";
 
 export default function Header() {
+  const [expandedSection, setExpandedSection] = ref<HTMLElement>();
+  const [expanded, setExpanded] = ref(false);
+
   function removeShow() {
     if (!selected().size) { return }
 
@@ -27,7 +30,7 @@ export default function Header() {
   }
 
   return (
-    <header class:tvsm-header>
+    <header class:tvsm-header class:expanded={expanded()}>
       <p>TVSM</p>
       <div class:divider />
       <Search />
@@ -53,7 +56,13 @@ export default function Header() {
         <Tooltip>Update selected shows</Tooltip>
       </button>
       <div class:divider />
-      <Filter />
+      <Filter expandedSection={expandedSection()} isExpanded={expanded()} />
+      <div class:divider />
+      <button class:icon-btn on:click={() => setExpanded(!expanded())}>
+        <Tooltip>More filtering options</Tooltip>
+        <i></i>
+      </button>
+      <section class:extra-content $ref={setExpandedSection} />
     </header>
   );
 }

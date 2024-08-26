@@ -3,10 +3,35 @@
   width: 100%;
   padding: var(--spacing-nm);
   display: grid;
-  grid-template-columns: repeat(7, auto) 1fr;
+  grid-template-columns: repeat(7, auto) 1fr auto auto;
   color: var(--color-light);
   align-items: center;
-  gap: var(--spacing-nm);
+  column-gap: var(--spacing-nm);
+
+  --content-size: 0fr;
+  grid-template-rows: min-content var(--content-size);
+  overflow: hidden;
+  transition: grid-template-rows 250ms;
+
+  &.expanded {
+    --content-size: 1fr;
+    row-gap: var(--spacing-nm);
+  }
+
+  .extra-content {
+    display: grid;
+    align-items: center;
+    grid-auto-flow: column;
+    gap: var(--spacing-nm);
+    grid-column: 1 / 11;
+    overflow: hidden;
+    transition: opacity 250ms;
+  }
+
+  &:not(.expanded) .extra-content {
+    pointer-events: none;
+    opacity: 0;
+  }
 
   p {
     font-size: 1rem;

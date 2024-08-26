@@ -1,12 +1,21 @@
-import jsx, { ref, watchOnly } from "jsx";
+import jsx, { Fragment, reactive, ref, watchOnly } from "jsx";
+import FixedFor from "jsx/components/FixedFor";
+import Portal from "jsx/components/Portal";
 import { showList } from "~/storage";
+import { STATUS_VALUES, TvShowPreview, Status } from "~/tvsm";
 import { isAnyInputFocused } from "~/utils";
 
 export const [filtered, setFiltered] = ref(new Set<number>);
 
-export default function Filter() {
+type FilterProps = {
+  expandedSection: HTMLElement,
+  isExpanded: boolean,
+};
+
+export default function Filter(props: FilterProps) {
   let input!: HTMLInputElement;
-  const [nameFilter, setNameFilter] = ref("");
+  const filters = reactive({ name: "", network: "" });
+  const [statusFilter, setStatusFilter] = ref(new Set<Status>);
 
   function keyListener(e: KeyboardEvent) {
     if (e.key === "Escape") {
@@ -26,13 +35,31 @@ export default function Filter() {
     document.body.removeEventListener("keydown", keyListener);
   }
 
-  watchOnly([showList], filterByName);
+  watchOnly([showList, filters, statusFilter], filterByName);
+
+  function toggleStatus(status: Status) {
+    return function (this: HTMLInputElement) {
+      if (this.checked) {
+        setStatusFilter.byRef(s => s.add(status));
+      }
+      else {
+        setStatusFilter.byRef(s => s.delete(status));
+      }
+    };
+  }
+
+  function checkMatch(s: TvShowPreview) {
+    return (
+      (!filters.name || s.name.includes(filters.name)) &&
+      (!filters.network || s.network.includes(filters.network)) &&
+      (!statusFilter().size || statusFilter().has(s.status))
+    );
+  }
 
   function filterByName() {
-    const search = nameFilter();
     const list = filtered();
 
-    if (!search) {
+    if (!filters.name && !filters.network && !statusFilter().size) {
       if (list.size) {
         list.clear();
         setFiltered(list);
@@ -42,7 +69,7 @@ export default function Filter() {
 
     let changed = false;
     showList().forEach(s => {
-      const isMatch = s.name.includes(search);
+      const isMatch = checkMatch(s);
       if (isMatch && list.has(s.id)) {
         list.delete(s.id);
         changed = true;
@@ -59,14 +86,50 @@ export default function Filter() {
   }
 
   return (
-    <label class:tv-show-filter on:unmount={onDestroy}>
-      <i></i>
+    <>
+      <Input
+        $ref={input}
+        value={filters.name}
+        key="name"
+        on:unmount={onDestroy}
+      />
+      <Portal to={props.expandedSection}>
+        <Input value={filters.network} key="network" disabled={!props.isExpanded} />
+        <FixedFor each={STATUS_VALUES} do={(status) => (
+          <label>
+            <input
+              type="checkbox"
+              checked={statusFilter().has(status())}
+              on:change={toggleStatus(status())}
+              disabled={!props.isExpanded}
+            />
+            <em>{status()}</em>
+          </label>
+        )} />
+      </Portal>
+    </>
+  );
+}
+
+type InputProps = {
+  $ref?: HTMLInputElement,
+  value: string,
+  key: string,
+  disabled?: boolean,
+  "on:unmount"?: () => void,
+};
+
+function Input(props: InputProps) {
+  return (
+    <label class:tv-show-filter on:unmount={props["on:unmount"]}>
+      <i class:input-icn></i>
       <input
         class:delegated
-        $ref={input}
-        bind:value={[nameFilter, setNameFilter]}
-        on:input={filterByName}
-        placeholder="Filter shows by name"
+        $ref={props.$ref}
+        value={props.value}
+        on:input={function () { props.value = this.value }}
+        placeholder={`Filter by ${props.key}`}
+        disabled={props.disabled}
       />
     </label>
   );

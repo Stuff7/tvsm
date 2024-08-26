@@ -101,12 +101,16 @@ const STATUS: Record<TvMaze.Status, Status> = {
   "Ended": "Ended",
 };
 
+export type Status = "TBD" | "Running" | "Ended" | "In Dev";
+
+export const STATUS_VALUES = Object.values(STATUS);
+
 export type TvShowPreview = {
   id: number,
   name: string,
   premiered: Option<Date>,
   network: string,
-  status: string,
+  status: Status,
   rating: Option<number>,
   image: Option<string>,
 };
@@ -122,5 +126,3 @@ export type Episode = {
   number: number,
   released: Date,
 };
-
-type Status = "TBD" | "Running" | "Ended" | "In Dev";

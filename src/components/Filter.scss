@@ -10,7 +10,7 @@ label.tv-show-filter {
 
   transition: background 250ms, color 250ms, padding 250ms, border 250ms;
 
-  i {
+  .input-icn {
     opacity: 0.5;
   }
 
@@ -20,7 +20,7 @@ label.tv-show-filter {
     border-color: currentColor;
     background: #141414;
 
-    i {
+    .input-icn {
       opacity: 1.0;
     }
   }
