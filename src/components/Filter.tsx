@@ -27,14 +27,6 @@ export default function Filter(props: FilterProps) {
     }
   }
 
-  queueMicrotask(() => {
-    document.body.addEventListener("keydown", keyListener);
-  });
-
-  function onDestroy() {
-    document.body.removeEventListener("keydown", keyListener);
-  }
-
   watchOnly([showList, filters, statusFilter], filterByName);
 
   function toggleStatus(status: Status) {
@@ -91,7 +83,7 @@ export default function Filter(props: FilterProps) {
         $ref={input}
         value={filters.name}
         key="name"
-        on:unmount={onDestroy}
+        win:onkeydown={keyListener}
       />
       <Portal to={props.expandedSection}>
         <Input value={filters.network} key="network" disabled={!props.isExpanded} />
@@ -116,12 +108,12 @@ type InputProps = {
   value: string,
   key: string,
   disabled?: boolean,
-  "on:unmount"?: () => void,
+  "win:onkeydown"?: (e: KeyboardEvent) => void,
 };
 
 function Input(props: InputProps) {
   return (
-    <label class:tv-show-filter on:unmount={props["on:unmount"]}>
+    <label class:tv-show-filter win:onkeydown={props["win:onkeydown"]}>
       <i class:input-icn></i>
       <input
         class:delegated

@@ -1,3 +1,4 @@
+@use "./components/Carousel.scss";
 @use "./components/Tooltip.scss";
 @use "./components/Dialog.scss";
 @use "./components/Header.scss";
@@ -33,6 +34,10 @@
   --color-disabled-2: #cbcbcb;
   --spacing-nm: 0.5em;
   --radius-nm: 0.3em;
+
+  --button-fg: var(--color-dark);
+  --button-bg: var(--color-accent);
+  --button-bg-2: var(--color-accent-2);
 }
 
 *, *::before, *::after {
@@ -90,9 +95,6 @@ button {
   border: 0;
   border-radius: var(--radius-nm);
   font-weight: 500;
-  --button-fg: var(--color-dark);
-  --button-bg: var(--color-accent);
-  --button-bg-2: var(--color-accent-2);
   background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
   color: var(--button-fg);
 

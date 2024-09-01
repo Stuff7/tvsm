@@ -1,5 +1,15 @@
 import { Episode } from "~/tvsm";
 
+export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+export function syncFrame<T>(fn: () => T) {
+  return new Promise<T>(res => {
+    requestAnimationFrame(async () => {
+      res(await fn());
+    });
+  });
+}
+
 export function delayCall<T>(fn: () => T, delay = 300) {
   return new Promise(res => setTimeout(async () => res(await fn()), delay));
 }
