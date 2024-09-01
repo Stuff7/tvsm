@@ -10,9 +10,19 @@
   .month {
     display: grid;
     grid-template-columns: repeat(7, min-content);
-    gap: 2rem;
+    gap: var(--spacing-nm);
     justify-items: center;
     justify-content: space-between;
     color: var(--color-light);
+
+    button {
+      background: transparent;
+      color: currentColor;
+      font-size: 1.5rem;
+      padding: var(--spacing-nm);
+      border: 1px solid;
+      width: 100%;
+      height: 100%;
+    }
   }
 }

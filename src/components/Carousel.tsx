@@ -106,23 +106,11 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       }
     }
 
-    if (!props.snap) { return }
-
-    const pos = -position();
-    const point = snapPoint();
-    if (pos > point) {
-      props.page = indices()[2];
-    }
-    else if (pos < point) {
-      props.page = indices()[0];
-    }
-    else {
-      props.page = indices()[1];
-    }
+    updPage();
   }
 
   watchFn(() => props.page, async (v: number) => {
-    if (!container) {
+    if (!container || accel() !== 0) {
       return;
     }
 
@@ -150,20 +138,35 @@ export default function Carousel<T>(props: CarouselProps<T>) {
         }
       }
 
+      setAccel(0);
       return;
     }
 
-    if (pos > snapPoint()) {
+    if (pos - cellWidth / 4 > snapPoint()) {
       setAccel(snapSpeed);
       while (position() !== -snapPoint()) {
         await syncFrame(() => scroll(start() - accel() - 1));
       }
     }
-    else if (pos < snapPoint()) {
+    else if (pos > snapPoint()) {
+      setAccel(-snapSpeed);
+      while (position() < -snapPoint()) {
+        await syncFrame(() => scroll(start() - accel() + 1));
+      }
+      setPosition(-snapPoint());
+    }
+    else if (pos < snapPoint() - cellWidth / 4) {
       setAccel(-snapSpeed);
       while (position() !== -snapPoint()) {
         await syncFrame(() => scroll(start() - accel() + 1));
       }
+    }
+    else if (pos < snapPoint()) {
+      setAccel(snapSpeed);
+      while (position() > -snapPoint()) {
+        await syncFrame(() => scroll(start() - accel() - 1));
+      }
+      setPosition(-snapPoint());
     }
 
     setAccel(0);
@@ -182,6 +185,25 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     else if (pos > -spacing() / 2) {
       setIndices.byRef(prevSwap);
       setPosition(-snapPoint());
+    }
+    else {
+      return;
+    }
+
+    updPage();
+  }
+
+  function updPage() {
+    const pos = -position();
+    const point = snapPoint();
+    if (pos > point + cellWidth / 2) {
+      props.page = indices()[2];
+    }
+    else if (pos < point - cellWidth / 2) {
+      props.page = indices()[0];
+    }
+    else {
+      props.page = indices()[1];
     }
   }
 
