@@ -55,14 +55,6 @@ export default function Search() {
     }
   }
 
-  function onMount() {
-    document.body.addEventListener("keydown", keyListener);
-  }
-
-  function onDestroy() {
-    document.body.removeEventListener("keydown", keyListener);
-  }
-
   const search = debounced(async () => {
     setShows(await findShows(text()));
     setSelected.byRef(selected => selected.clear());
@@ -93,8 +85,7 @@ export default function Search() {
       <button
         class:add-show
         on:click={() => visible.value = !visible.value}
-        on:mount={onMount}
-        on:unmount={onDestroy}
+        win:onkeydown={keyListener}
       >
         <i></i>
         <div class:divider />

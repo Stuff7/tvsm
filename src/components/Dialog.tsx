@@ -56,20 +56,6 @@ export default function Dialog(props: DialogProps) {
     cursorEnd.y = cursor.y;
   }
 
-  function onMount() {
-    window.addEventListener("touchmove", drag);
-    window.addEventListener("touchend", stopDrag);
-    window.addEventListener("mousemove", drag);
-    window.addEventListener("mouseup", stopDrag);
-  }
-
-  function onDestroy() {
-    window.removeEventListener("touchmove", drag);
-    window.removeEventListener("touchend", stopDrag);
-    window.removeEventListener("mousemove", drag);
-    window.removeEventListener("mouseup", stopDrag);
-  }
-
   return (
     <Portal to="[data-layer=modals]">
       <Transition $if={!!props.$if} name="pop">
@@ -77,8 +63,10 @@ export default function Dialog(props: DialogProps) {
           class:dialog
           class:draggable={!!props.draggable}
           class:center={!!props.center}
-          on:mount={onMount}
-          on:unmount={onDestroy}
+          win:ontouchmove={drag}
+          win:ontouchend={stopDrag}
+          win:onmousemove={drag}
+          win:onmouseup={stopDrag}
           var:x={`${cursor.x}px`}
           var:y={`${cursor.y}px`}
         >

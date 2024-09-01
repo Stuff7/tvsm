@@ -68,14 +68,13 @@ export default function Tooltip(props: TooltipProps) {
       parent.addEventListener("mouseleave", unhover);
       parent.addEventListener("touchstart", hover);
       parent.addEventListener("touchend", unhover);
-      parent.removeEventListener("mount", addEvents);
     }
 
     if (parent.isConnected) {
       addEvents();
     }
     else {
-      parent.addEventListener("mount", addEvents);
+      parent.addEventListener("mount", addEvents, { once: true });
     }
 
     parent.addEventListener("unmount", () => {
@@ -110,16 +109,6 @@ export default function Tooltip(props: TooltipProps) {
     });
   }
 
-  function onMount() {
-    window.addEventListener("mousemove", trackMouse);
-    window.addEventListener("touchmove", trackMouse);
-  }
-
-  function onDestroy() {
-    window.removeEventListener("mousemove", trackMouse);
-    window.removeEventListener("touchmove", trackMouse);
-  }
-
   return (
     <>
       <Portal $ref={tooltipLayer} to="[data-layer=tooltips]">
@@ -131,8 +120,8 @@ export default function Tooltip(props: TooltipProps) {
             var:y={`${mouse().y}px`}
             var:pos-x={translation.x}
             var:pos-y={translation.y}
-            on:mount={onMount}
-            on:unmount={onDestroy}
+            win:onmousemove={trackMouse}
+            win:ontouchmove={trackMouse}
           >
             <slot />
           </div>

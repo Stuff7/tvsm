@@ -50,18 +50,6 @@ export default function List() {
     doAreaSelect,
   } = useSelection([selected, setSelected], showList);
 
-  function onMount() {
-    window.addEventListener("keydown", keyListener);
-    window.addEventListener("keyup", keyListener);
-    mountSelect();
-  }
-
-  function onDestroy() {
-    window.removeEventListener("keypress", keyListener);
-    window.removeEventListener("keyup", keyListener);
-    destroySelect();
-  }
-
   function keyListener(e: KeyboardEvent) {
     if (e.ctrlKey !== ctrlPressed()) {
       setCtrlPressed(e.ctrlKey);
@@ -94,8 +82,10 @@ export default function List() {
       class:tv-show-list
       class:empty={showList().length === 0}
       class:is-selecting={isAreaSelecting()}
-      on:mount={onMount}
-      on:unmount={onDestroy}
+      on:mount={mountSelect}
+      on:unmount={destroySelect}
+      win:onkeydown={keyListener}
+      win:onkeyup={keyListener}
     >
       <li class:header>
         <FixedFor each={HEADERS} do={(header) => {
