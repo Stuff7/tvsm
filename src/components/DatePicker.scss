@@ -1,0 +1,18 @@
+.date-picker {
+  padding-block: calc(var(--spacing-nm) * 3);
+  background: var(--color-dark);
+  width: min-content;
+  margin: auto;
+  font-size: 1.5rem;
+  display: grid;
+  gap: var(--spacing-nm);
+
+  .month {
+    display: grid;
+    grid-template-columns: repeat(7, min-content);
+    gap: 2rem;
+    justify-items: center;
+    justify-content: space-between;
+    color: var(--color-light);
+  }
+}
