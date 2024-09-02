@@ -3,7 +3,7 @@ import { isSafari, syncFrame } from "~/utils";
 
 type CarouselProps<T> = {
   each: T[],
-  do: (item: () => T, i: () => number) => JSX.Element,
+  do: (item: () => T, i: () => number, position: () => number) => JSX.Element,
   snap?: boolean,
   spacing?: number,
   page?: number,
@@ -110,7 +110,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
   }
 
   watchFn(() => props.page, async (v: number) => {
-    if (!container || accel() !== 0) {
+    if (!container || !props.snap || accel() !== 0) {
       return;
     }
 
@@ -239,7 +239,11 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     >
       <div class:carousel-content style:translate={`${position()}px`}>
         {...Array.from({ length: itemsPerPage() + 2 }).map((_, i) => {
-          const node = props.do(() => props.each[indices()[i]], () => indices()[i]);
+          const node = props.do(
+            () => props.each[indices()[i]],
+            () => indices()[i],
+            () => i,
+          );
           if (i === 0) { gridCell = node }
           return node;
         })}

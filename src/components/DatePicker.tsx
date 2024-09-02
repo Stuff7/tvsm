@@ -1,4 +1,4 @@
-import jsx, { reactive, ref, watch, watchFn, watchOnly } from "jsx";
+import jsx, { reactive, ref, watchFn, watchOnly } from "jsx";
 import Carousel from "./Carousel";
 import For from "jsx/components/For";
 import FixedFor from "jsx/components/FixedFor";
@@ -45,12 +45,30 @@ export default function DatePicker() {
       <nav class:week>
         <FixedFor each={DAYS} do={(day) => <span>{day()}</span>} />
       </nav>
-      <Carousel snap spacing={40} page={month.idx} each={MONTHS} do={(_, idx) => {
+      <Carousel snap spacing={40} page={month.idx} each={MONTHS} do={(_, idx, position) => {
         const [days, setDays] = ref<number[]>([]);
         const [prevDays, setPrevDays] = ref<number[]>([]);
+        const [nextDays, setNextDays] = ref<number[]>([]);
+        const [currYear, setCurrYear] = ref(0);
 
-        watchFn(() => [year(), idx()], () => {
-          const length = getDaysInMonth(year(), idx() + 1);
+        watchFn(() => [idx(), year()], () => {
+          const pos = position();
+          const i = idx();
+          const y = year();
+
+          if (pos === 0 && i === 11) {
+            setCurrYear(y - 1);
+          }
+          else if (pos === 2 && i === 0) {
+            setCurrYear(y + 1);
+          }
+          else {
+            setCurrYear(y);
+          }
+        });
+
+        watchFn(() => [currYear(), idx()], () => {
+          const length = getDaysInMonth(currYear(), idx() + 1);
           if (days().length === length) { return }
 
           setDays.byRef(days => {
@@ -65,25 +83,29 @@ export default function DatePicker() {
           });
         });
 
-        watchFn(() => [year(), idx()], () => {
+        watchFn(() => [currYear(), idx()], () => {
           const monthIdx = idx();
-          const firstDayMonth = new Date(year(), monthIdx, 1).getDay();
+          const firstDayMonth = new Date(currYear(), monthIdx, 1).getDay() || 7;
+          const daysPrevMonth = getDaysInMonth(monthIdx === 0 ? currYear() - 1 : currYear(), monthIdx);
 
-          if (firstDayMonth === 0) {
-            setPrevDays.byRef(days => days.length = 0);
-          }
-
-          const daysPrevMonth = getDaysInMonth(monthIdx === 0 ? year() - 1 : year(), monthIdx);
           setPrevDays(Array.from({ length: firstDayMonth }).map((_, i) => daysPrevMonth - firstDayMonth + 1 + i));
+        });
+
+        watchFn(() => [currYear(), idx()], () => {
+          const dayCount = prevDays().length + days().length;
+          setNextDays(Array.from({ length: 42 - dayCount }).map((_, i) => i + 1));
         });
 
         return (
           <section class:month data-id={idx()}>
             <For each={prevDays()} do={(i) => (
-              <button class:prev-days>{i()}</button>
+              <button class:offset-days>{i()}</button>
             )} />
             <For each={days()} do={(i) => (
               <button>{i()}</button>
+            )} />
+            <For each={nextDays()} do={(i) => (
+              <button class:offset-days>{i()}</button>
             )} />
           </section>
         );
