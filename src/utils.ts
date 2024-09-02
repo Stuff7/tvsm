@@ -2,6 +2,22 @@ import { Episode } from "~/tvsm";
 
 export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
+export function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+export function circularClamp(value: number, arr: unknown[]) {
+  if (value >= arr.length) {
+    return value - arr.length;
+  }
+
+  if (value < 0) {
+    return arr.length + value;
+  }
+
+  return value;
+}
+
 export function syncFrame<T>(fn: () => T) {
   return new Promise<T>(res => {
     requestAnimationFrame(async () => {

@@ -49,3 +49,27 @@
     font-weight: bold;
   }
 }
+
+.year-selector {
+  background: var(--color-dark);
+  padding-block: var(--spacing-nm);
+  width: min-content;
+  padding: var(--spacing-nm);
+  margin-inline: auto;
+
+  button {
+    padding: 0;
+    background: transparent;
+    color: var(--color-light);
+    font-size: 2rem;
+
+    &:hover {
+      background: #fff4;
+    }
+
+    &.selected {
+      background: var(--color-accent);
+      color: var(--color-dark);
+    }
+  }
+}

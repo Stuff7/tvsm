@@ -3,7 +3,7 @@ import { isSafari, syncFrame } from "~/utils";
 
 type CarouselProps<T> = {
   each: T[],
-  do: (item: () => T, i: () => number, position: () => number) => JSX.Element,
+  do: (item: () => T, i: () => number, position: number) => JSX.Element,
   snap?: boolean,
   spacing?: number,
   page?: number,
@@ -134,7 +134,18 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     updPage();
   }
 
-  watchFn(() => props.page, async (v: number) => {
+  watchFn(() => props.page, async (v: number | null) => {
+    if (v == null && props.page !== 0) {
+      setAccel(snapSpeed);
+      const page = props.page;
+      while (indices()[1] !== page || position() !== -snapPoint()) {
+        await syncFrame(() => scroll(start() - accel() - 1));
+      }
+
+      setAccel(0);
+      return;
+    }
+
     if (!container || !props.snap || accel() !== 0) {
       return;
     }
@@ -152,13 +163,15 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 
       if (diff < 0) {
         setAccel(snapSpeed);
-        while (indices()[1] !== props.page || position() !== -snapPoint()) {
+        const page = props.page;
+        while (indices()[1] !== page || position() !== -snapPoint()) {
           await syncFrame(() => scroll(start() - accel() - 1));
         }
       }
       else if (diff > 0) {
         setAccel(-snapSpeed);
-        while (indices()[1] !== props.page || position() !== -snapPoint()) {
+        const page = props.page;
+        while (indices()[1] !== page || position() !== -snapPoint()) {
           await syncFrame(() => scroll(start() - accel() + 1));
         }
       }
@@ -279,7 +292,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
           const node = props.do(
             () => props.each[indices()[i]],
             () => indices()[i],
-            () => i,
+            i,
           );
           if (i === 0) { gridCell = node }
           return node;
