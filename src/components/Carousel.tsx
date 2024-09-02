@@ -20,12 +20,14 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 
   const snapSpeed = isSafari ? 30 : 1;
   const itemsPerPage = () => props.itemsPerPage || 1;
-  const snapPoint = () => cellSize + spacing();
-  const swapPoint = () => cellSize * 2 + spacing();
+  const snapPoint = () => singleCellSize + spacing();
+  const swapPoint = () => singleCellSize * 2 + spacing() * 2 - snapOffset;
 
   let container!: HTMLDivElement;
   let gridCell!: HTMLElement;
   let cellSize = 0;
+  let singleCellSize = 0;
+  let snapOffset = 0;
   let isHolding = false;
 
   watchFn(() => props.each, () => {
@@ -41,13 +43,16 @@ export default function Carousel<T>(props: CarouselProps<T>) {
   function onMount() {
     const observer = new ResizeObserver(([e]) => {
       const offset = (itemsPerPage() - 1) * spacing();
+      snapOffset = itemsPerPage() > 1 ? spacing() / 2 : 0;
       if (props.vertical) {
+        singleCellSize = gridCell.clientHeight + snapOffset;
         cellSize = gridCell.clientHeight + offset;
         container.style.height = `${Math.ceil(e.contentRect.height) * itemsPerPage() + offset}px`;
         container.style.width = `${Math.ceil(e.contentRect.width)}px`;
       }
       else {
-        cellSize = gridCell.clientWidth;
+        singleCellSize = gridCell.clientWidth + snapOffset;
+        cellSize = gridCell.clientWidth + offset;
         container.style.width = `${Math.ceil(e.contentRect.width) * itemsPerPage() + offset}px`;
         container.style.height = `${Math.ceil(e.contentRect.height)}px`;
       }
@@ -202,7 +207,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       setIndices.byRef(nextSwap);
       setPosition(-snapPoint());
     }
-    else if (pos > -spacing() / 2) {
+    else if (pos > -snapOffset) {
       setIndices.byRef(prevSwap);
       setPosition(-snapPoint());
     }
@@ -246,7 +251,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
   async function scrollWheel(e: WheelEvent) {
     const dir = Math.sign(e.deltaY);
     const offset = props.vertical ? -dir : dir;
-    setAccel(10 * -offset);
+    setAccel(Math.ceil(cellSize / 60 * -offset));
     for (let i = 0; i < 10; i++) {
       await syncFrame(() => scroll(start() - accel() + offset));
     }
