@@ -8,6 +8,7 @@ type CarouselProps<T> = {
   spacing?: number,
   page?: number,
   itemsPerPage?: number,
+  vertical?: boolean,
 };
 
 export default function Carousel<T>(props: CarouselProps<T>) {
@@ -223,6 +224,17 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     indices[0] = last;
   }
 
+  async function scrollWheel(e: WheelEvent) {
+    const dir = Math.sign(e.deltaY);
+    setAccel(10 * -dir);
+    scroll(start() - accel() + dir);
+    for (let i = 0; i < 10; i++) {
+      await syncFrame(() => scroll(start() - accel() + dir));
+    }
+    setAccel(0);
+    updPage();
+  }
+
   return (
     <div
       $ref={container}
@@ -231,7 +243,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       on:mount={onMount}
       on:touchstart={e => touchStart(e, e.touches[0].pageX)}
       on:mousedown={e => e.button === 0 && touchStart(e, e.pageX)}
-      on:wheel={e => setStart(0) === undefined && scroll(Math.sign(e.deltaY))}
+      on:wheel={scrollWheel}
       win:ontouchmove={touchMove}
       win:ontouchend={accelerate}
       win:onmousemove={mouseMove}
