@@ -20,12 +20,12 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 
   const snapSpeed = isSafari ? 30 : 1;
   const itemsPerPage = () => props.itemsPerPage || 1;
-  const snapPoint = () => cellWidth + spacing() / 2;
-  const swapPoint = () => cellWidth * 2 + spacing() / 2;
+  const snapPoint = () => cellSize + spacing();
+  const swapPoint = () => cellSize * 2 + spacing();
 
   let container!: HTMLDivElement;
   let gridCell!: HTMLElement;
-  let cellWidth = 0;
+  let cellSize = 0;
   let isHolding = false;
 
   watchFn(() => props.each, () => {
@@ -39,9 +39,19 @@ export default function Carousel<T>(props: CarouselProps<T>) {
   watch(() => setSpacing(props.spacing || 0));
 
   function onMount() {
-    const observer = new ResizeObserver(() => {
-      cellWidth = gridCell.clientWidth + spacing();
-      container.style.width = `${cellWidth * itemsPerPage()}px`;
+    const observer = new ResizeObserver(([e]) => {
+      const offset = (itemsPerPage() - 1) * spacing();
+      if (props.vertical) {
+        cellSize = gridCell.clientHeight + offset;
+        container.style.height = `${Math.ceil(e.contentRect.height) * itemsPerPage() + offset}px`;
+        container.style.width = `${Math.ceil(e.contentRect.width)}px`;
+      }
+      else {
+        cellSize = gridCell.clientWidth;
+        container.style.width = `${Math.ceil(e.contentRect.width) * itemsPerPage() + offset}px`;
+        container.style.height = `${Math.ceil(e.contentRect.height)}px`;
+      }
+
       setPosition(-snapPoint());
     });
 
@@ -49,17 +59,26 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     container.addEventListener("unmount", () => observer.unobserve(gridCell));
   }
 
+  function getPagePos(e: { pageX: number, pageY: number }) {
+    if (props.vertical) {
+      return e.pageY;
+    }
+    else {
+      return e.pageX;
+    }
+  }
+
   function touchMove(e: TouchEvent) {
     e.preventDefault();
     if (isHolding) {
-      scroll(e.touches[0].pageX);
+      scroll(getPagePos(e.touches[0]));
     }
   }
 
   function mouseMove(e: MouseEvent) {
     e.preventDefault();
     if (isHolding) {
-      scroll(e.pageX);
+      scroll(getPagePos(e));
     }
   }
 
@@ -69,11 +88,11 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     }
   }
 
-  function touchStart(e: Event, pageX: number) {
+  function touchStart(e: Event, pixels: number) {
     e.preventDefault();
     isHolding = true;
     setAccel(0);
-    setStart(pageX);
+    setStart(pixels);
   }
 
   async function accelerate() {
@@ -143,7 +162,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       return;
     }
 
-    if (pos - cellWidth / 4 > snapPoint()) {
+    if (pos - cellSize / 4 > snapPoint()) {
       setAccel(snapSpeed);
       while (position() !== -snapPoint()) {
         await syncFrame(() => scroll(start() - accel() - 1));
@@ -156,7 +175,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       }
       setPosition(-snapPoint());
     }
-    else if (pos < snapPoint() - cellWidth / 4) {
+    else if (pos < snapPoint() - cellSize / 4) {
       setAccel(-snapSpeed);
       while (position() !== -snapPoint()) {
         await syncFrame(() => scroll(start() - accel() + 1));
@@ -173,10 +192,10 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     setAccel(0);
   });
 
-  function scroll(x: number) {
-    setAccel(start() - x);
+  function scroll(pixels: number) {
+    setAccel(start() - pixels);
     setPosition(position() - accel());
-    setStart(x);
+    setStart(pixels);
 
     const pos = position();
     if (-pos >= swapPoint()) {
@@ -197,10 +216,10 @@ export default function Carousel<T>(props: CarouselProps<T>) {
   function updPage() {
     const pos = -position();
     const point = snapPoint();
-    if (pos > point + cellWidth / 2) {
+    if (pos > point + cellSize / 2) {
       props.page = indices()[2];
     }
-    else if (pos < point - cellWidth / 2) {
+    else if (pos < point - cellSize / 2) {
       props.page = indices()[0];
     }
     else {
@@ -226,10 +245,10 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 
   async function scrollWheel(e: WheelEvent) {
     const dir = Math.sign(e.deltaY);
-    setAccel(10 * -dir);
-    scroll(start() - accel() + dir);
+    const offset = props.vertical ? -dir : dir;
+    setAccel(10 * -offset);
     for (let i = 0; i < 10; i++) {
-      await syncFrame(() => scroll(start() - accel() + dir));
+      await syncFrame(() => scroll(start() - accel() + offset));
     }
     setAccel(0);
     updPage();
@@ -239,17 +258,18 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     <div
       $ref={container}
       class:carousel
+      class:vertical={!!props.vertical}
       var:carousel-spacing={`${spacing()}px`}
       on:mount={onMount}
-      on:touchstart={e => touchStart(e, e.touches[0].pageX)}
-      on:mousedown={e => e.button === 0 && touchStart(e, e.pageX)}
+      on:touchstart={e => touchStart(e, getPagePos(e.touches[0]))}
+      on:mousedown={e => e.button === 0 && touchStart(e, getPagePos(e))}
       on:wheel={scrollWheel}
       win:ontouchmove={touchMove}
       win:ontouchend={accelerate}
       win:onmousemove={mouseMove}
       win:onmouseup={mouseUp}
     >
-      <div class:carousel-content style:translate={`${position()}px`}>
+      <div class:carousel-content var:translate={`${position()}px`}>
         {...Array.from({ length: itemsPerPage() + 2 }).map((_, i) => {
           const node = props.do(
             () => props.each[indices()[i]],

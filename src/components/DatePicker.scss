@@ -1,17 +1,16 @@
 .date-picker {
-  padding-block: var(--spacing-nm);
+  padding: var(--spacing-nm);
   background: var(--color-dark);
   width: min-content;
   margin: auto;
   font-size: 1.5rem;
   display: grid;
   gap: var(--spacing-nm);
-  $spacing: 20px;
 
   .controls {
     display: flex;
     justify-content: space-between;
-    padding: var(--spacing-nm) $spacing;
+    padding: var(--spacing-nm);
     align-items: center;
 
     button {
@@ -47,7 +46,6 @@
   }
 
   .week {
-    padding-inline: $spacing;
     font-weight: bold;
   }
 }

@@ -12,7 +12,7 @@ function getDaysInMonth(fullYear: number, month: number) {
   return new Date(fullYear, month, 0).getDate();
 }
 
-export default function DatePicker() {
+export default function DatePicker(props: { vertical?: boolean }) {
   const [year, setYear] = ref(new Date().getFullYear());
   const month = reactive({ idx: 0 });
 
@@ -45,7 +45,7 @@ export default function DatePicker() {
       <nav class:week>
         <FixedFor each={DAYS} do={(day) => <span>{day()}</span>} />
       </nav>
-      <Carousel snap spacing={40} page={month.idx} each={MONTHS} do={(_, idx, position) => {
+      <Carousel snap vertical={props.vertical} spacing={40} page={month.idx} each={MONTHS} do={(_, idx, position) => {
         const [days, setDays] = ref<number[]>([]);
         const [prevDays, setPrevDays] = ref<number[]>([]);
         const [nextDays, setNextDays] = ref<number[]>([]);
