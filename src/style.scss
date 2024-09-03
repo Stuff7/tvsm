@@ -96,24 +96,67 @@ button {
   border: 0;
   border-radius: var(--radius-nm);
   font-weight: 500;
-  background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
-  color: var(--button-fg);
-
-  &:hover {
-    background: var(--button-bg-2);
-  }
-
-  &:active {
-    background: var(--button-bg);
-  }
 
   &:disabled {
-    background: linear-gradient(to top right, var(--color-disabled) 1%, var(--color-disabled-2));
     cursor: not-allowed;
     opacity: 0.8;
 
     &:active {
       pointer-events: none;
+    }
+  }
+
+  &.border {
+    background: transparent;
+    color: var(--button-bg);
+    border: 1px solid currentColor;
+
+    &:hover {
+      color: var(--button-bg-2);
+    }
+
+    &:active {
+      color: var(--button-fg-2);
+    }
+
+    &:disabled {
+      color: var(--color-disabled);
+    }
+  }
+
+  &:not(.border) {
+    background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
+    color: var(--button-fg);
+
+    &:hover {
+      background: var(--button-bg-2);
+    }
+
+    &:active {
+      background: var(--button-bg);
+    }
+
+    &:disabled {
+      background: linear-gradient(to top right, var(--color-disabled) 1%, var(--color-disabled-2));
+    }
+  }
+
+  &.transparent {
+    background: transparent;
+    color: var(--button-bg);
+
+    &:hover {
+      background: var(--button-bg);
+      color: var(--button-fg);
+    }
+
+    &:active {
+      background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
+      color: var(--button-fg);
+    }
+
+    &:disabled {
+      background: linear-gradient(to top right, var(--color-disabled) 1%, var(--color-disabled-2));
     }
   }
 }

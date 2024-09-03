@@ -6,7 +6,8 @@ type CarouselProps<T> = {
   do: (item: () => T, i: () => number, position: number) => JSX.Element,
   snap?: boolean,
   spacing?: number,
-  page?: number,
+  page: number,
+  ["on:change"]: (page: number) => void,
   itemsPerPage?: number,
   vertical?: boolean,
 };
@@ -44,17 +45,19 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     const observer = new ResizeObserver(([e]) => {
       const offset = (itemsPerPage() - 1) * spacing();
       snapOffset = itemsPerPage() > 1 ? spacing() / 2 : 0;
+      const h = e.borderBoxSize[0].blockSize;
+      const w = e.borderBoxSize[0].inlineSize;
       if (props.vertical) {
-        singleCellSize = gridCell.clientHeight + snapOffset;
-        cellSize = gridCell.clientHeight + offset;
-        container.style.height = `${Math.ceil(e.contentRect.height) * itemsPerPage() + offset}px`;
-        container.style.width = `${Math.ceil(e.contentRect.width)}px`;
+        singleCellSize = h + snapOffset;
+        cellSize = h + offset;
+        container.style.height = `${h * itemsPerPage() + offset}px`;
+        container.style.width = `${w}px`;
       }
       else {
-        singleCellSize = gridCell.clientWidth + snapOffset;
-        cellSize = gridCell.clientWidth + offset;
-        container.style.width = `${Math.ceil(e.contentRect.width) * itemsPerPage() + offset}px`;
-        container.style.height = `${Math.ceil(e.contentRect.height)}px`;
+        singleCellSize = w + snapOffset;
+        cellSize = w + offset;
+        container.style.width = `${w * itemsPerPage() + offset}px`;
+        container.style.height = `${h}px`;
       }
 
       setPosition(-snapPoint());
@@ -134,14 +137,16 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     updPage();
   }
 
-  watchFn(() => props.page, async (v: number | null) => {
-    if (v == null && props.page !== 0) {
+  let prevPage: null | number = null;
+  watchFn(() => props.page, async () => {
+    if (prevPage == null && props.page !== 0) {
       setAccel(snapSpeed);
       const page = props.page;
       while (indices()[1] !== page || position() !== -snapPoint()) {
-        await syncFrame(() => scroll(start() - accel() - 1));
+        await syncFrame(() => scroll(start() - accel() - 1, false));
       }
 
+      prevPage = props.page;
       setAccel(0);
       return;
     }
@@ -151,8 +156,8 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     }
 
     const pos = Math.abs(position());
-    if (props.page != null && v != null && props.page !== v && pos === snapPoint()) {
-      let diff = v - props.page;
+    if (props.page != null && prevPage != null && props.page !== prevPage && pos === snapPoint()) {
+      let diff = prevPage - props.page;
       const h = props.each.length / 2;
       if (diff < -h) {
         diff += props.each.length;
@@ -165,17 +170,19 @@ export default function Carousel<T>(props: CarouselProps<T>) {
         setAccel(snapSpeed);
         const page = props.page;
         while (indices()[1] !== page || position() !== -snapPoint()) {
-          await syncFrame(() => scroll(start() - accel() - 1));
+          await syncFrame(() => scroll(start() - accel() - 1, false));
         }
       }
       else if (diff > 0) {
         setAccel(-snapSpeed);
         const page = props.page;
         while (indices()[1] !== page || position() !== -snapPoint()) {
-          await syncFrame(() => scroll(start() - accel() + 1));
+          await syncFrame(() => scroll(start() - accel() + 1, false));
         }
       }
 
+      prevPage = props.page;
+      updPage();
       setAccel(0);
       return;
     }
@@ -210,7 +217,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     setAccel(0);
   });
 
-  function scroll(pixels: number) {
+  function scroll(pixels: number, updatePage = true) {
     setAccel(start() - pixels);
     setPosition(position() - accel());
     setStart(pixels);
@@ -228,20 +235,22 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       return;
     }
 
-    updPage();
+    if (updatePage) {
+      updPage();
+    }
   }
 
   function updPage() {
     const pos = -position();
     const point = snapPoint();
     if (pos > point + cellSize / 2) {
-      props.page = indices()[2];
+      props["on:change"](indices()[2]);
     }
     else if (pos < point - cellSize / 2) {
-      props.page = indices()[0];
+      props["on:change"](indices()[0]);
     }
     else {
-      props.page = indices()[1];
+      props["on:change"](indices()[1]);
     }
   }
 

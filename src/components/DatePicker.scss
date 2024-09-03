@@ -8,16 +8,20 @@
   gap: var(--spacing-nm);
 
   .controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: min-content 1fr min-content;
+    gap: var(--spacing-nm);
     justify-content: space-between;
-    padding: var(--spacing-nm);
     align-items: center;
 
-    button {
-      background: transparent;
-      color: var(--color-accent);
-      font-size: 2rem;
+    .nav {
+      border-color: transparent;
+      font-size: 1.5em;
       padding: 0;
+    }
+
+    .select {
+      font-size: 0.8em;
     }
   }
 
@@ -50,7 +54,7 @@
   }
 }
 
-.year-selector {
+.scroll-selector {
   background: var(--color-dark);
   padding-block: var(--spacing-nm);
   width: min-content;
@@ -58,18 +62,13 @@
   margin-inline: auto;
 
   button {
-    padding: 0;
-    background: transparent;
-    color: var(--color-light);
-    font-size: 2rem;
-
-    &:hover {
-      background: #fff4;
-    }
+    font-size: 1.2em;
+    --button-bg: var(--color-light);
 
     &.selected {
-      background: var(--color-accent);
-      color: var(--color-dark);
+      --button-bg: var(--color-accent);
+      --button-bg-2: var(--color-accent-2);
+      --button-fg: var(--color-dark);
     }
   }
 }
