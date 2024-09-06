@@ -38,16 +38,26 @@
     color: var(--color-light);
 
     > button {
-      background: transparent;
-      color: currentColor;
+      --button-bg: currentColor;
       font-size: 1.5rem;
       padding: var(--spacing-nm);
-      border: 1px solid #fff2;
-      border-radius: 0;
       width: 100%;
+      aspect-ratio: 1 / 1;
+
+      &:not(.selected) {
+        border-color: transparent;
+      }
+
+      &:hover {
+        border-color: currentColor;
+      }
 
       &.offset-days {
         opacity: 0.6;
+      }
+
+      &:not(.border) {
+        --button-bg: var(--color-accent);
       }
     }
   }

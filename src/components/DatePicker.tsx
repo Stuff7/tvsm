@@ -42,6 +42,7 @@ export default function DatePicker(props: DatePickerProps) {
   function updMonth(v: number) {
     const prev = month();
     props.date.setMonth(v);
+    props.date.setDate(1);
 
     if (v === 11 && prev === 0) {
       props.date.setFullYear(year() - 1);
@@ -57,7 +58,7 @@ export default function DatePicker(props: DatePickerProps) {
     <article class:date-picker>
       <header class:controls>
         <button class:nav class:border on:click={prev}><i></i></button>
-        <button class:select class:border on:click={() => setMonthYearSelectorVisible(!monthYearSelectorVisible())}>
+        <button class:select on:click={() => setMonthYearSelectorVisible(!monthYearSelectorVisible())}>
           <span>{MONTHS[month()]} {year()}</span>
         </button>
         <button class:nav class:border on:click={next}><i></i></button>
@@ -65,11 +66,17 @@ export default function DatePicker(props: DatePickerProps) {
       <section $if={monthYearSelectorVisible()} style:grid-auto-flow="column">
         <YearSelector
           year={props.date.getFullYear()}
-          on:change={year => setByRef(date => date.setFullYear(year))}
+          on:change={year => setByRef(date => {
+            date.setDate(1);
+            date.setFullYear(year);
+          })}
         />
         <MonthSelector
           month={props.date.getMonth()}
-          on:change={month => setByRef(date => date.setMonth(month))}
+          on:change={month => setByRef(date => {
+            date.setDate(1);
+            date.setMonth(month);
+          })}
         />
       </section>
       <section $if={!monthYearSelectorVisible()}>
@@ -135,12 +142,31 @@ export default function DatePicker(props: DatePickerProps) {
               }
             }
 
+            function selectDay(pos: number) {
+              setByRef(date => {
+                if (pos < monthOffset.curr) {
+                  date.setMonth(date.getMonth() - 1);
+                }
+                else if (pos >= monthOffset.next) {
+                  date.setMonth(date.getMonth() + 1);
+                }
+                date.setDate(days()[pos]);
+              });
+            }
+
+            const isOffsetDay = (pos: number) => pos < monthOffset.curr || pos >= monthOffset.next;
+
+            const isSelected = (pos: number) => (
+              !isOffsetDay(pos) && props.date.getMonth() === idx() && props.date.getDate() === days()[pos]
+            );
+
             return (
               <section class:month data-id={idx()}>
                 <For each={days()} do={(i, pos) => (
                   <button
-                    class:border
-                    class:offset-days={pos < monthOffset.curr || pos >= monthOffset.next}
+                    class:border={!isSelected(pos)}
+                    class:offset-days={isOffsetDay(pos)}
+                    on:click={() => selectDay(pos)}
                   >{i()}</button>
                 )} />
               </section>
