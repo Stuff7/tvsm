@@ -1,4 +1,4 @@
-import jsx, { ref, watchFn } from "jsx";
+import jsx, { reactive, ref, watchFn } from "jsx";
 import Carousel from "./Carousel";
 import For from "jsx/components/For";
 import FixedFor from "jsx/components/FixedFor";
@@ -8,6 +8,8 @@ const MONTHS = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const MONTH_LEN = 7 * 6;
 
 function getDaysInMonth(fullYear: number, month: number) {
   return new Date(fullYear, month, 0).getDate();
@@ -22,6 +24,7 @@ type DatePickerProps = {
 export default function DatePicker(props: DatePickerProps) {
   const year = () => props.date.getFullYear();
   const month = () => props.date.getMonth();
+  const [monthYearSelectorVisible, setMonthYearSelectorVisible] = ref(false);
 
   function next() {
     updMonth(circularClamp(month() + 1, MONTHS));
@@ -29,6 +32,11 @@ export default function DatePicker(props: DatePickerProps) {
 
   function prev() {
     updMonth(circularClamp(month() - 1, MONTHS));
+  }
+
+  function setByRef(fn: (date: Date) => void) {
+    fn(props.date);
+    props["on:change"](props.date);
   }
 
   function updMonth(v: number) {
@@ -49,84 +57,97 @@ export default function DatePicker(props: DatePickerProps) {
     <article class:date-picker>
       <header class:controls>
         <button class:nav class:border on:click={prev}><i></i></button>
-        <button class:select class:border>{MONTHS[month()]} {year()}</button>
+        <button class:select class:border on:click={() => setMonthYearSelectorVisible(!monthYearSelectorVisible())}>
+          <span>{MONTHS[month()]} {year()}</span>
+        </button>
         <button class:nav class:border on:click={next}><i></i></button>
       </header>
-      <nav class:week>
-        <FixedFor each={DAYS} do={(day) => <span>{day()}</span>} />
-      </nav>
-      <Carousel
-        snap
-        vertical={props.vertical}
-        spacing={40}
-        page={month()}
-        on:change={updMonth}
-        each={MONTHS}
-        do={(_, idx, position) => {
-          const [days, setDays] = ref<number[]>([]);
-          const [prevDays, setPrevDays] = ref<number[]>([]);
-          const [nextDays, setNextDays] = ref<number[]>([]);
-          const [currYear, setCurrYear] = ref(0);
+      <section $if={monthYearSelectorVisible()} style:grid-auto-flow="column">
+        <YearSelector
+          year={props.date.getFullYear()}
+          on:change={year => setByRef(date => date.setFullYear(year))}
+        />
+        <MonthSelector
+          month={props.date.getMonth()}
+          on:change={month => setByRef(date => date.setMonth(month))}
+        />
+      </section>
+      <section $if={!monthYearSelectorVisible()}>
+        <header class:week>
+          <FixedFor each={DAYS} do={(day) => <span>{day()}</span>} />
+        </header>
+        <Carousel
+          snap
+          vertical={props.vertical}
+          spacing="40px"
+          page={month()}
+          on:change={updMonth}
+          each={MONTHS}
+          do={(_, idx, position) => {
+            const monthOffset = reactive({ curr: 0, next: 0 });
+            const [days, setDays] = ref<number[]>(Array.from({ length: MONTH_LEN }));
+            const [currYear, setCurrYear] = ref(0);
 
-          watchFn(() => [idx(), year()], () => {
-            const i = idx();
-            const y = year();
+            watchFn(() => [idx(), year()], () => {
+              const i = idx();
+              const y = year();
 
-            if (position === 0 && i === 11) {
-              setCurrYear(y - 1);
-            }
-            else if (position === 2 && i === 0) {
-              setCurrYear(y + 1);
-            }
-            else {
-              setCurrYear(y);
-            }
-          });
-
-          watchFn(() => [currYear(), idx()], () => {
-            const length = getDaysInMonth(currYear(), idx() + 1);
-            if (days().length === length) { return }
-
-            setDays.byRef(days => {
-              if (length < days.length) {
-                days.length = length;
+              if (position === 0 && i === 11) {
+                setCurrYear(y - 1);
+              }
+              else if (position === 2 && i === 0) {
+                setCurrYear(y + 1);
               }
               else {
-                for (let i = days.length; i < length; i++) {
-                  days.push(i + 1);
-                }
+                setCurrYear(y);
               }
             });
-          });
 
-          watchFn(() => [currYear(), idx()], () => {
-            const monthIdx = idx();
-            const firstDayMonth = new Date(currYear(), monthIdx, 1).getDay() || 7;
-            const daysPrevMonth = getDaysInMonth(monthIdx === 0 ? currYear() - 1 : currYear(), monthIdx);
+            function setPrevDays(days: number[]) {
+              const monthIdx = idx();
+              monthOffset.curr = new Date(currYear(), monthIdx, 1).getDay() || 7;
+              const daysPrevMonth = getDaysInMonth(monthIdx === 0 ? currYear() - 1 : currYear(), monthIdx);
 
-            setPrevDays(Array.from({ length: firstDayMonth }, (_, i) => daysPrevMonth - firstDayMonth + 1 + i));
-          });
+              for (let i = 0; i < monthOffset.curr; i++) {
+                days[i] = daysPrevMonth - monthOffset.curr + 1 + i;
+              }
+            }
 
-          watchFn(() => [currYear(), idx()], () => {
-            const dayCount = prevDays().length + days().length;
-            setNextDays(Array.from({ length: 42 - dayCount }, (_, i) => i + 1));
-          });
+            watchFn(() => [currYear(), idx()], () => {
+              const len = getDaysInMonth(currYear(), idx() + 1);
+              if (days().length === len) { return }
 
-          return (
-            <section class:month data-id={idx()}>
-              <For each={prevDays()} do={(i) => (
-                <button class:border class:offset-days>{i()}</button>
-              )} />
-              <For each={days()} do={(i) => (
-                <button class:border>{i()}</button>
-              )} />
-              <For each={nextDays()} do={(i) => (
-                <button class:border class:offset-days>{i()}</button>
-              )} />
-            </section>
-          );
-        }}
-      />
+              setDays.byRef(days => {
+                setPrevDays(days);
+                monthOffset.next = monthOffset.curr + len;
+
+                for (let i = monthOffset.curr; i < monthOffset.next; i++) {
+                  days[i] = i - monthOffset.curr + 1;
+                }
+
+                setNextDays(days);
+              });
+            });
+
+            function setNextDays(days: number[]) {
+              for (let i = monthOffset.next; i < MONTH_LEN; i++) {
+                days[i] = i - monthOffset.next + 1;
+              }
+            }
+
+            return (
+              <section class:month data-id={idx()}>
+                <For each={days()} do={(i, pos) => (
+                  <button
+                    class:border
+                    class:offset-days={pos < monthOffset.curr || pos >= monthOffset.next}
+                  >{i()}</button>
+                )} />
+              </section>
+            );
+          }}
+        />
+      </section>
     </article>
   );
 }
@@ -144,8 +165,8 @@ export function MonthSelector(props: MonthSelectorProps) {
         vertical
         snap
         each={MONTHS}
-        page={circularClamp(props.month - 2, MONTHS)}
-        on:change={month => props["on:change"](circularClamp(month + 2, MONTHS))}
+        page={props.month}
+        on:change={props["on:change"]}
         do={(month, idx, position) => {
           const selected = position === 3;
 
@@ -158,7 +179,6 @@ export function MonthSelector(props: MonthSelectorProps) {
               class:selected={selected}
               class:transparent
               on:click={selectMonth}
-              on:touchstart={selectMonth}
             >{month()}</button>
           );
         }}
@@ -173,59 +193,62 @@ type YearSelectorProps = {
 };
 
 export function YearSelector(props: YearSelectorProps) {
-  const [years, setYears] = ref<number[]>(Array.from({ length: 7 }, genYears));
-  const [page, setPage] = ref(0);
-  const updYear = (idx: number) => props["on:change"](years()[circularClamp(idx + 2, years())]);
-
-  function genYears(_: unknown, i: number) {
-    return props.year - 2 + i;
-  }
+  const [yearPeriods, setYearPeriods] = ref([0, 0, 0]);
+  const [page, setPage] = ref(1);
+  const [selected, setSelected] = ref(2);
 
   watchFn(() => props.year, () => {
-    const i = years().indexOf(props.year);
-    if (i < 0) {
-      setYears.byRef(years => years.forEach((_, i) => years[i] = genYears(_, i)));
-      setPage(1);
+    setYearPeriods.byRef(periods => {
+      const idx = page();
+      const pos = props.year % 5;
+      const period = props.year - pos + 2;
+      periods[idx] = period;
+      periods[circularClamp(idx - 1, periods)] = period - 5;
+      periods[circularClamp(idx + 1, periods)] = period + 5;
+      setSelected(pos);
+    });
+  });
+
+  let firstRun = true;
+  watchFn(page, () => {
+    if (!firstRun) {
+      setSelected(2);
+      props["on:change"](yearPeriods()[page()]);
     }
     else {
-      setPage(circularClamp(years().indexOf(props.year) - 2, years()));
+      firstRun = false;
     }
   });
 
   return (
     <div class:scroll-selector>
       <Carousel
-        itemsPerPage={5}
         vertical
         snap
-        each={years()}
+        each={yearPeriods()}
         page={page()}
-        on:change={updYear}
-        do={(year, idx, position) => {
-          const selected = position === 3;
+        on:change={setPage}
+        do={(period) => {
+          const [years, setYears] = ref<number[]>(Array.from({ length: 5 }));
 
-          function selectYear() {
-            updYear(idx() - 2);
-          }
-
-          if (position === 4) {
-            watchFn(idx, () => {
-              setYears.byRef(years => years[circularClamp(idx() + 2, years)] = year() + 2);
+          watchFn(period, () => {
+            setYears.byRef(years => {
+              years.forEach((_, i) => years[i] = period() - 2 + i);
             });
-          }
-          else if (position === 2) {
-            watchFn(idx, () => {
-              setYears.byRef(years => years[circularClamp(idx() - 2, years)] = year() - 2);
-            });
-          }
+          });
 
           return (
-            <button
-              class:selected={selected}
-              class:transparent
-              on:click={selectYear}
-              on:touchstart={selectYear}
-            >{year()}</button>
+            <section>
+              <FixedFor each={years()} do={(year, i) => (
+                <button
+                  class:selected={selected() === i}
+                  class:transparent
+                  on:click={() => props["on:change"](year())}
+                >
+                  {year()}
+                </button>
+              )} />
+            </section>
           );
         }}
       />

@@ -4,8 +4,11 @@
   width: min-content;
   margin: auto;
   font-size: 1.5rem;
-  display: grid;
-  gap: var(--spacing-nm);
+
+  &, section {
+    display: grid;
+    gap: var(--spacing-nm);
+  }
 
   .controls {
     display: grid;
