@@ -31,7 +31,7 @@ export default function Header() {
 
   return (
     <header class:tvsm-header class:expanded={expanded()}>
-      <p>TVSM</p>
+      <p class:logo>TVSM</p>
       <div class:divider />
       <Search />
       <div class:divider />

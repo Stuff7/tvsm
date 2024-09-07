@@ -13,16 +13,6 @@
     border-color: var(--color-accent);
   }
 
-  > .content {
-    border-radius: var(--radius-nm);
-    box-shadow: 0px 0px 0px 1px #5556;
-    position: absolute;
-    top: calc(100% + var(--spacing-nm));
-    left: 50%;
-    translate: -50%;
-    background: var(--color-dark);
-  }
-
   > i {
     padding: var(--spacing-nm) calc(var(--spacing-nm) * 1.5);
     color: var(--color-accent);
@@ -64,4 +54,12 @@
       border: 0;
     }
   }
+}
+
+.date-range-content {
+  border-radius: var(--radius-nm);
+  box-shadow: 0px 0px 0px 1px #5556;
+  position: absolute;
+  translate: -50%;
+  background: var(--color-dark);
 }
