@@ -3,28 +3,48 @@
   background: var(--color-dark);
   width: min-content;
   margin: auto;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 
   &, section {
     display: grid;
-    gap: var(--spacing-nm);
   }
 
   .controls {
     display: grid;
-    grid-template-columns: min-content 1fr min-content;
+    grid-template-columns: 0.15fr 1fr 0.15fr;
     gap: var(--spacing-nm);
     justify-content: space-between;
     align-items: center;
 
     .nav {
-      border-color: transparent;
-      font-size: 1.5em;
+      border: 0;
       padding: 0;
+      height: 100%;
     }
 
     .select {
+      --button-bg: var(--color-light);
       font-size: 0.8em;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+
+      i {
+        transition: rotate 250ms;
+      }
+
+      &.selecting i {
+        rotate: 180deg;
+      }
+
+      strong {
+        font-size: 1.1em;
+        color: var(--color-accent);
+      }
+
+      &:hover strong, &:active strong {
+        color: currentColor;
+      }
     }
   }
 
@@ -37,12 +57,19 @@
     justify-content: space-between;
     color: var(--color-light);
 
-    > button {
-      --button-bg: currentColor;
-      font-size: 1.5rem;
+    > * {
+      font-size: 0.8em;
       padding: var(--spacing-nm);
       width: 100%;
       aspect-ratio: 1 / 1;
+    }
+
+    > span {
+      border: 1px solid transparent;
+    }
+
+    > button {
+      --button-bg: currentColor;
 
       &.border {
         border-color: transparent;
@@ -65,6 +92,10 @@
   .week {
     font-weight: bold;
   }
+
+  .border.weekend {
+    color: var(--color-danger);
+  }
 }
 
 .scroll-selector {
@@ -75,7 +106,7 @@
   margin-inline: auto;
 
   button {
-    font-size: 1.2em;
+    font-size: 1.07em;
     --button-bg: var(--color-light);
 
     &.selected {

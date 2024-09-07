@@ -1,5 +1,6 @@
 import jsx, { ref, watchFn } from "jsx";
 import { circularClamp, syncFrame } from "~/utils";
+import Debug from "./Debug";
 
 type CarouselProps<T> = {
   $if?: boolean,
@@ -91,9 +92,10 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     isHolding = false;
 
     let i = 4;
-    while (accel() !== 0) {
+    const sign = Math.sign(accel());
+    while (sign < 0 ? accel() < 0 : accel() > 0) {
       if (isHolding) { return }
-      const acc = accel();
+      const acc = Math.round(accel());
       const a = Math.abs(acc);
       if (a < 20) {
         i = 1;
@@ -106,12 +108,13 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       }
 
       if (acc < 0) {
-        await scroll(start() - acc - i);
+        await scroll(Math.round(start()) - acc - i);
       }
       else if (acc > 0) {
-        await scroll(start() - acc + i);
+        await scroll(Math.round(start()) - acc + i);
       }
     }
+    setAccel(0);
 
     await snap();
   }
@@ -141,21 +144,16 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       if (Math.abs(f) < props.each.length / 2) {
         f = -f;
       }
-      f = Math.sign(f);
+      f = -Math.sign(f);
+      const swap = f >= 0 ? prevSwap : nextSwap;
 
       while (running && indices[focusedIdx] !== newPage) {
         for (let i = 0; i < 8; i++) {
           await syncFrame(() => setPosition(i * f * gridCell.clientWidth / 8));
         }
         await syncFrame(() => setPosition(0));
-        if (!running) { return }
 
-        if (f < 0) {
-          prevSwap(indices);
-        }
-        else {
-          nextSwap(indices);
-        }
+        if (running) { swap(indices) }
       }
     });
   }
@@ -174,7 +172,8 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 
   function scroll(pixels: number, updatePage = true) {
     return syncFrame(() => {
-      setAccel(start() - pixels);
+      const a = start() - pixels;
+      setAccel(Math.abs(a) > 150 ? Math.sign(a) * 150 : a);
       setPosition(position() - accel());
       setStart(pixels);
 
@@ -275,6 +274,18 @@ export default function Carousel<T>(props: CarouselProps<T>) {
         if (i === focusedIdx) { gridCell = node }
         return node;
       })}
+      <Debug
+        title={`Carousel.${gridCell?.className}`}
+        data={{
+          accel: accel(),
+          position: position(),
+          start: start(),
+          focusedIdx,
+          cellSize,
+          spacing,
+          isHolding,
+        }}
+      />
     </div>
   );
 }

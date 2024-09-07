@@ -1,3 +1,4 @@
+@use "./components/Debug.scss";
 @use "./components/DatePicker.scss";
 @use "./components/Carousel.scss";
 @use "./components/Tooltip.scss";
@@ -74,6 +75,10 @@ em {
   font-size: 0.9em;
   font-weight: 300;
   opacity: 0.9;
+}
+
+strong {
+  font-weight: bold;
 }
 
 input {

@@ -1,13 +1,12 @@
 import jsx, { reactive, ref, watchFn } from "jsx";
 import Carousel from "./Carousel";
-import For from "jsx/components/For";
 import FixedFor from "jsx/components/FixedFor";
-import { circularClamp } from "~/utils";
+import { circularClamp, formatDateFullYear } from "~/utils";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const MONTH_LEN = 7 * 6;
 
@@ -58,10 +57,19 @@ export default function DatePicker(props: DatePickerProps) {
     <article class:date-picker>
       <header class:controls>
         <button class:nav class:border on:click={prev}><i></i></button>
-        <button class:select on:click={() => setMonthYearSelectorVisible(!monthYearSelectorVisible())}>
-          <span>{MONTHS[month()]} {year()}</span>
+        <button
+          class:select
+          class:border
+          class:selecting={monthYearSelectorVisible()}
+          on:click={() => setMonthYearSelectorVisible(!monthYearSelectorVisible())}
+        >
+          <span>{MONTHS[month()]} <strong>{year()}</strong></span>
+          <i></i>
         </button>
         <button class:nav class:border on:click={next}><i></i></button>
+      </header>
+      <header class:week>
+        <FixedFor each={DAYS.map(d => d.slice(0, 2))} do={(day) => <span>{day()}</span>} />
       </header>
       <section $if={monthYearSelectorVisible()} style:grid-auto-flow="column">
         <YearSelector
@@ -80,9 +88,6 @@ export default function DatePicker(props: DatePickerProps) {
         />
       </section>
       <section $if={!monthYearSelectorVisible()}>
-        <header class:week>
-          <FixedFor each={DAYS} do={(day) => <span>{day()}</span>} />
-        </header>
         <Carousel
           snap
           vertical={props.vertical}
@@ -162,11 +167,13 @@ export default function DatePicker(props: DatePickerProps) {
 
             return (
               <section class:month data-id={idx()}>
-                <For each={days()} do={(i, pos) => (
+                <FixedFor each={days()} do={(i, pos) => (
                   <button
                     class:border={!isSelected(pos)}
                     class:offset-days={isOffsetDay(pos)}
+                    class:weekend={pos % 7 === 0 || pos % 7 === 6}
                     on:click={() => selectDay(pos)}
+                    tabindex={position === 1 ? 0 : -1}
                   >{i()}</button>
                 )} />
               </section>

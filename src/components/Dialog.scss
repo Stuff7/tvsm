@@ -24,6 +24,10 @@
 
   --bounce-offset: 0px;
 
+  &:focus, &:has(:focus) {
+    z-index: 1;
+  }
+
   &.pop-enter-active, &.pop-leave-active {
     scale: 1.2;
     opacity: 1;
@@ -58,16 +62,15 @@
     padding: var(--radius-nm);
     font-weight: 700;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr 38px;
 
     &, & ~ .content {
       box-shadow: 0px 0px 0px 1px #5556;
     }
 
     .close-btn {
-      background: transparent;
-      color: currentColor;
-      padding: var(--radius-nm);
+      padding: 0;
+      border: 0;
     }
   }
 

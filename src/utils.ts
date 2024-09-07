@@ -149,6 +149,16 @@ export function formatDate(date: Option<Date>): string {
   return date ? dateFormatter.format(date) : NA;
 }
 
+const dateFormatterFullYear = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "2-digit",
+  year: "numeric",
+});
+
+export function formatDateFullYear(date: Option<Date>): string {
+  return date ? dateFormatterFullYear.format(date) : NA;
+}
+
 export function formatOption<T>(thing: Option<T>): T | string {
   return thing ? thing : NA;
 }

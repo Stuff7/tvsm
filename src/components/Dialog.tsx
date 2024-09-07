@@ -63,6 +63,9 @@ export default function Dialog(props: DialogProps) {
           class:dialog
           class:draggable={!!props.draggable}
           class:center={!!props.center}
+          tabindex={0}
+          on:mousedown={e => e.currentTarget.focus()}
+          on:touchstart={e => e.currentTarget.focus()}
           win:ontouchmove={drag}
           win:ontouchend={stopDrag}
           win:onmousemove={drag}
@@ -77,7 +80,7 @@ export default function Dialog(props: DialogProps) {
             on:touchstart={startDrag}
           >
             <slot name="header" />
-            <button class:close-btn on:click={() => props.$if = false}>
+            <button class:close-btn class:border on:click={() => props.$if = false}>
               <i></i>
             </button>
           </header>
