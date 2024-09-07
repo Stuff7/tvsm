@@ -6,8 +6,8 @@
   "type": "module",
   "author": "Armando",
   "scripts": {
-    "build": "mkdir -p dist && rm -rf dist/* && cp -r public/* dist && sass --style compressed src/style.scss dist/style.css && esbuild src/main.tsx --sourcemap --bundle --outdir=dist --outbase=src --minify && jsx dist",
-    "watch": "dirwatch -watch src -serve dist -run 'npm run build'",
+    "build": "./build.sh release",
+    "dev": "dirwatch -watch src -serve dist -run 'sh build.sh'",
     "tsc": "tsc"
   },
   "devDependencies": {
