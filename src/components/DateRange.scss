@@ -1,0 +1,67 @@
+.date-range {
+  margin: auto;
+
+  width: max-content;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border: 1px solid #fff6;
+  border-radius: var(--radius-nm);
+  position: relative;
+
+  &:has(:focus) {
+    border-color: var(--color-accent);
+  }
+
+  > .content {
+    border-radius: var(--radius-nm);
+    box-shadow: 0px 0px 0px 1px #5556;
+    position: absolute;
+    top: calc(100% + var(--spacing-nm));
+    left: 50%;
+    translate: -50%;
+    background: var(--color-dark);
+  }
+
+  > i {
+    padding: var(--spacing-nm) calc(var(--spacing-nm) * 1.5);
+    color: var(--color-accent);
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+
+  > .border, > .period-select .border {
+    --button-bg: var(--color-light);
+    --button-fg-2: var(--color-accent);
+    display: grid;
+    gap: var(--spacing-nm);
+    outline: 0;
+
+    > * {
+      pointer-events: none;
+    }
+
+    &:first-child {
+      border-width: 0 1px 1px 0;
+      grid-template-columns: auto 1fr;
+    }
+
+    &:not(:first-child) {
+      border-width: 0 0 1px 1px;
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  > .period-select {
+    grid-column: 1 / 4;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-nm);
+    align-items: center;
+    padding-left: var(--spacing-nm);
+
+    > select.border {
+      border: 0;
+    }
+  }
+}

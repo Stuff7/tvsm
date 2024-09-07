@@ -1,5 +1,6 @@
 @use "./components/Debug.scss";
 @use "./components/DatePicker.scss";
+@use "./components/DateRange.scss";
 @use "./components/Carousel.scss";
 @use "./components/Tooltip.scss";
 @use "./components/Dialog.scss";
@@ -95,7 +96,7 @@ input {
   }
 }
 
-button {
+button, select {
   cursor: pointer;
   padding: var(--spacing-nm);
   border: 0;
@@ -120,7 +121,7 @@ button {
       color: var(--button-bg-2);
     }
 
-    &:active {
+    &:active, &:focus {
       color: var(--button-fg-2);
     }
 
@@ -137,7 +138,7 @@ button {
       background: var(--button-bg-2);
     }
 
-    &:active {
+    &:active, &:focus {
       background: var(--button-bg);
     }
 
@@ -155,7 +156,7 @@ button {
       color: var(--button-fg);
     }
 
-    &:active {
+    &:active, &:focus {
       background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
       color: var(--button-fg);
     }

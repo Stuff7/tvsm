@@ -1,6 +1,5 @@
 import jsx, { ref, watchFn } from "jsx";
 import { circularClamp, syncFrame } from "~/utils";
-import Debug from "./Debug";
 
 type CarouselProps<T> = {
   $if?: boolean,
@@ -274,18 +273,6 @@ export default function Carousel<T>(props: CarouselProps<T>) {
         if (i === focusedIdx) { gridCell = node }
         return node;
       })}
-      <Debug
-        title={`Carousel.${gridCell?.className}`}
-        data={{
-          accel: accel(),
-          position: position(),
-          start: start(),
-          focusedIdx,
-          cellSize,
-          spacing,
-          isHolding,
-        }}
-      />
     </div>
   );
 }
