@@ -30,7 +30,7 @@
     font-size: 1.2em;
   }
 
-  > .border, > .period-select .border {
+  > .border, > .preset-select .border {
     --button-bg: var(--color-light);
     --button-fg-2: var(--color-accent);
     display: grid;
@@ -52,7 +52,7 @@
     }
   }
 
-  > .period-select {
+  > .preset-select {
     grid-column: 1 / 4;
     display: grid;
     grid-template-columns: auto 1fr;

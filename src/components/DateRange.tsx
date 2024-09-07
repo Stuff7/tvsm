@@ -126,8 +126,8 @@ export default function DateRange(props: DateRangeProps) {
         <span>{formatDateFullYear(props.end)}</span>
         <i></i>
       </button>
-      <section class:period-select>
-        <span>Period: </span>
+      <section class:preset-select>
+        <span>Preset: </span>
         <select class:border value={preset()} on:change={e => setPreset(e.currentTarget.value)}>
           <option value="nextCentury">Next century</option>
           <option value="next50Years">Next 50 years</option>
