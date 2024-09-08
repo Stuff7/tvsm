@@ -58,7 +58,10 @@ export default function Header() {
       <div class:divider />
       <Filter expandedSection={expandedSection()} isExpanded={expanded()} />
       <div class:divider />
-      <button class:icon-btn on:click={() => setExpanded(!expanded())}>
+      <button class:icon-btn on:click={(e) => {
+        e.currentTarget.focus();
+        setExpanded(!expanded());
+      }}>
         <Tooltip>More filtering options</Tooltip>
         <i></i>
       </button>

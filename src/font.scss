@@ -13,6 +13,8 @@ $weight-name-map: (
   900: "Black",
 );
 
+$fonts-dir: "./fonts/";
+
 @mixin font-rules(
   $font-name,
   $font-weight: 400,
@@ -21,10 +23,7 @@ $weight-name-map: (
   $font-family: $font-name,
 ) {
   font-family: $font-family;
-  src: url(
-    "./fonts/" + $font-name + "/" + $font-name + "-" +
-    $font-variant + "." + $font-type
-  );
+  src: url($fonts-dir + $font-name + "/" + $font-name + "-" + $font-variant + "." + $font-type);
   font-weight: $font-weight;
 }
 
@@ -41,6 +40,23 @@ $weight-name-map: (
           font-style: italic;
         }
       }
+    }
+  }
+}
+
+@mixin load-variable-font($font-name, $italic, $font-type: "ttf", $font-family: $font-name, $font-weight: 100 900) {
+  @font-face {
+    font-family: $font-family;
+    src: url($fonts-dir + $font-name + "/" + $font-name + "." + $font-type);
+    font-weight: $font-weight;
+  }
+
+  @if $italic {
+    @font-face {
+      font-family: $font-family;
+      src: url($fonts-dir + $font-name + "/" + $font-name + "-Italic." + $font-type);
+      font-weight: $font-weight;
+      font-style: italic;
     }
   }
 }

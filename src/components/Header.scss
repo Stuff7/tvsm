@@ -21,17 +21,22 @@
   .extra-content {
     display: grid;
     align-items: center;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: var(--spacing-nm);
     grid-column: 1 / 11;
     overflow: hidden;
     transition: opacity 250ms;
+
+    > section {
+      grid-column: 2 / 4;
+    }
   }
 
   &:not(.expanded) .extra-content {
+    transition: opacity 250ms, visibility 250ms 250ms;
     pointer-events: none;
     opacity: 0;
+    visibility: hidden;
   }
 
   .logo {

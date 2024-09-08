@@ -21,12 +21,14 @@
   )
 );
 
-@include font.load-font("VictorMono", $font-family: "Victor Mono", $replace: (800: "Bold", 900: "Bold"), $italic: false);
+@include font.load-variable-font($font-name: "JetBrainsMono", $font-family: "JetBrains Mono", $font-weight: 100 800, $italic: true);
 
 :root {
   --color-bg: linear-gradient(to bottom right, #081010, #2f0f2f, #091111 120%);
+  --color-dark-2: #141414;
   --color-dark: #222;
   --color-light: #ddd;
+  --color-light-2: #fff6;
   --color-accent: #ffd400;
   --color-accent-2: #ffa700;
   --color-danger: #ff7a7a;
@@ -44,7 +46,7 @@
 }
 
 *, *::before, *::after {
-  font-family: "Victor Mono", "SF Mono", "Roboto Mono", "Menlo", "Consolas", "Liberation Mono", "Courier New", monospace;
+  font-family: "JetBrains Mono", "SF Mono", "Roboto Mono", "Menlo", "Consolas", "Liberation Mono", "Courier New", monospace;
   box-sizing: border-box;
   line-height: normal;
 

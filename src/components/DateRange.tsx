@@ -7,6 +7,7 @@ type DateRangeProps = {
   start: Date,
   end: Date,
   ["on:change"]: (start: Date, end: Date) => void,
+  title?: string,
 };
 
 export default function DateRange(props: DateRangeProps) {
@@ -105,12 +106,15 @@ export default function DateRange(props: DateRangeProps) {
     }
   });
 
-  function isTargetElement(e: Event, elem: Element) {
-    return e.target === elem || (e.target instanceof Element && elem.contains(e.target));
+  function isTargetElement(target: Element, elem: Element) {
+    return target === elem || elem.contains(target);
   }
 
   function close(this: HTMLElement, e: Event) {
-    if (isTargetElement(e, container) || isTargetElement(e, content)) {
+    if (e.target instanceof Element && !(e.target instanceof HTMLSelectElement) && (
+      isTargetElement(e.target, container) ||
+      isTargetElement(e.target, content)
+    )) {
       return;
     }
     open.value = false;
@@ -151,8 +155,13 @@ export default function DateRange(props: DateRangeProps) {
         <i></i>
       </button>
       <section class:preset-select>
-        <span>Preset: </span>
-        <select class:border value={preset()} on:change={e => setPreset(e.currentTarget.value)}>
+        <span>{props.title ?? "Preset"}: </span>
+        <select class:border value={preset()} on:change={e => {
+          if (e.currentTarget.value === "None") {
+            props["on:change"](new Date, new Date);
+          }
+          setPreset(e.currentTarget.value);
+        }}>
           <option value="nextCentury">Next century</option>
           <option value="next50Years">Next 50 years</option>
           <option value="next20Years">Next 20 years</option>
