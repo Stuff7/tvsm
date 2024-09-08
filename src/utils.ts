@@ -61,6 +61,10 @@ export function optionCmp<T>(a: Option<T>, b: Option<T>, reverse = false) {
   return reverse ? -ret : ret;
 }
 
+export function isTargetElement(target: Element, elem: Element) {
+  return target === elem || elem.contains(target);
+}
+
 export function isAnyInputFocused() {
   const activeElement = document.activeElement;
 

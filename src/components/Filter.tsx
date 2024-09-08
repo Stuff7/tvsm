@@ -2,9 +2,11 @@ import jsx, { Fragment, reactive, ref, watchOnly } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import Portal from "jsx/components/Portal";
 import { showList } from "~/storage";
-import { STATUS_VALUES, TvShowPreview, Status, TvShow } from "~/tvsm";
+import { STATUS_VALUES, Status, TvShow } from "~/tvsm";
 import { isAnyInputFocused } from "~/utils";
 import DateRange from "./DateRange";
+import MultiSelect from "./MultiSelect";
+import { setSelected } from "./List";
 
 export const [filtered, setFiltered] = ref(new Set<number>);
 
@@ -32,17 +34,6 @@ export default function Filter(props: FilterProps) {
   }
 
   watchOnly([showList, filters, statusFilter, premieredFilter, prevEpFilter, nextEpFilter], filterByName);
-
-  function toggleStatus(status: Status) {
-    return function (this: HTMLInputElement) {
-      if (this.checked) {
-        setStatusFilter.byRef(s => s.add(status));
-      }
-      else {
-        setStatusFilter.byRef(s => s.delete(status));
-      }
-    };
-  }
 
   function isDateInRange(d: Option<Date>, s: Date, e: Date) {
     return !d || +s === +e || (d >= s && d <= e);
@@ -107,19 +98,11 @@ export default function Filter(props: FilterProps) {
       />
       <Portal to={props.expandedSection}>
         <Input value={filters.network} key="network" disabled={!props.isExpanded} />
-        <section>
-          <FixedFor each={STATUS_VALUES} do={(status) => (
-            <label>
-              <input
-                type="checkbox"
-                checked={statusFilter().has(status())}
-                on:change={toggleStatus(status())}
-                disabled={!props.isExpanded}
-              />
-              <em>{status()}</em>
-            </label>
-          )} />
-        </section>
+        <MultiSelect
+          placeholder="Filter by status"
+          options={STATUS_VALUES}
+          on:change={setStatusFilter}
+        />
         <DateRange
           title="Premiered"
           start={premieredFilter()[0]}

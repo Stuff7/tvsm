@@ -1,6 +1,6 @@
 import jsx, { reactive, ref, watchFn } from "jsx";
 import DatePicker from "./DatePicker";
-import { formatDateFullYear } from "~/utils";
+import { formatDateFullYear, isTargetElement } from "~/utils";
 import Portal from "jsx/components/Portal";
 
 type DateRangeProps = {
@@ -105,10 +105,6 @@ export default function DateRange(props: DateRangeProps) {
       }
     }
   });
-
-  function isTargetElement(target: Element, elem: Element) {
-    return target === elem || elem.contains(target);
-  }
 
   function close(this: HTMLElement, e: Event) {
     if (e.target instanceof Element && !(e.target instanceof HTMLSelectElement) && (
