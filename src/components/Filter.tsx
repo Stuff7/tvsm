@@ -1,12 +1,10 @@
 import jsx, { Fragment, reactive, ref, watchOnly } from "jsx";
-import FixedFor from "jsx/components/FixedFor";
 import Portal from "jsx/components/Portal";
 import { showList } from "~/storage";
 import { STATUS_VALUES, Status, TvShow } from "~/tvsm";
 import { isAnyInputFocused } from "~/utils";
 import DateRange from "./DateRange";
 import MultiSelect from "./MultiSelect";
-import { setSelected } from "./List";
 
 export const [filtered, setFiltered] = ref(new Set<number>);
 
@@ -94,12 +92,14 @@ export default function Filter(props: FilterProps) {
         $ref={input}
         value={filters.name}
         key="name"
-        win:onkeydown={keyListener}
+        g:onkeydown={keyListener}
       />
       <Portal to={props.expandedSection}>
+        <strong class:title>Filters</strong>
+        <div class:divider class:horizontal />
         <Input value={filters.network} key="network" disabled={!props.isExpanded} />
         <MultiSelect
-          placeholder="Filter by status"
+          placeholder="Status"
           options={STATUS_VALUES}
           on:change={setStatusFilter}
         />
@@ -131,21 +131,24 @@ type InputProps = {
   value: string,
   key: string,
   disabled?: boolean,
-  "win:onkeydown"?: (e: KeyboardEvent) => void,
+  "g:onkeydown"?: (e: KeyboardEvent) => void,
 };
 
 function Input(props: InputProps) {
+  const placeholder = () => `Show's ${props.key}`;
+
   return (
-    <label class:tv-show-filter win:onkeydown={props["win:onkeydown"]}>
+    <label class:tv-show-filter g:onkeydown={props["g:onkeydown"]}>
       <i class:input-icn></i>
       <input
         class:delegated
         $ref={props.$ref}
         value={props.value}
         on:input={function () { props.value = this.value }}
-        placeholder={`Filter by ${props.key}`}
+        placeholder={placeholder()}
         disabled={props.disabled}
       />
+      <em class:placeholder>{placeholder()}</em>
     </label>
   );
 }

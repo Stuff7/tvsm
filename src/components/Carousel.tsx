@@ -259,10 +259,10 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       on:mousedown={e => e.button === 0 && touchStart(getPagePos(e))}
       on:touchmove={e => e.preventDefault()}
       on:wheel={scrollWheel}
-      win:ontouchmove={touchMove}
-      win:ontouchend={accelerate}
-      win:onmousemove={mouseMove}
-      win:onmouseup={mouseUp}
+      g:ontouchmove={touchMove}
+      g:ontouchend={accelerate}
+      g:onmousemove={mouseMove}
+      g:onmouseup={mouseUp}
     >
       {...Array.from({ length: itemsPerPage() + 2 }, (_, i) => {
         const node = props.do(

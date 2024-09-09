@@ -92,7 +92,7 @@
     font-weight: bold;
   }
 
-  .border.weekend {
+  .border.weekend:not(:hover) {
     color: var(--color-danger);
   }
 }

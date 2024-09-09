@@ -1,3 +1,5 @@
+@use "../media.scss";
+
 ul.table-list {
   display: grid;
   list-style: none;
@@ -5,6 +7,10 @@ ul.table-list {
   padding: 0;
   width: 100%;
   border-radius: var(--radius-nm);
+  position: relative;
+  z-index: -1;
+  overflow: auto;
+  max-height: 100%;
 
   &.is-selecting {
     user-select: none;
@@ -44,6 +50,7 @@ ul.table-list {
     }
 
     .status i::before {
+      font-family: icon;
       white-space: pre;
     }
 
@@ -176,6 +183,44 @@ ul.table-list {
 }
 
 ul.tv-show-list {
-  grid-template-columns: 1fr repeat(6, auto);
   background: #0005;
+
+  @mixin hide-cols($selectors...) {
+    li .list-cell {
+      @each $n in $selectors {
+        &:nth-child(#{$n}) {
+          padding-inline: 0;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+
+  @include media.larger-than(desktop-sm) {
+    grid-template-columns: 1fr repeat(6, auto);
+  }
+
+  @include media.smaller-than(desktop-sm) {
+    grid-template-columns: 1fr repeat(6, auto);
+
+    &.expanded {
+      grid-template-columns: 1fr repeat(3, auto) 0fr 0fr auto;
+      @include hide-cols(5, 6);
+    }
+  }
+
+  @include media.smaller-than(tablet) {
+    grid-template-columns: 1fr repeat(3, auto) 0fr auto auto;
+    @include hide-cols(5);
+  }
+
+  @include media.smaller-than(tablet-sm) {
+    grid-template-columns: 1fr 0fr 0fr auto 0fr auto auto;
+    @include hide-cols(2, 3, 5);
+  }
+
+  @include media.smaller-than(phone) {
+    grid-template-columns: 1fr 0fr 0fr 1fr 0fr 0fr 0fr;
+    @include hide-cols(2, 3, 5, 6, 7);
+  }
 }

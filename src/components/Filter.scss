@@ -7,8 +7,18 @@ label.tv-show-filter {
   color: var(--color-light);
   border: 1px dashed transparent;
   padding: var(--spacing-nm) calc(var(--spacing-nm)*1.5);
+  position: relative;
 
   transition: background 250ms, color 250ms, padding 250ms, border 250ms;
+
+  .placeholder {
+    pointer-events: none;
+    opacity: 0;
+    position: absolute;
+    top: var(--spacing-nm);
+    left: var(--spacing-nm);
+    transition: background 250ms, opacity 250ms, top 250ms;
+  }
 
   .input-icn {
     opacity: 0.5;
@@ -25,5 +35,11 @@ label.tv-show-filter {
     padding-inline: 1em;
     border-color: currentColor;
     background: #141414;
+  }
+
+  input:not(:placeholder-shown) + .placeholder {
+    opacity: 1;
+    top: calc(var(--spacing-nm) * -1 - 2px);
+    background: var(--color-dark-2);
   }
 }

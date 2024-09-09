@@ -37,7 +37,11 @@ function sortList<T extends TvShowPreview>(reverse: boolean, a: T, b: T, ...keys
   return optionCmp(getDeep(a, ...keys), getDeep(b, ...keys), reverse);
 }
 
-export default function List() {
+type ListProps = {
+  expanded: boolean,
+};
+
+export default function List(props: ListProps) {
   const [sortKey, setSortKey] = ref("");
   const [ctrlPressed, setCtrlPressed] = ref(false);
   const {
@@ -80,12 +84,13 @@ export default function List() {
     <ul
       class:table-list
       class:tv-show-list
+      class:expanded={props.expanded}
       class:empty={showList().length === 0}
       class:is-selecting={isAreaSelecting()}
       on:mount={mountSelect}
       on:unmount={destroySelect}
-      win:onkeydown={keyListener}
-      win:onkeyup={keyListener}
+      g:onkeydown={keyListener}
+      g:onkeyup={keyListener}
     >
       <li class:header>
         <FixedFor each={HEADERS} do={(header) => {
@@ -125,9 +130,9 @@ export default function List() {
           </ListCell>
           <EpisodeCell show={show()} key="prevEp" />
           <EpisodeCell show={show()} key="nextEp" />
-          <ListCell show={show()} key="network"><i></i>{show().network}</ListCell>
+          <ListCell show={show()} key="network">{show().network}</ListCell>
           <ListCell show={show()} key="status"><i />{show().status}</ListCell>
-          <ListCell show={show()} key="seasons"><i></i>{padNum(show().seasons, 2)}</ListCell>
+          <ListCell show={show()} key="seasons">{padNum(show().seasons, 2)}</ListCell>
           <ListCell show={show()} key="rating" horizontal={show().rating != null}>
             <div
               class:progress-bar

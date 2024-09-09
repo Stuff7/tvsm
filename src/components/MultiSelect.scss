@@ -1,11 +1,12 @@
-.multi-select {
+.multi-select.border {
   --button-bg: var(--color-light);
-  overflow: hidden;
   text-align: left;
   display: grid;
   gap: var(--spacing-nm);
   grid-template-columns: 1fr auto;
   align-items: center;
+  position: relative;
+  color: var(--color-light-2);
 
   > .items {
     display: flex;
@@ -40,35 +41,39 @@
   &.expanded .chevron {
     rotate: 0deg;
   }
-}
 
-.multi-select-content {
-  display: grid;
-  gap: var(--spacing-nm);
-  grid-template-columns: 1fr 1fr;
-  padding: var(--spacing-nm);
-  background: var(--color-dark);
-  width: max-content;
-  position: absolute;
-  border: 1px solid var(--color-light-2);
-  border-top: 0;
-  border-radius: 0 0 var(--radius-nm) var(--radius-nm);
-  transition: margin-top 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s;
-
-  > label {
+  .multi-select-content {
     display: grid;
     gap: var(--spacing-nm);
-    grid-template-columns: auto 1fr;
-    align-items: center;
-  }
+    grid-template-columns: 1fr 1fr;
+    padding: var(--spacing-nm);
+    background: var(--color-dark);
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: -1px;
+    width: calc(100% + 2px);
+    border: 1px solid currentColor;
+    color: var(--color-light-2);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-nm) var(--radius-nm);
+    transition: margin-top 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s;
 
-  &.pop-enter-active, &.pop-leave-active {
-    margin-top: 0;
-    opacity: 1;
-  }
+    &.slide-enter-active, &.slide-leave-active {
+      margin-top: 0;
+      opacity: 1;
+    }
 
-  &.pop-enter-from, &.pop-leave-to {
-    margin-top: -50px;
-    opacity: 0;
+    &.slide-enter-from, &.slide-leave-to {
+      margin-top: -50px;
+      opacity: 0;
+    }
+
+    > label {
+      display: grid;
+      gap: var(--spacing-nm);
+      grid-template-columns: auto 1fr;
+      align-items: center;
+    }
   }
 }

@@ -1,3 +1,4 @@
+@use "./media.scss";
 @use "./components/Debug.scss";
 @use "./components/MultiSelect.scss";
 @use "./components/DatePicker.scss";
@@ -30,6 +31,7 @@
   --color-dark: #222;
   --color-light: #ddd;
   --color-light-2: #fff6;
+  --color-light-3: #fff4;
   --color-accent: #ffd400;
   --color-accent-2: #ffa700;
   --color-danger: #ff7a7a;
@@ -39,6 +41,7 @@
   --color-disabled: #a5a5a5;
   --color-disabled-2: #cbcbcb;
   --spacing-nm: 0.5em;
+  --spacing-md: 0.75em;
   --radius-nm: 0.4em;
 
   --button-fg: var(--color-dark);
@@ -70,8 +73,41 @@ body, :root {
 }
 
 main {
+  isolation: isolate;
   display: grid;
+  --right-sidebar: 0fr;
+  grid-template-columns: 1fr var(--right-sidebar);
   grid-template-rows: auto 1fr;
+  height: 100vh;
+  align-items: start;
+  transition: grid-template-columns 300ms;
+  overflow-x: hidden;
+
+  @include media.smaller-than(tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  &:has(.right-sidebar.expanded) {
+    @include media.larger-than(desktop-lg) {
+      --right-sidebar: 0.25fr;
+    }
+
+    @include media.smaller-than(desktop-lg) {
+      --right-sidebar: 0.33fr;
+    }
+
+    @include media.smaller-than(desktop) {
+      --right-sidebar: 0.4fr;
+    }
+
+    @include media.smaller-than(desktop-sm) {
+      --right-sidebar: 0.5fr;
+    }
+
+    @include media.smaller-than(tablet) {
+      --right-sidebar: 0.6fr;
+    }
+  }
 }
 
 em {
@@ -227,9 +263,17 @@ i {
 }
 
 .divider {
-  height: 100%;
-  border-right: 2px solid #fff4;
   border-radius: var(--radius-nm);
+
+  &:not(.horizontal) {
+    height: 100%;
+    border-right: 2px solid var(--color-light-3);
+  }
+
+  &.horizontal {
+    width: 100%;
+    border-top: 2px solid var(--color-light-3);
+  }
 }
 
 .icon-btn {

@@ -120,8 +120,8 @@ export default function Tooltip(props: TooltipProps) {
             var:y={`${mouse().y}px`}
             var:pos-x={translation.x}
             var:pos-y={translation.y}
-            win:onmousemove={trackMouse}
-            win:ontouchmove={trackMouse}
+            g:onmousemove={trackMouse}
+            g:ontouchmove={trackMouse}
           >
             <slot />
           </div>

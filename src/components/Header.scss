@@ -1,42 +1,22 @@
+@use "../media.scss";
+$tlen: 300ms;
+
 .tvsm-header {
   position: relative;
   width: 100%;
   padding: var(--spacing-nm);
   display: grid;
-  grid-template-columns: repeat(7, auto) 1fr auto auto;
+  grid-template-columns: max-content auto max-content repeat(4, auto) 1fr auto auto;
   color: var(--color-light);
   align-items: center;
   column-gap: var(--spacing-nm);
-
-  --content-size: 0fr;
-  grid-template-rows: min-content var(--content-size);
-  overflow: hidden;
-  transition: grid-template-rows 250ms;
+  grid-template-rows: min-content;
+  transition: background $tlen;
+  border-bottom: 1px solid transparent;
 
   &.expanded {
-    --content-size: 1fr;
-    row-gap: var(--spacing-nm);
-  }
-
-  .extra-content {
-    display: grid;
-    align-items: center;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: var(--spacing-nm);
-    grid-column: 1 / 11;
-    overflow: hidden;
-    transition: opacity 250ms;
-
-    > section {
-      grid-column: 2 / 4;
-    }
-  }
-
-  &:not(.expanded) .extra-content {
-    transition: opacity 250ms, visibility 250ms 250ms;
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
+    background: var(--color-dark-2);
+    border-color: var(--color-light-3);
   }
 
   .logo {
@@ -46,5 +26,49 @@
     color: var(--color-accent);
     margin: 0;
     text-transform: full-width;
+  }
+}
+
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-nm);
+  border-left: 1px solid var(--color-light-3);
+  height: 100%;
+  transition: opacity $tlen;
+  grid-row: 1 / 3;
+  grid-column: 2 / 4;
+  background: var(--color-dark-2);
+  isolation: isolate;
+
+  .close {
+    position: absolute;
+    top: var(--spacing-nm);
+    right: var(--spacing-nm);
+    border: 0;
+    padding: var(--spacing-md);
+    --button-bg: var(--color-light);
+  }
+
+  .title {
+    padding: var(--spacing-nm);
+    font-size: 1.1em;
+  }
+
+  &.expanded {
+    padding: var(--spacing-nm);
+  }
+
+  &:not(.expanded) {
+    transition: opacity $tlen, visibility $tlen $tlen, background $tlen, padding $tlen;
+    padding: 0;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  @include media.smaller-than(tablet) {
+    position: absolute;
+    right: 0;
   }
 }

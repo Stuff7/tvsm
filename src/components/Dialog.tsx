@@ -66,10 +66,10 @@ export default function Dialog(props: DialogProps) {
           tabindex={0}
           on:mousedown={e => e.currentTarget.focus()}
           on:touchstart={e => e.currentTarget.focus()}
-          win:ontouchmove={drag}
-          win:ontouchend={stopDrag}
-          win:onmousemove={drag}
-          win:onmouseup={stopDrag}
+          g:ontouchmove={drag}
+          g:ontouchend={stopDrag}
+          g:onmousemove={drag}
+          g:onmouseup={stopDrag}
           var:x={`${cursor.x}px`}
           var:y={`${cursor.y}px`}
         >

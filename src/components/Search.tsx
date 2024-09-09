@@ -85,7 +85,7 @@ export default function Search() {
       <button
         class:add-show
         on:click={() => visible.value = !visible.value}
-        win:onkeydown={keyListener}
+        g:onkeydown={keyListener}
       >
         <i></i>
         <div class:divider />

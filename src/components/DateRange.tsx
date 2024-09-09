@@ -1,7 +1,7 @@
 import jsx, { reactive, ref, watchFn } from "jsx";
 import DatePicker from "./DatePicker";
 import { formatDateFullYear, isTargetElement } from "~/utils";
-import Portal from "jsx/components/Portal";
+import Transition from "jsx/components/Transition";
 
 type DateRangeProps = {
   start: Date,
@@ -14,19 +14,8 @@ export default function DateRange(props: DateRangeProps) {
   const open = reactive({ value: false });
   const [isSelectingStart, setIsSelectingStart] = ref(true);
   const [preset, setPreset] = ref("None");
-  const [x, setX] = ref(0);
-  const [y, setY] = ref(0);
   let container!: HTMLElement;
   let content!: HTMLElement;
-
-  function positionCalendar() {
-    const r = container?.getBoundingClientRect();
-    if (!r) { return }
-    setX(r.x + r.width / 2);
-    setY(r.y + r.height);
-  }
-
-  watchFn(() => open.value, positionCalendar);
 
   watchFn(preset, () => {
     const p = preset();
@@ -107,10 +96,8 @@ export default function DateRange(props: DateRangeProps) {
   });
 
   function close(this: HTMLElement, e: Event) {
-    if (e.target instanceof Element && !(e.target instanceof HTMLSelectElement) && (
-      isTargetElement(e.target, container) ||
-      isTargetElement(e.target, content)
-    )) {
+    if (e.target instanceof Element && !(e.target instanceof HTMLSelectElement) &&
+        isTargetElement(e.target, container)) {
       return;
     }
     open.value = false;
@@ -130,10 +117,8 @@ export default function DateRange(props: DateRangeProps) {
     <article
       class:date-range
       $ref={container}
-      on:mount={positionCalendar}
-      win:onresize={positionCalendar}
-      win:onclick={close}
-      win:ontouchstart={close}
+      g:onclick={close}
+      g:ontouchstart={close}
     >
       <button class:border on:click={() => {
         open.value = true;
@@ -176,21 +161,15 @@ export default function DateRange(props: DateRangeProps) {
           <option value="past50Years">Past 50 years</option>
           <option value="pastCentury">Past century</option>
         </select>
+        <Transition $if={open.value} name="slide">
+          <section $ref={content} class:date-range-content>
+            <DatePicker
+              date={isSelectingStart() ? props.start : props.end}
+              on:change={updateDate}
+            />
+          </section>
+        </Transition>
       </section>
-      <Portal to="[data-layer=modals]">
-        <section
-          $if={open.value}
-          $ref={content}
-          class:date-range-content
-          style:left={`${x()}px`}
-          style:top={`${y()}px`}
-        >
-          <DatePicker
-            date={isSelectingStart() ? props.start : props.end}
-            on:change={updateDate}
-          />
-        </section>
-      </Portal>
     </article>
   );
 }

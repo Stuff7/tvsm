@@ -1,5 +1,5 @@
 .date-range {
-  width: max-content;
+  min-width: max-content;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -12,7 +12,7 @@
     padding: var(--spacing-nm) calc(var(--spacing-nm) * 1.5);
     font-weight: bold;
     font-size: 0.5em;
-    transition: font-size 250ms;
+    transition: font-size 250ms, padding 250ms;
   }
 
   &:hover {
@@ -26,6 +26,7 @@
 
     > i {
       font-size: 1em;
+      padding: 0;
     }
   }
 
@@ -62,12 +63,25 @@
       border: 0;
     }
   }
-}
 
-.date-range-content {
-  border-radius: var(--radius-nm);
-  box-shadow: 0px 0px 0px 1px #5556;
-  position: absolute;
-  translate: -50%;
-  background: var(--color-dark);
+  .date-range-content {
+    border-radius: var(--radius-nm);
+    box-shadow: 0px 0px 0px 1px #5556;
+    position: absolute;
+    z-index: 1;
+    top: calc(100% + var(--spacing-nm));
+    right: 0;
+    background: var(--color-dark);
+    transition: margin-top 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s;
+
+    &.slide-enter-active, &.slide-leave-active {
+      margin-top: 0;
+      opacity: 1;
+    }
+
+    &.slide-enter-from, &.slide-leave-to {
+      margin-top: -50px;
+      opacity: 0;
+    }
+  }
 }
