@@ -54,7 +54,7 @@
   > .preset-select {
     grid-column: 1 / 4;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr max-content;
     gap: var(--spacing-nm);
     align-items: center;
     padding-left: var(--spacing-nm);

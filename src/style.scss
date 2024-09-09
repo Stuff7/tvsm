@@ -257,7 +257,7 @@ h1, h2, h3, h4, h5, h6, p {
   margin: 0;
 }
 
-i {
+i, i::before, i::after {
   font-family: icon;
   font-style: normal;
 }

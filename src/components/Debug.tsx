@@ -7,6 +7,8 @@ type DebugProps<T> = {
   data: T,
   "on:change"?: (data: T) => void,
   title?: string,
+  x?: number,
+  y?: number,
 };
 
 export default function Debug<T>(props: DebugProps<T>) {
@@ -30,9 +32,11 @@ export default function Debug<T>(props: DebugProps<T>) {
             class:debug-button
             $if={!visible.value}
             on:click={() => visible.value = !visible.value}
+            style:left={props.x != null ? `${props.x}px` : 0}
+            style:top={props.y != null ? `${props.y}px` : 0}
           >{title()}</button>
         </Portal>
-        <Dialog $if={visible.value} draggable>
+        <Dialog $if={visible.value} draggable x={props.x} y={props.y}>
           <label slot="header" class:show-search>
             {title()}
           </label>

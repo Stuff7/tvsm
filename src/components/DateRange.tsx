@@ -161,6 +161,12 @@ export default function DateRange(props: DateRangeProps) {
           <option value="past50Years">Past 50 years</option>
           <option value="pastCentury">Past century</option>
         </select>
+        <button $if={+props.start !== +props.end} class:border on:click={() => {
+          setPreset("None");
+          props["on:change"](new Date, new Date);
+        }}>
+          <i></i>
+        </button>
         <Transition $if={open.value} name="slide">
           <section $ref={content} class:date-range-content>
             <DatePicker
