@@ -13,17 +13,8 @@
 @use "./misc.scss";
 @use "./font.scss";
 
-@include font.load-font(
-  "icon",
-  $font-type: "woff2",
-  $italic: false,
-  $replace: (
-    100: "Regular", 200: "Regular", 300: "Regular", 400: "Regular",
-    500: "Regular", 600: "Regular", 700: "Regular", 800: "Regular", 900: "Regular"
-  )
-);
-
-@include font.load-variable-font($font-name: "JetBrainsMono", $font-family: "JetBrains Mono", $font-weight: 100 800, $italic: true);
+@include font.load-font($file-prefix: "icon", $font-type: "woff2", $italic: false);
+@include font.load-font($file-prefix: "JetBrainsMono", $font-family: "JetBrains Mono", $font-weight: 100 800, $italic: true);
 
 :root {
   --color-bg: linear-gradient(to bottom right, #081010, #2f0f2f, #091111 120%);

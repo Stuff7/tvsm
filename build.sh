@@ -1,12 +1,26 @@
 #!/bin/bash
 
-mkdir -p dist
-rm -rf dist/*
-
+npmBin="./node_modules/.bin"
 flags="--sourcemap --bundle --outdir=dist --outbase=src --minify"
-[ "$1" = "release" ] && flags="$flags --drop-labels=DEV"
+if [[ "$1" = "release" ]]; then
+  flags="$flags --drop-labels=DEV"
+  pathChanged=""
+else
+  pathChanged=$(cat)
+fi
 
-___NPM="./node_modules/.bin"
+sass="$npmBin/sass --style compressed src/style.scss dist/style.css"
+esbuild="$npmBin/esbuild src/main.tsx $flags"
 
-cp -r public/* dist & $___NPM/sass --style compressed src/style.scss dist/style.css & $___NPM/esbuild src/main.tsx $flags & wait
-./node_modules/.bin/jsx dist
+if [[ "$pathChanged" == *".scss" ]]; then
+  $sass
+elif [[ "$pathChanged" == *".tsx" || "$pathChanged" == *".ts" ]]; then
+  $esbuild
+  $npmBin/jsx dist
+else
+  mkdir -p dist
+  rm -rf dist/*
+
+  cp -r public/* dist & $sass & $esbuild & wait
+  $npmBin/jsx dist
+fi
