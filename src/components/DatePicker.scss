@@ -1,53 +1,55 @@
-.date-picker {
+.DatePicker {
   padding: var(--spacing-nm);
   background: var(--color-dark);
   width: min-content;
   font-size: 1.2rem;
 
-  &, section {
+  &, > section {
     display: grid;
   }
 
-  .controls {
+  > .controls {
     display: grid;
     grid-template-columns: 0.15fr 1fr 0.15fr;
     gap: var(--spacing-nm);
     justify-content: space-between;
     align-items: center;
 
-    .nav {
+    > .nav {
       border: 0;
       padding: 0;
       height: 100%;
+      align-items: center;
+      justify-content: center;
     }
 
-    .select {
+    > .select {
       --button-bg: var(--color-light);
       font-size: 0.8em;
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
 
-      i {
+      > i {
         transition: rotate 250ms;
       }
 
-      &.selecting i {
+      &.selecting > i {
         rotate: 180deg;
       }
 
-      strong {
+      > span > strong {
         font-size: 1.1em;
         color: var(--color-accent);
       }
 
-      &:hover strong, &:active strong {
+      &:hover > span > strong, &:active > span > strong {
         color: currentColor;
       }
     }
   }
 
-  .month, .week {
+  > section > .Carousel > .month, > .week {
     display: grid;
     grid-template-columns: repeat(7, min-content);
     grid-auto-rows: min-content;
@@ -70,7 +72,7 @@
     > button {
       --button-bg: currentColor;
 
-      &.border {
+      &.g-border {
         border-color: transparent;
       }
 
@@ -82,22 +84,22 @@
         opacity: 0.6;
       }
 
-      &:not(.border) {
+      &:not(.g-border) {
         --button-bg: var(--color-accent);
       }
     }
   }
 
-  .week {
+  > .week {
     font-weight: bold;
   }
 
-  .border.weekend:not(:hover) {
+  > section > .Carousel > .month > .g-border.weekend:not(:hover) {
     color: var(--color-danger);
   }
 }
 
-.scroll-selector {
+.ScrollSelector {
   background: var(--color-dark);
   padding-block: var(--spacing-nm);
   width: min-content;

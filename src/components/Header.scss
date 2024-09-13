@@ -1,7 +1,7 @@
 @use "../media.scss";
 $tlen: 300ms;
 
-.tvsm-header {
+.Header {
   position: relative;
   width: 100%;
   padding: var(--spacing-nm);
@@ -19,7 +19,7 @@ $tlen: 300ms;
     border-color: var(--color-light-3);
   }
 
-  .logo {
+  > .logo {
     font-size: 1rem;
     padding: var(--spacing-nm);
     font-weight: bold;
@@ -29,7 +29,7 @@ $tlen: 300ms;
   }
 }
 
-.right-sidebar {
+.RightSidebar {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-nm);
@@ -41,7 +41,7 @@ $tlen: 300ms;
   background: var(--color-dark-2);
   isolation: isolate;
 
-  .close {
+  > .close {
     position: absolute;
     top: var(--spacing-nm);
     right: var(--spacing-nm);
@@ -50,7 +50,7 @@ $tlen: 300ms;
     --button-bg: var(--color-light);
   }
 
-  .title {
+  > .title {
     padding: var(--spacing-nm);
     font-size: 1.1em;
   }

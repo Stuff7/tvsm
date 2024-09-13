@@ -29,7 +29,7 @@ export default function Debug<T>(props: DebugProps<T>) {
       <>
         <Portal to="[data-layer=modals]">
           <button
-            class:debug-button
+            class:Debug-button
             $if={!visible.value}
             on:click={() => visible.value = !visible.value}
             style:left={props.x != null ? `${props.x}px` : 0}
@@ -37,12 +37,12 @@ export default function Debug<T>(props: DebugProps<T>) {
           >{title()}</button>
         </Portal>
         <Dialog $if={visible.value} draggable x={props.x} y={props.y}>
-          <label slot="header" class:show-search>
+          <label slot="header">
             {title()}
           </label>
           <pre
             slot="content"
-            class:debug-content
+            class:Debug-content
             contenteditable
             spellcheck={false}
             on:input={[e => updData(e.currentTarget.innerHTML), { once: true }]}

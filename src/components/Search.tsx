@@ -83,16 +83,16 @@ export default function Search() {
   return (
     <>
       <button
-        class:add-show
+        class:AddShow
         on:click={() => visible.value = !visible.value}
         g:onkeydown={keyListener}
       >
         <i></i>
-        <div class:divider />
+        <div class:g-divider />
         <strong>Add Show <em>[/]</em></strong>
       </button>
       <Dialog $if={visible.value} center>
-        <label slot="header" class:show-search>
+        <label slot="header" class:ShowSearch>
           <i></i>
           <input
             $ref={input}
@@ -111,15 +111,15 @@ export default function Search() {
         </label>
         <ul
           slot="content"
-          class:table-list
-          class:show-search-results
+          class:List-general
+          class:ShowSearch-results
           class:is-selecting={isAreaSelecting()}
           class:empty={!shows().length}
           on:mount={mountSelect}
           on:unmount={destroySelect}
         >
           <FixedFor each={HEADERS} do={(name) => (
-            <li class:header>{name()}</li>
+            <li class:header><button class:list-cell>{name()}</button></li>
           )} />
           <li $if={!!text() && !shows().length}><em>No results</em></li>
           <For each={shows()} do={(show, i) => (
@@ -133,14 +133,14 @@ export default function Search() {
             >
               <Tooltip>
                 <div
-                  class:show-search-preview-img
+                  class:ShowSearch-preview-img
                   style:background-image={show().image && `url(${show().image})`}
                 >
                   <em $if={!show().image}>{show().name}</em>
                 </div>
               </Tooltip>
               <span class:list-cell>
-                <button class:active-hidden disabled={added().has(show().id)} aria-hidden />
+                <button class:g-active-hidden disabled={added().has(show().id)} aria-hidden />
                 {show().name}
               </span>
               <span class:list-cell>{formatDate(show().premiered)}</span>

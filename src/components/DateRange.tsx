@@ -115,12 +115,12 @@ export default function DateRange(props: DateRangeProps) {
 
   return (
     <article
-      class:date-range
+      class:DateRange
       $ref={container}
       g:onclick={close}
       g:ontouchstart={close}
     >
-      <button class:border on:click={() => {
+      <button class:g-border on:click={() => {
         open.value = true;
         setIsSelectingStart(true);
       }}>
@@ -128,7 +128,7 @@ export default function DateRange(props: DateRangeProps) {
         <span>{formatDateFullYear(props.start)}</span>
       </button>
       <i></i>
-      <button class:border on:click={() => {
+      <button class:g-border on:click={() => {
         open.value = true;
         setIsSelectingStart(false);
       }}>
@@ -137,7 +137,7 @@ export default function DateRange(props: DateRangeProps) {
       </button>
       <section class:preset-select>
         <span>{props.title ?? "Preset"}: </span>
-        <select class:border value={preset()} on:change={e => {
+        <select class:g-border value={preset()} on:change={e => {
           if (e.currentTarget.value === "None") {
             props["on:change"](new Date, new Date);
           }
@@ -161,14 +161,14 @@ export default function DateRange(props: DateRangeProps) {
           <option value="past50Years">Past 50 years</option>
           <option value="pastCentury">Past century</option>
         </select>
-        <button $if={+props.start !== +props.end} class:border on:click={() => {
+        <button $if={+props.start !== +props.end} class:g-border on:click={() => {
           setPreset("None");
           props["on:change"](new Date, new Date);
         }}>
           <i></i>
         </button>
         <Transition $if={open.value} name="slide">
-          <section $ref={content} class:date-range-content>
+          <section $ref={content} class:content>
             <DatePicker
               date={isSelectingStart() ? props.start : props.end}
               on:change={updateDate}

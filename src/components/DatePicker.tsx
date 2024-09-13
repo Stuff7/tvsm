@@ -1,7 +1,7 @@
 import jsx, { reactive, ref, watchFn } from "jsx";
 import Carousel from "./Carousel";
 import FixedFor from "jsx/components/FixedFor";
-import { circularClamp, formatDateFullYear } from "~/utils";
+import { circularClamp } from "~/utils";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"];
@@ -54,19 +54,19 @@ export default function DatePicker(props: DatePickerProps) {
   }
 
   return (
-    <article class:date-picker>
+    <article class:DatePicker>
       <header class:controls>
-        <button class:nav class:border on:click={prev}><i></i></button>
+        <button class:nav class:g-border on:click={prev}><i></i></button>
         <button
           class:select
-          class:border
+          class:g-border
           class:selecting={monthYearSelectorVisible()}
           on:click={() => setMonthYearSelectorVisible(!monthYearSelectorVisible())}
         >
           <span>{MONTHS[month()]} <strong>{year()}</strong></span>
           <i></i>
         </button>
-        <button class:nav class:border on:click={next}><i></i></button>
+        <button class:nav class:g-border on:click={next}><i></i></button>
       </header>
       <header class:week>
         <FixedFor each={DAYS.map(d => d.slice(0, 2))} do={(day) => <span>{day()}</span>} />
@@ -169,7 +169,7 @@ export default function DatePicker(props: DatePickerProps) {
               <section class:month data-id={idx()}>
                 <FixedFor each={days()} do={(i, pos) => (
                   <button
-                    class:border={!isSelected(pos)}
+                    class:g-border={!isSelected(pos)}
                     class:offset-days={isOffsetDay(pos)}
                     class:weekend={pos % 7 === 0 || pos % 7 === 6}
                     on:click={() => selectDay(pos)}
@@ -192,7 +192,7 @@ type MonthSelectorProps = {
 
 export function MonthSelector(props: MonthSelectorProps) {
   return (
-    <div class:scroll-selector>
+    <div class:ScrollSelector>
       <Carousel
         itemsPerPage={5}
         vertical
@@ -210,7 +210,7 @@ export function MonthSelector(props: MonthSelectorProps) {
           return (
             <button
               class:selected={selected}
-              class:transparent
+              class:g-transparent
               on:click={selectMonth}
             >{month()}</button>
           );
@@ -254,7 +254,7 @@ export function YearSelector(props: YearSelectorProps) {
   });
 
   return (
-    <div class:scroll-selector>
+    <div class:ScrollSelector>
       <Carousel
         vertical
         snap
@@ -275,7 +275,7 @@ export function YearSelector(props: YearSelectorProps) {
               <FixedFor each={years()} do={(year, i) => (
                 <button
                   class:selected={selected() === i}
-                  class:transparent
+                  class:g-transparent
                   on:click={() => props["on:change"](year())}
                 >
                   {year()}

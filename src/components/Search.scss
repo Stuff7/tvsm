@@ -1,14 +1,14 @@
-button.add-show {
+.AddShow {
   display: grid;
   grid-template-columns: auto auto 1fr;
   gap: var(--spacing-nm);
   align-items: center;
 
-  .divider {
+  > .g-divider {
     background: currentColor;
   }
 
-  .text {
+  > .text {
     > * {
       display: block;
     }
@@ -21,7 +21,7 @@ button.add-show {
   }
 }
 
-label.show-search {
+.ShowSearch {
   display: flex;
   align-items: center;
   border-radius: var(--radius-nm);
@@ -32,19 +32,19 @@ label.show-search {
 
   transition: background 250ms, color 250ms, padding 250ms, border 250ms;
 
-  i {
+  > i {
     opacity: 0.5;
   }
 
   &:has(input:focus) {
     color: var(--color-accent);
 
-    i {
+    > i {
       opacity: 1.0;
     }
   }
 
-  input {
+  > input {
     flex: 1;
     background: transparent;
     border: 0;
@@ -54,7 +54,7 @@ label.show-search {
   }
 }
 
-.show-search-preview-img {
+.ShowSearch-preview-img {
   width: 210px;
   height: 295px;
   object-fit: cover;
@@ -64,7 +64,7 @@ label.show-search {
   padding: var(--spacing-nm);
 }
 
-ul.show-search-results {
+.ShowSearch-results {
   grid-template-columns: 1fr auto 1fr 1fr auto;
   padding: var(--spacing-nm);
   background: #0005;

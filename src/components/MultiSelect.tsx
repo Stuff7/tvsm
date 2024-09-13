@@ -49,8 +49,8 @@ export default function MultiSelect<T extends string>(props: MultiSelectProps<T>
   return (
     <button
       $ref={button}
-      class:multi-select
-      class:border
+      class:MultiSelect
+      class:g-border
       class:expanded={expanded()}
       on:click={toggle}
       g:onclick={close}
@@ -72,14 +72,17 @@ export default function MultiSelect<T extends string>(props: MultiSelectProps<T>
       <Transition $if={expanded()} name="slide">
         <article
           $ref={content}
-          class:multi-select-content
+          class:content
         >
-          <For each={props.options} do={txt => (
-            <label>
-              <input type="checkbox" checked={selected().has(txt())} on:change={select(txt())} />
-              <span>{txt()}</span>
-            </label>
-          )} />
+          <slot />
+          <section class:items>
+            <For each={props.options} do={txt => (
+              <label>
+                <input type="checkbox" checked={selected().has(txt())} on:change={select(txt())} />
+                <span>{txt()}</span>
+              </label>
+            )} />
+          </section>
         </article>
       </Transition>
     </button>

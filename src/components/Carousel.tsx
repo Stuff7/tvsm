@@ -251,7 +251,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
     <div
       $ref={container}
       $if={props.$if ?? true}
-      class:carousel
+      class:Carousel
       class:vertical={!!props.vertical}
       style:gap={props.spacing}
       on:mount={onMount}

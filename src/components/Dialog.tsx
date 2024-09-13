@@ -60,7 +60,7 @@ export default function Dialog(props: DialogProps) {
     <Portal to="[data-layer=modals]">
       <Transition $if={!!props.$if} name="pop">
         <div
-          class:dialog
+          class:Dialog
           class:draggable={!!props.draggable}
           class:center={!!props.center}
           tabindex={0}
@@ -80,7 +80,7 @@ export default function Dialog(props: DialogProps) {
             on:touchstart={startDrag}
           >
             <slot name="header" />
-            <button class:close-btn class:border on:click={() => props.$if = false}>
+            <button class:close-btn class:g-border on:click={() => props.$if = false}>
               <i></i>
             </button>
           </header>

@@ -35,13 +35,13 @@ export default function Header(props: HeaderProps) {
 
   return (
     <>
-      <header class:tvsm-header class:expanded={props.expanded}>
+      <header class:Header class:expanded={props.expanded}>
         <p class:logo>TVSM</p>
-        <div class:divider />
+        <div class:g-divider />
         <Search />
-        <div class:divider />
+        <div class:g-divider />
         <button
-          class:icon-btn
+          class:g-icon-btn
           disabled={!selected().size}
           on:click={removeShow}
           var:button-bg="var(--color-danger)"
@@ -51,7 +51,7 @@ export default function Header(props: HeaderProps) {
           <Tooltip>Delete selected shows</Tooltip>
         </button>
         <button
-          class:icon-btn
+          class:g-icon-btn
           disabled={!selected().size}
           on:click={updateShow}
           var:button-bg="var(--color-ok)"
@@ -60,10 +60,10 @@ export default function Header(props: HeaderProps) {
           <i></i>
           <Tooltip>Update selected shows</Tooltip>
         </button>
-        <div class:divider />
+        <div class:g-divider />
         <Filter expandedSection={rightSidebar()} isExpanded={props.expanded} />
-        <div class:divider />
-        <button class:icon-btn on:click={(e) => {
+        <div class:g-divider />
+        <button class:g-icon-btn on:click={(e) => {
           e.currentTarget.focus();
           props["on:expand"](!props.expanded);
         }}>
@@ -71,8 +71,8 @@ export default function Header(props: HeaderProps) {
           <i></i>
         </button>
       </header>
-      <aside class:right-sidebar class:expanded={props.expanded} $ref={setRightSidebar}>
-        <button class:close class:border on:click={() => props["on:expand"](false)}>
+      <aside class:RightSidebar class:expanded={props.expanded} $ref={setRightSidebar}>
+        <button class:close class:g-border on:click={() => props["on:expand"](false)}>
           <i></i>
         </button>
       </aside>

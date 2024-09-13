@@ -1,4 +1,4 @@
-.multi-select.border {
+.MultiSelect.g-border {
   --button-bg: var(--color-light);
   text-align: left;
   display: grid;
@@ -13,7 +13,7 @@
     gap: var(--spacing-nm);
     flex-wrap: wrap;
 
-    button {
+    > button {
       padding-block: 0;
 
       &.hidden {
@@ -38,14 +38,14 @@
     border-radius: var(--radius-nm) var(--radius-nm) 0 0;
   }
 
-  &.expanded .chevron {
+  &.expanded > .chevron {
     rotate: 0deg;
   }
 
-  .multi-select-content {
-    display: grid;
+  > .content {
+    display: flex;
     gap: var(--spacing-nm);
-    grid-template-columns: 1fr 1fr;
+    flex-direction: column;
     padding: var(--spacing-nm);
     background: var(--color-dark);
     position: absolute;
@@ -69,11 +69,17 @@
       opacity: 0;
     }
 
-    > label {
+    > .items {
       display: grid;
       gap: var(--spacing-nm);
-      grid-template-columns: auto 1fr;
-      align-items: center;
+      grid-template-columns: 1fr 1fr;
+
+      > label {
+        display: grid;
+        gap: var(--spacing-nm);
+        grid-template-columns: auto 1fr;
+        align-items: center;
+      }
     }
   }
 }

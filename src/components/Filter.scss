@@ -1,4 +1,4 @@
-label.tv-show-filter {
+.Input {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
@@ -11,7 +11,7 @@ label.tv-show-filter {
 
   transition: background 250ms, color 250ms, padding 250ms, border 250ms;
 
-  .placeholder {
+  > .placeholder {
     pointer-events: none;
     opacity: 0;
     position: absolute;
@@ -20,12 +20,12 @@ label.tv-show-filter {
     transition: background 250ms, opacity 250ms, top 250ms;
   }
 
-  .input-icn {
+  > .input-icn {
     opacity: 0.5;
   }
 
   &:hover, &:has(input:focus) {
-    .input-icn, ::placeholder {
+    > .input-icn, ::placeholder {
       opacity: 1.0;
     }
   }
@@ -37,9 +37,19 @@ label.tv-show-filter {
     background: #141414;
   }
 
-  input:not(:placeholder-shown) + .placeholder {
+  > input:not(:placeholder-shown) + .placeholder {
     opacity: 1;
     top: calc(var(--spacing-nm) * -1 - 2px);
     background: var(--color-dark-2);
+  }
+}
+
+.Tag-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+
+  > .Input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }

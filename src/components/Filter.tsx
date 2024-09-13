@@ -91,18 +91,28 @@ export default function Filter(props: FilterProps) {
       <Input
         $ref={input}
         value={filters.name}
-        key="name"
+        placeholder="Search by name"
         g:onkeydown={keyListener}
       />
       <Portal to={props.expandedSection}>
         <strong class:title>Filters</strong>
-        <div class:divider class:horizontal />
-        <Input value={filters.network} key="network" disabled={!props.isExpanded} />
+        <div class:g-divider class:g-horizontal />
+        <Input value={filters.network} placeholder="Network" disabled={!props.isExpanded} />
         <MultiSelect
           placeholder="Status"
           options={STATUS_VALUES}
           on:change={setStatusFilter}
         />
+        <MultiSelect
+          placeholder="Tags"
+          options={STATUS_VALUES}
+          on:change={setStatusFilter}
+        >
+          <section class:Tag-input>
+            <Input value={filters.name} placeholder="Add tag" />
+            <button>Add</button>
+          </section>
+        </MultiSelect>
         <DateRange
           title="Premiered"
           start={premieredFilter()[0]}
@@ -129,26 +139,24 @@ export default function Filter(props: FilterProps) {
 type InputProps = {
   $ref?: HTMLInputElement,
   value: string,
-  key: string,
+  placeholder?: string,
   disabled?: boolean,
   "g:onkeydown"?: (e: KeyboardEvent) => void,
 };
 
 function Input(props: InputProps) {
-  const placeholder = () => `Show's ${props.key}`;
-
   return (
-    <label class:tv-show-filter g:onkeydown={props["g:onkeydown"]}>
+    <label class:Input g:onkeydown={props["g:onkeydown"]}>
       <i class:input-icn></i>
       <input
-        class:delegated
+        class:g-delegated
         $ref={props.$ref}
         value={props.value}
         on:input={function () { props.value = this.value }}
-        placeholder={placeholder()}
+        placeholder={props.placeholder}
         disabled={props.disabled}
       />
-      <em class:placeholder>{placeholder()}</em>
+      <em class:placeholder>{props.placeholder}</em>
     </label>
   );
 }

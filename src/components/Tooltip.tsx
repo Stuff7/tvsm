@@ -114,7 +114,7 @@ export default function Tooltip(props: TooltipProps) {
       <Portal $ref={tooltipLayer} to="[data-layer=tooltips]">
         <Transition $if={visible()} name="pop">
           <div
-            class:tooltip
+            class:Tooltip
             $ref={tooltip}
             var:x={`${mouse().x}px`}
             var:y={`${mouse().y}px`}

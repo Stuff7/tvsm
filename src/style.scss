@@ -78,7 +78,7 @@ main {
     grid-template-columns: 1fr;
   }
 
-  &:has(.right-sidebar.expanded) {
+  &:has(.RightSidebar.expanded) {
     @include media.larger-than(desktop-lg) {
       --right-sidebar: 0.25fr;
     }
@@ -115,7 +115,7 @@ strong {
 input {
   margin: 0;
 
-  &.delegated{
+  &.g-delegated{
     background: transparent;
     border: 0;
     color: currentColor;
@@ -189,7 +189,7 @@ button, select {
     }
   }
 
-  &.border {
+  &.g-border {
     background: transparent;
     color: var(--button-bg);
     border: 1px solid currentColor;
@@ -207,7 +207,7 @@ button, select {
     }
   }
 
-  &:not(.border) {
+  &:not(.g-border) {
     background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
     color: var(--button-fg);
 
@@ -224,7 +224,7 @@ button, select {
     }
   }
 
-  &.transparent {
+  &.g-transparent {
     background: transparent;
     color: var(--button-bg);
 
@@ -253,21 +253,21 @@ i, i::before, i::after {
   font-style: normal;
 }
 
-.divider {
+.g-divider {
   border-radius: var(--radius-nm);
 
-  &:not(.horizontal) {
+  &:not(.g-horizontal) {
     height: 100%;
     border-right: 2px solid var(--color-light-3);
   }
 
-  &.horizontal {
+  &.g-horizontal {
     width: 100%;
     border-top: 2px solid var(--color-light-3);
   }
 }
 
-.icon-btn {
+.g-icon-btn {
   width: 2rem;
   height: 2rem;
   display: flex;
@@ -275,7 +275,7 @@ i, i::before, i::after {
   align-items: center;
 }
 
-.active-hidden {
+.g-active-hidden {
   position: absolute;
   left: -100%;
   top: -100%;

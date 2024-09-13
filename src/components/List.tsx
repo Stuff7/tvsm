@@ -82,8 +82,8 @@ export default function List(props: ListProps) {
 
   return (
     <ul
-      class:table-list
-      class:tv-show-list
+      class:List-general
+      class:List
       class:expanded={props.expanded}
       class:empty={showList().length === 0}
       class:is-selecting={isAreaSelecting()}
@@ -118,14 +118,14 @@ export default function List(props: ListProps) {
         >
           <Tooltip $if={ctrlPressed()}>
             <div
-              class:show-search-preview-img
+              class:ShowSearch-preview-img
               style:background-image={show().image && `url(${show().image})`}
             >
               <em $if={!show().image}>{show().name}</em>
             </div>
           </Tooltip>
           <ListCell show={show()} key="name">
-            <button class:active-hidden disabled={filtered().has(show().id)} aria-hidden />
+            <button class:g-active-hidden disabled={filtered().has(show().id)} aria-hidden />
             {formatIdx(i + 1)} {show().name}
           </ListCell>
           <EpisodeCell show={show()} key="prevEp" />
@@ -160,7 +160,7 @@ function ListCell(props: ListCellProps) {
   const change = () => changes()[props.show.id];
 
   return (
-    <span class:list-cell class:status={props.key === "status"} class:horizontal={!!props.horizontal}>
+    <span class:list-cell class:status={props.key === "status"} class:g-horizontal={!!props.horizontal}>
       <slot />
       <mark $if={!!change()?.paths.includes(props.key)}>
         <Tooltip>
@@ -190,7 +190,7 @@ function EpisodeCell(props: EpisodeCellProps) {
   }
 
   return (
-    <span class:list-cell class:horizontal>
+    <span class:list-cell class:g-horizontal>
       <strong>{formatEp(ep())}</strong>
       <em>{formatDate(ep()?.released)}</em>
       <mark $if={!!change()?.paths.some(p => p.startsWith(props.key))}>

@@ -1,14 +1,12 @@
 @use "../media.scss";
 
-ul.table-list {
+.List-general {
   display: grid;
   list-style: none;
   margin: 0;
   padding: 0;
   width: 100%;
   border-radius: var(--radius-nm);
-  position: relative;
-  z-index: -1;
   overflow: auto;
   max-height: 100%;
 
@@ -20,12 +18,12 @@ ul.table-list {
     display: none;
   }
 
-  li {
+  > li {
     display: contents;
     --status-color: var(--color-light);
     color: var(--status-color);
 
-    &:has([disabled]) span {
+    &:has([disabled]) > span {
       opacity: 0.2;
       pointer-events: none;
     }
@@ -33,7 +31,7 @@ ul.table-list {
     &.header {
       font-weight: bold;
 
-      .list-cell {
+      > .list-cell {
         background: transparent;
         color: var(--color-light);
         text-align: left;
@@ -41,22 +39,23 @@ ul.table-list {
         padding: var(--radius-nm) var(--spacing-nm);
       }
 
-      i {
+      > i {
         transition: rotate 250ms;
+
         &.descending {
           rotate: 180deg;
         }
       }
     }
 
-    .status i::before {
+    > .status i::before {
       white-space: pre;
     }
 
     &[data-status="Running"] {
       --status-color: #cbffcb;
 
-      .status i::before {
+      > .status i::before {
         content: " ";
       }
     }
@@ -64,7 +63,7 @@ ul.table-list {
     &[data-status="Ended"] {
       --status-color: #fff09d;
 
-      .status i::before {
+      > .status i::before {
         content: " ";
       }
     }
@@ -72,7 +71,7 @@ ul.table-list {
     &[data-status="TBD"] {
       --status-color: #f3f3f3;
 
-      .status i::before {
+      > .status i::before {
         content: " ";
       }
     }
@@ -80,12 +79,12 @@ ul.table-list {
     &[data-status="In Dev"] {
       --status-color: #c5ffff;
 
-      .status i::before {
+      > .status i::before {
         content: " ";
       }
     }
 
-    .progress-bar {
+    > .list-cell > .progress-bar {
       display: flex;
       align-items: center;
       position: relative;
@@ -94,7 +93,7 @@ ul.table-list {
       background: var(--color-light);
       border-radius: var(--radius-nm);
 
-      div {
+      > div {
         position: absolute;
         background: var(--status-color);
         width: var(--percent);
@@ -102,7 +101,7 @@ ul.table-list {
         border-radius: var(--radius-nm);
       }
 
-      i {
+      > i {
         position: absolute;
         left: var(--percent);
         text-shadow: 0px 0px 5px var(--color-dark);
@@ -110,7 +109,7 @@ ul.table-list {
       }
     }
 
-    .list-cell {
+    > .list-cell {
       display: grid;
       align-items: center;
       text-overflow: ellipsis;
@@ -120,7 +119,7 @@ ul.table-list {
       box-shadow: 0 0 1px #555;
       position: relative;
 
-      mark {
+      > mark {
         width: fit-content;
         padding: 0 var(--radius-nm);
         border-radius: var(--radius-nm);
@@ -139,21 +138,21 @@ ul.table-list {
         border: 2px dashed var(--color-danger-2);
       }
 
-      &:not(.horizontal) {
+      &:not(.g-horizontal) {
         grid-template-columns: auto 1fr;
         gap: var(--spacing-nm);
       }
 
-      &.horizontal {
+      &.g-horizontal {
         grid-template-rows: 1fr 1fr;
         font-size: 0.8em;
       }
 
-      strong {
+      > strong {
         color: var(--status-color);
       }
 
-      em {
+      > em {
         font-style: normal;
         font-size: 1em;
       }
@@ -181,11 +180,13 @@ ul.table-list {
   }
 }
 
-ul.tv-show-list {
+.List {
+  position: relative;
+  z-index: -1;
   background: #0005;
 
   @mixin hide-cols($selectors...) {
-    li .list-cell {
+    > li .list-cell {
       @each $n in $selectors {
         &:nth-child(#{$n}) {
           padding-inline: 0;
