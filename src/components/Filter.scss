@@ -1,4 +1,5 @@
 .Input {
+  --input-bg: var(--color-dark-2);
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
@@ -34,22 +35,50 @@
     color: var(--color-accent);
     padding-inline: 1em;
     border-color: currentColor;
-    background: #141414;
+    background: var(--input-bg);
   }
 
   > input:not(:placeholder-shown) + .placeholder {
     opacity: 1;
-    top: calc(var(--spacing-nm) * -1 - 2px);
-    background: var(--color-dark-2);
+    top: calc(var(--spacing-nm) * -1 - 4px);
+    background: var(--input-bg);
   }
 }
 
 .Tag-input {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
+
+  > .g-border {
+    border-width: 0;
+  }
 
   > .Input {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    --input-bg: var(--color-dark);
+    border-radius: var(--spacing-nm) 0 0 var(--spacing-nm);
+    border-right: 0;
+
+    ~ .g-border {
+      border-color: transparent;
+      border-style: dashed;
+      transition: border 250ms;
+    }
+
+    &:has(:focus), &:has(:active) {
+      ~ .g-border {
+        border-color: currentColor;
+        border-width: 1px;
+      }
+
+      + .g-border {
+        border-radius: 0;
+        border-inline: 0;
+
+        + .g-border {
+          border-radius: 0 var(--spacing-nm) var(--spacing-nm) 0;
+          border-left: 0;
+        }
+      }
+    }
   }
 }

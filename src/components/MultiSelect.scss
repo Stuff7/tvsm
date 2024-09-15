@@ -73,6 +73,8 @@
       display: grid;
       gap: var(--spacing-nm);
       grid-template-columns: 1fr 1fr;
+      padding: var(--spacing-nm);
+      color: var(--color-light);
 
       > label {
         display: grid;

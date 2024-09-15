@@ -128,7 +128,7 @@ input {
   &[type=checkbox] {
     width: 1.2em;
     height: 1.2em;
-    color: var(--color-light);
+    color: var(--color-light-2);
     appearance: none;
     background: transparent;
     border: 2px solid currentColor;
@@ -162,7 +162,7 @@ input {
     }
 
     &:hover {
-      color: var(--color-accent-2);
+      color: var(--color-light);
     }
 
     &:disabled {

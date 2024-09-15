@@ -7,6 +7,7 @@ type MultiSelectProps<T extends string> = {
   placeholder?: string,
   options: T[],
   ["on:change"]: (selected: Set<T>) => void,
+  ["on:expand"]?: (expanded: boolean) => void,
 };
 
 export default function MultiSelect<T extends string>(props: MultiSelectProps<T>) {
@@ -16,6 +17,16 @@ export default function MultiSelect<T extends string>(props: MultiSelectProps<T>
   let button!: HTMLButtonElement;
   let content!: HTMLElement;
 
+  watchFn(() => props.options, () => {
+    setSelected.byRef(selected => {
+      selected.forEach((s) => {
+        if (!props.options.includes(s)) {
+          selected.delete(s);
+        }
+      });
+    });
+  });
+  watchFn(expanded, () => props["on:expand"]?.(expanded()));
   watchFn(selected, () => props["on:change"](selected()));
 
   function close(e: Event) {

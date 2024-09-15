@@ -1,9 +1,11 @@
-import { ref } from "jsx";
+import { ref, watchFn } from "jsx";
 import { TvShow, TvShowPreview } from "~/tvsm";
 import { objCmp, ObjectCmpResult } from "./utils";
 
 type StorageAPI = {
   load(): TvShow[],
+  loadTags(): Record<string, Set<number>>,
+  saveTags(): void,
   insert(show: TvShow): void,
 };
 
@@ -24,10 +26,21 @@ type Changes = Partial<Record<number, ObjectCmpResult<TvShow>>>;
 
 export const [changes, setChanges] = ref<Changes>({});
 
-const localStorageKey = "TVSM__showList";
+const SHOWS_LOCAL_KEY = "TVSM__showList";
+const TAGS_LOCAL_KEY = "TVSM__tags";
 export const local: StorageAPI = {
   load() {
-    return parseShowList(localStorage.getItem(localStorageKey) || "[]");
+    return parseShowList(localStorage.getItem(SHOWS_LOCAL_KEY) || "[]");
+  },
+  loadTags() {
+    return JSON.parse(localStorage.getItem(TAGS_LOCAL_KEY) || "{}", (_, v) => (
+      v instanceof Array ? new Set(v) : v
+    ));
+  },
+  saveTags() {
+    localStorage.setItem(TAGS_LOCAL_KEY, JSON.stringify(tags(), (_, v) => (
+      v instanceof Set ? [...v] : v
+    )));
   },
   insert(show) {
     const list = showList();
@@ -40,11 +53,13 @@ export const local: StorageAPI = {
       setShowList.byRef(list => list.push(show));
     }
 
-    localStorage.setItem(localStorageKey, JSON.stringify(showList()));
+    localStorage.setItem(SHOWS_LOCAL_KEY, JSON.stringify(showList()));
   },
 };
 
 export const [showList, setShowList] = ref(local.load());
+export const [tags, setTags] = ref(local.loadTags());
+watchFn(tags, () => local.saveTags());
 console.log(setShowList);
 
 const list = showList();

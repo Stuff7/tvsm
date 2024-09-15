@@ -14,6 +14,8 @@ export default function DateRange(props: DateRangeProps) {
   const open = reactive({ value: false });
   const [isSelectingStart, setIsSelectingStart] = ref(true);
   const [preset, setPreset] = ref("None");
+
+  let insideClick = false;
   let container!: HTMLElement;
   let content!: HTMLElement;
 
@@ -96,8 +98,11 @@ export default function DateRange(props: DateRangeProps) {
   });
 
   function close(this: HTMLElement, e: Event) {
-    if (e.target instanceof Element && !(e.target instanceof HTMLSelectElement) &&
-        isTargetElement(e.target, container)) {
+    if (insideClick || (
+      e.target instanceof Element && !(e.target instanceof HTMLSelectElement) &&
+      isTargetElement(e.target, container)
+    )) {
+      insideClick = false;
       return;
     }
     open.value = false;
@@ -118,7 +123,8 @@ export default function DateRange(props: DateRangeProps) {
       class:DateRange
       $ref={container}
       g:onclick={close}
-      g:ontouchstart={close}
+      on:touchstart={() => insideClick = true}
+      on:mousedown={() => insideClick = true}
     >
       <button class:g-border on:click={() => {
         open.value = true;
