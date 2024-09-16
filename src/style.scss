@@ -1,5 +1,6 @@
 @use "./media.scss";
 @use "./components/Debug.scss";
+@use "./components/NumberRange.scss";
 @use "./components/MultiSelect.scss";
 @use "./components/DatePicker.scss";
 @use "./components/DateRange.scss";
@@ -31,6 +32,8 @@
   --color-ok-2: #83ca86;
   --color-disabled: #a5a5a5;
   --color-disabled-2: #cbcbcb;
+
+  --spacing-sm: 0.2em;
   --spacing-nm: 0.5em;
   --spacing-md: 0.75em;
   --radius-nm: 0.4em;

@@ -2,10 +2,11 @@ import jsx, { Fragment, ref, watchFn, watchOnly } from "jsx";
 import Portal from "jsx/components/Portal";
 import { setTags, showList, tags } from "~/storage";
 import { STATUS_VALUES, Status, TvShow } from "~/tvsm";
-import { isAnyInputFocused } from "~/utils";
+import { isAnyInputFocused, isDateInRange, isNumberInRange } from "~/utils";
 import DateRange from "./DateRange";
 import MultiSelect from "./MultiSelect";
 import { selected } from "./List";
+import NumberRange from "./NumberRange";
 
 export const [filtered, setFiltered] = ref(new Set<number>);
 
@@ -26,6 +27,12 @@ export default function Filter(props: FilterProps) {
   const [premieredFilter, setPremieredFilter] = ref<[Date, Date]>([new Date, new Date]);
   const [prevEpFilter, setPrevEpFilter] = ref<[Date, Date]>([new Date, new Date]);
   const [nextEpFilter, setNextEpFilter] = ref<[Date, Date]>([new Date, new Date]);
+  const seasonsLimit = useRangeLimits(s => s.seasons, () => props.isExpanded);
+  const [minSeasons, setMinSeasons] = ref(0);
+  const [maxSeasons, setMaxSeasons] = ref(10);
+  const ratingLimit = useRangeLimits(s => s.rating || 0, () => props.isExpanded);
+  const [minRating, setMinRating] = ref(0);
+  const [maxRating, setMaxRating] = ref(10);
 
   watchFn(() => [showList(), networksOpen(), props.isExpanded], () => {
     if (networksOpen() && props.isExpanded) {
@@ -52,11 +59,11 @@ export default function Filter(props: FilterProps) {
     premieredFilter,
     prevEpFilter,
     nextEpFilter,
+    minSeasons,
+    maxSeasons,
+    minRating,
+    maxRating,
   ], filterByName);
-
-  function isDateInRange(d: Option<Date>, s: Date, e: Date) {
-    return !d || +s === +e || (d >= s && d <= e);
-  }
 
   function addTag() {
     setTags.byRef(tags => {
@@ -111,7 +118,9 @@ export default function Filter(props: FilterProps) {
       showHasTag(s) &&
       isDateInRange(s.premiered, ...premieredFilter()) &&
       isDateInRange(s.prevEp?.released, ...prevEpFilter()) &&
-      isDateInRange(s.nextEp?.released, ...nextEpFilter())
+      isDateInRange(s.nextEp?.released, ...nextEpFilter()) &&
+      isNumberInRange(s.seasons, minSeasons(), maxSeasons()) &&
+      isNumberInRange(s.rating || 0, minRating(), maxRating())
     );
   }
 
@@ -209,9 +218,56 @@ export default function Filter(props: FilterProps) {
           end={nextEpFilter()[1]}
           on:change={(s, e) => setNextEpFilter([s, e])}
         />
+        <label class:Filter-label>
+          <span>Seasons</span>
+          <NumberRange
+            min={minSeasons()}
+            max={maxSeasons()}
+            on:min-change={setMinSeasons}
+            on:max-change={setMaxSeasons}
+            minLimit={seasonsLimit().min}
+            maxLimit={seasonsLimit().max}
+          />
+        </label>
+        <label class:Filter-label>
+          <span>Rating</span>
+          <NumberRange
+            min={minRating()}
+            max={maxRating()}
+            on:min-change={setMinRating}
+            on:max-change={setMaxRating}
+            formatter={n => n.toFixed(1)}
+            step={0.1}
+            minLimit={ratingLimit().min}
+            maxLimit={ratingLimit().max}
+          />
+        </label>
       </Portal>
     </>
   );
+}
+
+function useRangeLimits(getter: (s: TvShow) => number, isExpanded: () => boolean): () => { min: number, max: number } {
+  const [limit, setLimit] = ref({ min: NaN, max: NaN });
+
+  watchFn(() => [showList(), isExpanded()], () => {
+    if (isExpanded()) {
+      setLimit.byRef(limit => {
+        const list = showList();
+        for (const s of list) {
+          const n = getter(s);
+          if (isNaN(limit.min) || n < limit.min) {
+            limit.min = n;
+          }
+          if (isNaN(limit.max) || n > limit.max) {
+            limit.max = n;
+          }
+        }
+      });
+    }
+  });
+
+  return limit;
 }
 
 type InputProps = {

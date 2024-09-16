@@ -33,3 +33,24 @@
     width: rem(3);
   }
 }
+
+@mixin range-thumb {
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @content;
+  }
+
+  &::-moz-range-thumb {
+    @content;
+  }
+
+  &::-ms-thumb {
+    @content;
+  }
+}
+
+@mixin range-track {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}

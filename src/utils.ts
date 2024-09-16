@@ -163,6 +163,14 @@ export function formatDateFullYear(date: Option<Date>): string {
   return date ? dateFormatterFullYear.format(date) : NA;
 }
 
+export function isDateInRange(d: Option<Date>, s: Date, e: Date) {
+  return !d || +s === +e || (d >= s && d <= e);
+}
+
+export function isNumberInRange(n: number, min: number, max: number) {
+  return n >= min && n <= max;
+}
+
 export function formatOption<T>(thing: Option<T>): T | string {
   return thing ? thing : NA;
 }
