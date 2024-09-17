@@ -64,10 +64,14 @@ export default function Tooltip(props: TooltipProps) {
     }
 
     function addEvents() {
-      parent.addEventListener("mouseenter", hover);
-      parent.addEventListener("mouseleave", unhover);
-      parent.addEventListener("touchstart", hover);
-      parent.addEventListener("touchend", unhover);
+      if ("ontouchstart" in window) {
+        parent.addEventListener("touchstart", hover);
+        parent.addEventListener("touchend", unhover);
+      }
+      else {
+        parent.addEventListener("mouseenter", hover);
+        parent.addEventListener("mouseleave", unhover);
+      }
     }
 
     if (parent.isConnected) {

@@ -124,25 +124,8 @@ export default function Filter(props: FilterProps) {
     );
   }
 
-  function areFiltersEmpty() {
-    return (
-      !nameFilter() && !networkFilter().size && !statusFilter().size && !tagFilter() &&
-      +premieredFilter()[0] === +premieredFilter()[1] &&
-      +prevEpFilter()[0] === +prevEpFilter()[1] &&
-      +nextEpFilter()[0] === +nextEpFilter()[1]
-    );
-  }
-
   function filterByName() {
     const list = filtered();
-
-    if (areFiltersEmpty()) {
-      if (list.size) {
-        list.clear();
-        setFiltered(list);
-      }
-      return;
-    }
 
     let changed = false;
     showList().forEach(s => {
