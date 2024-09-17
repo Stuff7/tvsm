@@ -1,4 +1,4 @@
-import jsx, { ref, watch, watchFn } from "jsx";
+import jsx, { ref, watch } from "jsx";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type NumberRangeProps = {
@@ -85,7 +85,7 @@ export default function NumberRange(props: NumberRangeProps) {
       data-max={props.formatter ? props.formatter(props.max) : props.max}
       on:mousemove={reposition}
       on:touchmove={reposition}
-      on:touchstart={reposition}
+      on:click={reposition}
     >
       <input
         type="range"
@@ -100,7 +100,7 @@ export default function NumberRange(props: NumberRangeProps) {
         step={step()}
         aria-label="Minimum value"
       />
-      <progress class:progress max={100} value={0} aria-disabled />
+      <div class:progress />
       <input
         type="range"
         class:knob
