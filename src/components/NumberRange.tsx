@@ -81,8 +81,8 @@ export default function NumberRange(props: NumberRangeProps) {
       aria-label="Number range slider"
       var:NumberRange-left={`${minPos()}%`}
       var:NumberRange-right={`${100 - maxPos()}%`}
-      data-min={props.formatter ? props.formatter(props.min) : props.min}
-      data-max={props.formatter ? props.formatter(props.max) : props.max}
+      $data-min={props.formatter ? props.formatter(props.min) : props.min}
+      $data-max={props.formatter ? props.formatter(props.max) : props.max}
       on:mousemove={reposition}
       on:touchmove={reposition}
       on:click={reposition}
@@ -92,12 +92,12 @@ export default function NumberRange(props: NumberRangeProps) {
         class:knob
         class:min
         class:focused={minFocused()}
-        value={props.min}
+        $value={props.min}
         on:input={updMin}
         on:focus={() => setMinFocused(true)}
-        min={minLimit()}
-        max={maxLimit()}
-        step={step()}
+        $min={minLimit()}
+        $max={maxLimit()}
+        $step={step()}
         aria-label="Minimum value"
       />
       <div class:progress />
@@ -106,12 +106,12 @@ export default function NumberRange(props: NumberRangeProps) {
         class:knob
         class:max
         class:focused={!minFocused()}
-        value={props.max}
+        $value={props.max}
         on:input={updMax}
         on:focus={() => setMinFocused(false)}
-        min={minLimit()}
-        max={maxLimit()}
-        step={step()}
+        $min={minLimit()}
+        $max={maxLimit()}
+        $step={step()}
         aria-label="Maximum value"
       />
     </div>

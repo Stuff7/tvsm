@@ -1,4 +1,4 @@
-import jsx, { reactive, ref, watchFn } from "jsx";
+import { reactive, ref, watchFn } from "jsx";
 import Carousel from "./Carousel";
 import FixedFor from "jsx/components/FixedFor";
 import { circularClamp } from "~/utils";
@@ -166,14 +166,14 @@ export default function DatePicker(props: DatePickerProps) {
             );
 
             return (
-              <section class:month data-id={idx()}>
+              <section class:month $data-id={idx()}>
                 <FixedFor each={days()} do={(i, pos) => (
                   <button
                     class:g-border={!isSelected(pos)}
                     class:offset-days={isOffsetDay(pos)}
                     class:weekend={pos % 7 === 0 || pos % 7 === 6}
                     on:click={() => selectDay(pos)}
-                    tabindex={position === 1 ? 0 : -1}
+                    $tabindex={position === 1 ? 0 : -1}
                   >{i()}</button>
                 )} />
               </section>

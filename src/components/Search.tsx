@@ -91,7 +91,7 @@ export default function Search() {
         <div class:g-divider />
         <strong>Add Show <em>[/]</em></strong>
       </button>
-      <Dialog $if={visible.value} center>
+      <Dialog $open={visible.value} center>
         <label slot="header" class:ShowSearch>
           <i></i>
           <input
@@ -124,7 +124,7 @@ export default function Search() {
           <li $if={!!text() && !shows().length}><em>No results</em></li>
           <For each={shows()} do={(show, i) => (
             <li
-              data-status={show().status}
+              $data-status={show().status}
               class:selected={selected().has(show().id)}
               on:click={selectIdx(i)}
               on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
@@ -140,7 +140,7 @@ export default function Search() {
                 </div>
               </Tooltip>
               <span class:list-cell>
-                <button class:g-active-hidden disabled={added().has(show().id)} aria-hidden />
+                <button class:g-active-hidden $disabled={added().has(show().id)} aria-hidden />
                 {show().name}
               </span>
               <span class:list-cell>{formatDate(show().premiered)}</span>

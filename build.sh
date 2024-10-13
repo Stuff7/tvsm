@@ -1,7 +1,7 @@
 #!/bin/bash
 
 npmBin="./node_modules/.bin"
-flags="--sourcemap --bundle --outdir=dist --outbase=src --minify"
+flags="--sourcemap --bundle --outdir=dist --outbase=build --jsx=preserve --alias:~=./build"
 if [[ "$1" = "release" ]]; then
   flags="$flags --drop-labels=DEV"
   pathChanged=""
@@ -10,17 +10,17 @@ else
 fi
 
 sass="$npmBin/sass --style compressed src/style.scss dist/style.css"
-esbuild="$npmBin/esbuild src/main.tsx $flags"
+esbuild="$npmBin/esbuild build/main.tsx $flags"
 
 if [[ "$pathChanged" == *".scss" ]]; then
   $sass
 elif [[ "$pathChanged" == *".tsx" || "$pathChanged" == *".ts" ]]; then
+  $npmBin/jsx src
   $esbuild
-  $npmBin/jsx dist
 else
   mkdir -p dist
   rm -rf dist/*
 
+  ~/dev/rust/jsx/target/debug/jsx src
   cp -r public/* dist & $sass & $esbuild & wait
-  $npmBin/jsx dist
 fi

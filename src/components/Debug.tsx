@@ -36,7 +36,7 @@ export default function Debug<T>(props: DebugProps<T>) {
             style:top={props.y != null ? `${props.y}px` : 0}
           >{title()}</button>
         </Portal>
-        <Dialog $if={visible.value} draggable x={props.x} y={props.y}>
+        <Dialog $open={visible.value} draggable x={props.x} y={props.y}>
           <label slot="header">
             {title()}
           </label>

@@ -1,6 +1,5 @@
-import jsx, { Fragment, reactive, ref, watch, watchOnly } from "jsx";
+import { reactive, ref, watch, watchOnly } from "jsx";
 import Portal from "jsx/components/Portal";
-import Transition from "jsx/components/Transition";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type TooltipProps = {
@@ -116,20 +115,19 @@ export default function Tooltip(props: TooltipProps) {
   return (
     <>
       <Portal $ref={tooltipLayer} to="[data-layer=tooltips]">
-        <Transition $if={visible()} name="pop">
-          <div
-            class:Tooltip
-            $ref={tooltip}
-            var:x={`${mouse().x}px`}
-            var:y={`${mouse().y}px`}
-            var:pos-x={translation.x}
-            var:pos-y={translation.y}
-            g:onmousemove={trackMouse}
-            g:ontouchmove={trackMouse}
-          >
-            <slot />
-          </div>
-        </Transition>
+        <div
+          $transition:pop={visible()}
+          class:Tooltip
+          $ref={tooltip}
+          var:x={`${mouse().x}px`}
+          var:y={`${mouse().y}px`}
+          var:pos-x={translation.x}
+          var:pos-y={translation.y}
+          g:onmousemove={trackMouse}
+          g:ontouchmove={trackMouse}
+        >
+          <slot />
+        </div>
       </Portal>
       <span on:mount={addHoverListener} />
     </>

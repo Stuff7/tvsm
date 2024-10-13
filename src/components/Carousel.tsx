@@ -1,4 +1,5 @@
-import jsx, { ref, watchFn } from "jsx";
+import { ref, watchFn } from "jsx";
+import FixedFor from "jsx/components/FixedFor";
 import { circularClamp, syncFrame } from "~/utils";
 
 type CarouselProps<T> = {
@@ -264,7 +265,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
       g:onmousemove={mouseMove}
       g:onmouseup={mouseUp}
     >
-      {...Array.from({ length: itemsPerPage() + 2 }, (_, i) => {
+      <FixedFor each={Array.from({ length: itemsPerPage() + 2 })} do={(_, i) => {
         const node = props.do(
           () => props.each[indices()[i]],
           () => indices()[i],
@@ -272,7 +273,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
         );
         if (i === focusedIdx) { gridCell = node }
         return node;
-      })}
+      }} />
     </div>
   );
 }

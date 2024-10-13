@@ -1,4 +1,4 @@
-import jsx, { Fragment, ref, watchFn, watchOnly } from "jsx";
+import { ref, watchFn, watchOnly } from "jsx";
 import Portal from "jsx/components/Portal";
 import { setTags, showList, tags } from "~/storage";
 import { STATUS_VALUES, Status, TvShow } from "~/tvsm";
@@ -271,8 +271,8 @@ function Input(props: InputProps) {
         $ref={props.$ref}
         value={props.value}
         on:input={e => props["on:change"](e.currentTarget.value)}
-        placeholder={props.placeholder}
-        disabled={props.disabled}
+        $placeholder={props.placeholder}
+        $disabled={props.disabled}
       />
       <em class:placeholder>{props.placeholder}</em>
     </label>

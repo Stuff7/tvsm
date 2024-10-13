@@ -1,10 +1,9 @@
 import jsx, { reactive, ref } from "jsx";
 import Portal from "jsx/components/Portal";
-import Transition from "jsx/components/Transition";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type DialogProps = {
-  $if?: boolean,
+  $open?: boolean,
   x?: number,
   y?: number,
   draggable?: boolean,
@@ -58,38 +57,37 @@ export default function Dialog(props: DialogProps) {
 
   return (
     <Portal to="[data-layer=modals]">
-      <Transition $if={!!props.$if} name="pop">
-        <div
-          class:Dialog
-          class:draggable={!!props.draggable}
-          class:center={!!props.center}
-          tabindex={0}
-          on:mousedown={e => e.currentTarget.focus()}
-          on:touchstart={e => e.currentTarget.focus()}
-          g:ontouchmove={drag}
-          g:ontouchend={stopDrag}
-          g:onmousemove={drag}
-          g:onmouseup={stopDrag}
-          var:x={`${cursor.x}px`}
-          var:y={`${cursor.y}px`}
+      <div
+        $transition:pop={!!props.$open}
+        class:Dialog
+        class:draggable={!!props.draggable}
+        class:center={!!props.center}
+        tabindex={0}
+        on:mousedown={e => e.currentTarget.focus()}
+        on:touchstart={e => e.currentTarget.focus()}
+        g:ontouchmove={drag}
+        g:ontouchend={stopDrag}
+        g:onmousemove={drag}
+        g:onmouseup={stopDrag}
+        var:x={`${cursor.x}px`}
+        var:y={`${cursor.y}px`}
+      >
+        <header
+          class:header
+          class:dragging={dragging()}
+          on:mousedown={startDrag}
+          on:touchstart={startDrag}
         >
-          <header
-            class:header
-            class:dragging={dragging()}
-            on:mousedown={startDrag}
-            on:touchstart={startDrag}
-          >
-            <slot name="header" />
-            <button class:close-btn class:g-border on:click={() => props.$if = false}>
-              <i></i>
-            </button>
-          </header>
-          <article class:content>
-            <slot name="content" />
-          </article>
-          <slot />
-        </div>
-      </Transition>
+          <slot name="header" />
+          <button class:close-btn class:g-border on:click={() => props.$open = false}>
+            <i></i>
+          </button>
+        </header>
+        <article class:content>
+          <slot name="content" />
+        </article>
+        <slot />
+      </div>
     </Portal >
   );
 }

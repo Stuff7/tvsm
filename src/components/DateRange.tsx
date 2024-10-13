@@ -1,7 +1,6 @@
-import jsx, { reactive, ref, watchFn } from "jsx";
+import { reactive, ref, watchFn } from "jsx";
 import DatePicker from "./DatePicker";
 import { formatDateFullYear, isTargetElement } from "~/utils";
-import Transition from "jsx/components/Transition";
 
 type DateRangeProps = {
   start: Date,
@@ -17,7 +16,6 @@ export default function DateRange(props: DateRangeProps) {
 
   let insideClick = false;
   let container!: HTMLElement;
-  let content!: HTMLElement;
 
   watchFn(preset, () => {
     const p = preset();
@@ -173,14 +171,12 @@ export default function DateRange(props: DateRangeProps) {
         }}>
           <i></i>
         </button>
-        <Transition $if={open.value} name="slide">
-          <section $ref={content} class:content>
-            <DatePicker
-              date={isSelectingStart() ? props.start : props.end}
-              on:change={updateDate}
-            />
-          </section>
-        </Transition>
+        <section $transition:slide={open.value} class:content>
+          <DatePicker
+            date={isSelectingStart() ? props.start : props.end}
+            on:change={updateDate}
+          />
+        </section>
       </section>
     </article>
   );

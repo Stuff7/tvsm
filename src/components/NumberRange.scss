@@ -98,6 +98,7 @@
     outline: 0;
     height: 2em;
     pointer-events: all;
+    --_NumberRange-thumb-x: -50%;
 
     @include misc.range-track;
     @include misc.range-thumb {
@@ -109,7 +110,6 @@
       translate: var(--_NumberRange-thumb-x);
     }
 
-    --_NumberRange-thumb-x: -50%;
     &.max {
       --_NumberRange-thumb-x: 50%;
     }

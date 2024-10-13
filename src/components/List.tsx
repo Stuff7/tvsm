@@ -108,7 +108,7 @@ export default function List(props: ListProps) {
       </li>
       <For each={showList()} do={(show, i) => (
         <li
-          data-status={show().status}
+          $data-status={show().status}
           class:selected={selected().has(show().id)}
           on:click={selectIdx(i)}
           on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
@@ -125,7 +125,7 @@ export default function List(props: ListProps) {
             </div>
           </Tooltip>
           <ListCell show={show()} key="name">
-            <button class:g-active-hidden disabled={filtered().has(show().id)} aria-hidden />
+            <button class:g-active-hidden $disabled={filtered().has(show().id)} aria-hidden />
             {formatIdx(i + 1)} {show().name}
           </ListCell>
           <EpisodeCell show={show()} key="prevEp" />

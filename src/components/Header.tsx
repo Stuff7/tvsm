@@ -1,4 +1,4 @@
-import jsx, { Fragment, ref } from "jsx";
+import { ref } from "jsx";
 import { showList, setShowList } from "~/storage";
 import Filter from "~/components/Filter";
 import Search, { addShow } from "./Search";
@@ -42,7 +42,7 @@ export default function Header(props: HeaderProps) {
         <div class:g-divider />
         <button
           class:g-icon-btn
-          disabled={!selected().size}
+          $disabled={!selected().size}
           on:click={removeShow}
           var:button-bg="var(--color-danger)"
           var:button-bg-2="var(--color-danger-2)"
@@ -52,7 +52,7 @@ export default function Header(props: HeaderProps) {
         </button>
         <button
           class:g-icon-btn
-          disabled={!selected().size}
+          $disabled={!selected().size}
           on:click={updateShow}
           var:button-bg="var(--color-ok)"
           var:button-bg-2="var(--color-ok-2)"
@@ -71,7 +71,7 @@ export default function Header(props: HeaderProps) {
           <i></i>
         </button>
       </header>
-      <aside class:RightSidebar class:expanded={props.expanded} $ref={setRightSidebar}>
+      <aside class:RightSidebar class:expanded={props.expanded} $refFn={setRightSidebar}>
         <button class:close class:g-border on:click={() => props["on:expand"](false)}>
           <i></i>
         </button>

@@ -1,6 +1,5 @@
-import jsx, { ref, watchFn } from "jsx";
+import { ref, watchFn } from "jsx";
 import For from "jsx/components/For";
-import Transition from "jsx/components/Transition";
 import { isTargetElement } from "~/utils";
 
 type MultiSelectProps<T extends string> = {
@@ -80,22 +79,21 @@ export default function MultiSelect<T extends string>(props: MultiSelectProps<T>
         </span>
       </section>
       <i class:chevron></i>
-      <Transition $if={expanded()} name="slide">
-        <article
-          $ref={content}
-          class:content
-        >
-          <slot />
-          <section class:items>
-            <For each={props.options} do={txt => (
-              <label>
-                <input type="checkbox" checked={selected().has(txt())} on:change={select(txt())} />
-                <span>{txt()}</span>
-              </label>
-            )} />
-          </section>
-        </article>
-      </Transition>
+      <article
+        $transition:slide={expanded()}
+        $ref={content}
+        class:content
+      >
+        <slot />
+        <section class:items>
+          <For each={props.options} do={txt => (
+            <label>
+              <input type="checkbox" $checked={selected().has(txt())} on:change={select(txt())} />
+              <span>{txt()}</span>
+            </label>
+          )} />
+        </section>
+      </article>
     </button>
   );
 }
