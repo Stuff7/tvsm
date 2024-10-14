@@ -1,4 +1,4 @@
-import jsx, { Fragment, reactive, ref } from "jsx";
+import { reactive, ref } from "jsx";
 import For from "jsx/components/For";
 import * as Storage from "~/storage";
 import { findShowByID, findShows, TvShowPreview } from "~/tvsm";

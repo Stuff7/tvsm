@@ -3,7 +3,7 @@ import Portal from "jsx/components/Portal";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type TooltipProps = {
-  $if?: boolean,
+  visible?: boolean,
   disableHover?: boolean,
 };
 
@@ -29,11 +29,11 @@ export default function Tooltip(props: TooltipProps) {
 
   watch(() => {
     if (props.disableHover) {
-      setVisible(props.$if || false);
+      setVisible(props.visible || false);
       return;
     }
 
-    setVisible(hovering() && (props.$if ?? true));
+    setVisible(hovering() && (props.visible ?? true));
   });
 
   watchOnly([visible], () => {

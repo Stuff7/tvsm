@@ -1,4 +1,4 @@
-import jsx, { ref, watch } from "jsx";
+import { ref, watch } from "jsx";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 
 type NumberRangeProps = {

@@ -1,4 +1,4 @@
-import jsx, { reactive, ref } from "jsx";
+import { reactive, ref } from "jsx";
 import Portal from "jsx/components/Portal";
 import { getCursorPosition, MouseTouchEvent } from "~/utils";
 

@@ -1,4 +1,4 @@
-import jsx, { ref, watchOnly } from "jsx";
+import { ref, watchOnly } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { changes, showList, setShowList } from "~/storage";
@@ -116,7 +116,7 @@ export default function List(props: ListProps) {
           on:dblclick={(e) => selectAll(e, filtered())}
           aria-disabled
         >
-          <Tooltip $if={ctrlPressed()}>
+          <Tooltip visible={ctrlPressed()}>
             <div
               class:ShowSearch-preview-img
               style:background-image={show().image && `url(${show().image})`}

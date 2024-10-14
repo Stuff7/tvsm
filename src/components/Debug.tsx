@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-labels */
-import jsx, { Fragment, reactive } from "jsx";
+import { reactive } from "jsx";
 import Dialog from "./Dialog";
 import Portal from "jsx/components/Portal";
 

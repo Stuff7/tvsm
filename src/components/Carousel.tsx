@@ -3,7 +3,7 @@ import FixedFor from "jsx/components/FixedFor";
 import { circularClamp, syncFrame } from "~/utils";
 
 type CarouselProps<T> = {
-  $if?: boolean,
+  $visible?: boolean,
   each: T[],
   do: (item: () => T, i: () => number, position: number) => JSX.Element,
   snap?: boolean,
@@ -251,7 +251,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
   return (
     <div
       $ref={container}
-      $if={props.$if ?? true}
+      $if={props.$visible ?? true}
       class:Carousel
       class:vertical={!!props.vertical}
       style:gap={props.spacing}
