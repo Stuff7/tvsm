@@ -1,7 +1,7 @@
 #!/bin/bash
 
 npmBin="./node_modules/.bin"
-flags="--sourcemap --bundle --outdir=dist --outbase=build --jsx=preserve --alias:~=./build"
+flags="--sourcemap --bundle --outdir=dist --outbase=build --minify --alias:~=./build"
 if [[ "$1" = "release" ]]; then
   flags="$flags --drop-labels=DEV"
   pathChanged=""
@@ -21,6 +21,7 @@ else
   mkdir -p dist
   rm -rf dist/*
 
-  ~/dev/rust/jsx/target/debug/jsx src
+  # ~/dev/rust/jsx/target/debug/jsx src
+  $npmBin/jsx src
   cp -r public/* dist & $sass & $esbuild & wait
 fi

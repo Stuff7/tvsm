@@ -119,6 +119,7 @@ export default function DateRange(props: DateRangeProps) {
   return (
     <article
       class:DateRange
+      class:open={open.value}
       $ref={container}
       g:onclick={close}
       on:touchstart={() => insideClick = true}

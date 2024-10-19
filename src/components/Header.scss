@@ -41,6 +41,10 @@ $tlen: 300ms;
   background: var(--color-dark-2);
   isolation: isolate;
 
+  > .DateRange.open {
+    z-index: 3;
+  }
+
   > .close {
     position: absolute;
     top: var(--spacing-nm);
