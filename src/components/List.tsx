@@ -1,4 +1,4 @@
-import { ref, watchOnly } from "jsx";
+import { reactive, ref, watchOnly } from "jsx";
 import FixedFor from "jsx/components/FixedFor";
 import For from "jsx/components/For";
 import { changes, showList, setShowList } from "~/storage";
@@ -8,6 +8,7 @@ import { formatDate, formatEp, formatOption, getDeep, KeysDeep, optionCmp, padNu
 import { TvShow, TvShowPreview } from "~/tvsm";
 import useSelection from "~/useSelection";
 import { ShowSummary } from "./Search";
+import Dialog from "./Dialog";
 
 const HEADERS = [
   ["Name", ["name"]] as const,
@@ -96,6 +97,14 @@ export default function List(props: ListProps) {
     }, 1e3);
   }
 
+  const [detailedShow, setDetailedShow] = ref<TvShow>();
+  const details = reactive({ open: false });
+  function openDetails(e: MouseEvent, show: TvShow) {
+    e.stopPropagation();
+    setDetailedShow(show);
+    details.open = !details.open;
+  }
+
   return (
     <ul
       class:List-general
@@ -124,6 +133,10 @@ export default function List(props: ListProps) {
           );
         }} />
       </li>
+      <Dialog $open={details.open}>
+        <strong slot="header">{detailedShow().name}</strong>
+        <div slot="content"><ShowSummary show={detailedShow()} /></div>
+      </Dialog>
       <For each={showList()} do={(show, i) => (
         <li
           $data-status={show().status}
@@ -139,6 +152,15 @@ export default function List(props: ListProps) {
             <ShowSummary show={show()} />
           </Tooltip>
           <ListCell show={show()} key="name">
+            <button
+              class:details
+              class:g-icon-btn
+              var:button-bg="var(--color-ok)"
+              var:button-bg-2="var(--color-ok-2)"
+              on:click={e => openDetails(e, show())}
+            >
+              <i>+</i>
+            </button>
             <button class:g-active-hidden $disabled={filtered().has(show().id)} aria-hidden />
             {formatIdx(i + 1)} {show().name}
           </ListCell>
