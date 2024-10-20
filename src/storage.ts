@@ -1,6 +1,7 @@
 import { ref, watchFn } from "jsx";
 import { TvShow, TvShowPreview } from "~/tvsm";
 import { objCmp, ObjectCmpResult } from "./utils";
+import { listElem } from "./components/List";
 
 type StorageAPI = {
   load(): TvShow[],
@@ -52,6 +53,8 @@ export const local: StorageAPI = {
     else {
       setShowList.byRef(list => list.push(show));
     }
+    const ShowUpdate = new CustomEvent("show-update", { detail: show.id });
+    listElem.dispatchEvent(ShowUpdate);
 
     localStorage.setItem(SHOWS_LOCAL_KEY, JSON.stringify(showList()));
   },
@@ -60,7 +63,7 @@ export const local: StorageAPI = {
 export const [showList, setShowList] = ref(local.load());
 export const [tags, setTags] = ref(local.loadTags());
 watchFn(tags, () => local.saveTags());
-console.log(setShowList);
+console.log(setShowList, changes);
 
 const list = showList();
 if (!list.length && location.search) {

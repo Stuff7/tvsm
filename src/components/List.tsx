@@ -7,6 +7,7 @@ import Tooltip from "~/components/Tooltip";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, optionCmp, padNum } from "~/utils";
 import { TvShow, TvShowPreview } from "~/tvsm";
 import useSelection from "~/useSelection";
+import { ShowSummary } from "./Search";
 
 const HEADERS = [
   ["Name", ["name"]] as const,
@@ -40,6 +41,8 @@ function sortList<T extends TvShowPreview>(reverse: boolean, a: T, b: T, ...keys
 type ListProps = {
   expanded: boolean,
 };
+
+export let listElem: HTMLUListElement;
 
 export default function List(props: ListProps) {
   const [sortKey, setSortKey] = ref("");
@@ -80,6 +83,19 @@ export default function List(props: ListProps) {
 
   watchOnly([filtered, sortKey], sort);
 
+  const [updated, setUpdated] = ref(new Set);
+  function onShowUpdate(e: CustomEvent<number>) {
+    setUpdated.byRef(updated => {
+      updated.add(e.detail);
+    });
+
+    setTimeout(() => {
+      setUpdated.byRef(updated => {
+        updated.delete(e.detail);
+      });
+    }, 1e3);
+  }
+
   return (
     <ul
       class:List-general
@@ -87,8 +103,10 @@ export default function List(props: ListProps) {
       class:expanded={props.expanded}
       class:empty={showList().length === 0}
       class:is-selecting={isAreaSelecting()}
+      $ref={listElem}
       on:mount={mountSelect}
       on:unmount={destroySelect}
+      on:show-update={onShowUpdate}
       g:onkeydown={keyListener}
       g:onkeyup={keyListener}
     >
@@ -110,6 +128,7 @@ export default function List(props: ListProps) {
         <li
           $data-status={show().status}
           class:selected={selected().has(show().id)}
+          class:updated={updated().has(show().id)}
           on:click={selectIdx(i)}
           on:mousedown={(e) => e.button === 0 && startAreaSelect(i)}
           on:mouseover={() => doAreaSelect(i)}
@@ -117,12 +136,7 @@ export default function List(props: ListProps) {
           aria-disabled
         >
           <Tooltip visible={ctrlPressed()}>
-            <div
-              class:ShowSearch-preview-img
-              style:background-image={show().image && `url(${show().image})`}
-            >
-              <em $if={!show().image}>{show().name}</em>
-            </div>
+            <ShowSummary show={show()} />
           </Tooltip>
           <ListCell show={show()} key="name">
             <button class:g-active-hidden $disabled={filtered().has(show().id)} aria-hidden />

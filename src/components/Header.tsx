@@ -1,9 +1,11 @@
-import { ref } from "jsx";
+import { reactive, ref } from "jsx";
 import { showList, setShowList } from "~/storage";
 import Filter from "~/components/Filter";
 import Search, { addShow } from "./Search";
 import { selected, setSelected } from "./List";
 import Tooltip from "./Tooltip";
+import Dialog from "./Dialog";
+import { delayCall } from "~/utils";
 
 type HeaderProps = {
   expanded: boolean,
@@ -12,6 +14,7 @@ type HeaderProps = {
 
 export default function Header(props: HeaderProps) {
   const [rightSidebar, setRightSidebar] = ref<HTMLElement>();
+  const importExportDialog = reactive({ open: false });
 
   function removeShow() {
     if (!selected().size) { return }
@@ -27,10 +30,23 @@ export default function Header(props: HeaderProps) {
     });
   }
 
-  function updateShow() {
+  async function updateShow() {
     if (!selected().size) { return }
 
-    selected().forEach(addShow);
+    for (const s of selected()) {
+      await addShow(s);
+    }
+  }
+
+  let importInput!: HTMLInputElement;
+  async function importShows(e: SubmitEvent) {
+    e.preventDefault();
+    const ids = importInput.value.split(" ");
+    for (const i of ids) {
+      const id = +i;
+      if (isNaN(id)) { continue }
+      await delayCall(async () => await addShow(id));
+    }
   }
 
   return (
@@ -39,6 +55,29 @@ export default function Header(props: HeaderProps) {
         <p class:logo>TVSM</p>
         <div class:g-divider />
         <Search />
+        <button
+          class:g-icon-btn
+          on:click={() => importExportDialog.open = !importExportDialog.open}
+        >
+          <i></i>
+          <Tooltip>
+            <strong>Import / Export</strong>
+          </Tooltip>
+          <Dialog $open={importExportDialog.open} center>
+            <strong slot="header">Import / Export</strong>
+            <form slot="content" class:ImportExport on:submit={importShows}>
+              <input
+                slot="content"
+                readonly
+                placeholder="Select shows to export"
+                $value={importExportDialog.open ? [...selected()].join(" ") : ""}
+                on:click={e => e.currentTarget.select()}
+              />
+              <input $ref={importInput} placeholder="Import by id i.e '1 2 3'" />
+              <button />
+            </form>
+          </Dialog>
+        </button>
         <div class:g-divider />
         <button
           class:g-icon-btn

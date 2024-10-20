@@ -2,6 +2,10 @@ import { Episode } from "~/tvsm";
 
 export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
+export function stripHTML(html: string) {
+  return html.replaceAll(/<\/?\w+>/g, "");
+}
+
 export function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
@@ -208,7 +212,7 @@ export function objCmp<A extends object, B extends object>(
         paths.push(newPath);
       }
     }
-    else if (typeof a[key] === "object" && typeof b[key] === "object") {
+    else if (a[key] != null && typeof a[key] === "object" && b[key] != null && typeof b[key] === "object") {
       objCmp(a[key], b[key], newPath, paths);
     }
     else if (a[key] !== b[key]) {

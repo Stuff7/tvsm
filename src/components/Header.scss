@@ -1,12 +1,27 @@
 @use "../media.scss";
 $tlen: 300ms;
 
+.ImportExport {
+  display: grid;
+  grid-auto-flow: row;
+  gap: var(--spacing-nm);
+  width: 25em;
+
+  > input {
+    padding: var(--spacing-nm) var(--spacing-md);
+  }
+
+  > button {
+    display: none;
+  }
+}
+
 .Header {
   position: relative;
   width: 100%;
   padding: var(--spacing-nm);
   display: grid;
-  grid-template-columns: max-content auto max-content repeat(4, auto) 1fr auto auto;
+  grid-template-columns: max-content repeat(7, auto) 1fr auto auto;
   color: var(--color-light);
   align-items: center;
   column-gap: var(--spacing-nm);

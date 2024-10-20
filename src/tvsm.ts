@@ -1,4 +1,5 @@
 import type * as TvMaze from "~/tvmaze.d.ts";
+import { stripHTML } from "./utils";
 
 export async function findShows(search: string): Promise<TvShowPreview[]> {
   if (!search) {
@@ -69,6 +70,7 @@ function toTvShowPreview(show: TvMaze.ShowMatch, out = {} as TvShowPreview): TvS
   out.status = STATUS[show.status];
   out.rating = show.rating.average || undefined;
   out.image = show.image?.medium;
+  out.summary = show.summary && stripHTML(show.summary);
 
   return out;
 }
@@ -88,6 +90,8 @@ function toNetwork(show: TvMaze.Show): string {
 
 function toEpisode(ep: TvMaze.Episode): Episode {
   return {
+    name: ep.name,
+    summary: ep.summary && stripHTML(ep.summary),
     number: ep.number || 0,
     season: ep.season,
     released: new Date(ep.airstamp),
@@ -113,6 +117,7 @@ export type TvShowPreview = {
   status: Status,
   rating: Option<number>,
   image: Option<string>,
+  summary: Option<string>,
 };
 
 export type TvShow = TvShowPreview & {
@@ -122,6 +127,8 @@ export type TvShow = TvShowPreview & {
 };
 
 export type Episode = {
+  name: string,
+  summary: string,
   season: number,
   number: number,
   released: Date,

@@ -83,13 +83,14 @@ export default function Search() {
   return (
     <>
       <button
-        class:AddShow
+        class:g-icon-btn
         on:click={() => visible.value = !visible.value}
         g:onkeydown={keyListener}
       >
-        <i></i>
-        <div class:g-divider />
-        <strong>Add Show <em>[/]</em></strong>
+        <i>+</i>
+        <Tooltip>
+          <strong>Add new shows <em>[/]</em></strong>
+        </Tooltip>
       </button>
       <Dialog $open={visible.value} center>
         <label slot="header" class:ShowSearch>
@@ -131,14 +132,7 @@ export default function Search() {
               on:mouseover={() => doAreaSelect(i)}
               on:dblclick={(e) => selectAll(e, added())}
             >
-              <Tooltip>
-                <div
-                  class:ShowSearch-preview-img
-                  style:background-image={show().image && `url(${show().image})`}
-                >
-                  <em $if={!show().image}>{show().name}</em>
-                </div>
-              </Tooltip>
+              <Tooltip><ShowSummary show={show()} /></Tooltip>
               <span class:list-cell>
                 <button class:g-active-hidden $disabled={added().has(show().id)} aria-hidden />
                 {show().name}
@@ -164,4 +158,17 @@ export async function addShow(id: number) {
   }
 
   Storage.local.insert(show);
+}
+
+export function ShowSummary(props: { show: TvShowPreview }) {
+  return (
+    <div class:ShowSearch-preview>
+      <div
+        class:img
+        style:background-image={props.show.image && `url(${props.show.image})`}
+      />
+      <strong>{props.show.name}</strong>
+      <em>{props.show.summary}</em>
+    </div>
+  );
 }
