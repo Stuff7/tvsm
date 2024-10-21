@@ -119,11 +119,8 @@
       box-shadow: 0 0 1px #555;
       position: relative;
 
-      &:not(:hover) > .details {
-        display: none;
-      }
-
       > .details {
+        display: none;
         font-size: 0.75em;
         position: absolute;
         left: var(--spacing-nm);
@@ -170,6 +167,10 @@
       &:hover {
         background: #fff4;
       }
+    }
+
+    &:has(:hover) > .list-cell > .details {
+      display: block;
     }
 
     &:not(.header) {
