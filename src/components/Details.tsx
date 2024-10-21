@@ -17,7 +17,13 @@ export default function Details(props: DetailsProps) {
   watch(() => {
     if (props.$open) {
       setEpisodes(props.show.episodes.filter(e => e.season === season()));
+    }
+  });
+
+  watch(() => {
+    if (props.$open && seasons().length !== props.show.seasons) {
       setSeasons(Array.from({ length: props.show.seasons }));
+      setSeason(1);
     }
   });
 
@@ -32,7 +38,7 @@ export default function Details(props: DetailsProps) {
         <em class:summary>{props.show.summary}</em>
         <label class:season>
           <strong>Season</strong>
-          <select class:g-border value={season()} on:change={e => setSeason(+e.currentTarget.value)}>
+          <select class:g-border $value={season()} on:change={e => setSeason(+e.currentTarget.value)}>
             <For each={seasons()} do={(_, i) => (
               <option value={i + 1}>{i + 1}</option>
             )} />
