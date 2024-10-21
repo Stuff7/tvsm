@@ -1,0 +1,70 @@
+.Details-title {
+  > strong {
+    color: var(--color-accent);
+  }
+}
+
+.Details {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--spacing-nm);
+  position: relative;
+  max-width: 1000px;
+
+  > .img {
+    position: absolute;
+    width: 100%;
+    max-height: 100%;
+    mask-image: radial-gradient(ellipse 62% 63%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 80%);
+    object-fit: cover;
+    object-position: top;
+    z-index: -1;
+  }
+
+  > .season {
+    display: flex;
+    gap: var(--spacing-nm);
+    align-items: center;
+    width: max-content;
+  }
+
+  > .episodes {
+    display: grid;
+    grid-auto-flow: row;
+    gap: var(--spacing-md);
+
+    > .episode {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto 1fr auto;
+      gap: var(--spacing-nm);
+      border-block: 1px solid;
+      border-radius: var(--radius-nm);
+      padding-right: var(--spacing-nm);
+      align-items: center;
+      background: #0008;
+
+      > p {
+        padding-top: var(--spacing-nm);
+
+        > em {
+          float: right;
+        }
+      }
+
+      strong {
+        color: var(--color-accent);
+      }
+
+      > img {
+        grid-row: span 3;
+        border-radius: var(--radius-nm);
+      }
+
+      > .rating {
+        text-align: right;
+        padding-bottom: var(--spacing-nm);
+      }
+    }
+  }
+}

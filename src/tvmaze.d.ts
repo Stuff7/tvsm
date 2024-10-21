@@ -109,7 +109,7 @@ export type Episode = {
   airstamp: string;
   runtime: number;
   rating: Rating;
-  image: Image;
+  image: Option<Image>;
   summary: string;
   _links: PreviousepisodeLinks;
 };

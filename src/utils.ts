@@ -2,8 +2,9 @@ import { Episode } from "~/tvsm";
 
 export const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
+const domParser = new DOMParser();
 export function stripHTML(html: string) {
-  return html.replaceAll(/<\/?\w+>/g, "");
+  return domParser.parseFromString(html, "text/html").body.textContent || "";
 }
 
 export function clamp(value: number, min: number, max: number) {

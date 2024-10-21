@@ -7,8 +7,7 @@ import Tooltip from "~/components/Tooltip";
 import { formatDate, formatEp, formatOption, getDeep, KeysDeep, optionCmp, padNum } from "~/utils";
 import { TvShow, TvShowPreview } from "~/tvsm";
 import useSelection from "~/useSelection";
-import { ShowSummary } from "./Search";
-import Dialog from "./Dialog";
+import Details from "./Details";
 
 const HEADERS = [
   ["Name", ["name"]] as const,
@@ -47,7 +46,6 @@ export let listElem: HTMLUListElement;
 
 export default function List(props: ListProps) {
   const [sortKey, setSortKey] = ref("");
-  const [ctrlPressed, setCtrlPressed] = ref(false);
   const {
     mountSelect,
     destroySelect,
@@ -57,12 +55,6 @@ export default function List(props: ListProps) {
     startAreaSelect,
     doAreaSelect,
   } = useSelection([selected, setSelected], showList);
-
-  function keyListener(e: KeyboardEvent) {
-    if (e.ctrlKey !== ctrlPressed()) {
-      setCtrlPressed(e.ctrlKey);
-    }
-  }
 
   function sortBy(...keys: KeysDeep<TvShow>[]) {
     const key = keys.join(".");
@@ -101,8 +93,13 @@ export default function List(props: ListProps) {
   const details = reactive({ open: false });
   function openDetails(e: MouseEvent, show: TvShow) {
     e.stopPropagation();
-    setDetailedShow(show);
-    details.open = !details.open;
+    if (show === detailedShow()) {
+      details.open = !details.open;
+    }
+    else {
+      setDetailedShow(show);
+      details.open = true;
+    }
   }
 
   return (
@@ -116,8 +113,6 @@ export default function List(props: ListProps) {
       on:mount={mountSelect}
       on:unmount={destroySelect}
       on:show-update={onShowUpdate}
-      g:onkeydown={keyListener}
-      g:onkeyup={keyListener}
     >
       <li class:header>
         <FixedFor each={HEADERS} do={(header) => {
@@ -133,10 +128,7 @@ export default function List(props: ListProps) {
           );
         }} />
       </li>
-      <Dialog $open={details.open}>
-        <strong slot="header">{detailedShow().name}</strong>
-        <div slot="content"><ShowSummary show={detailedShow()} /></div>
-      </Dialog>
+      <Details $open={details.open} show={detailedShow()} />
       <For each={showList()} do={(show, i) => (
         <li
           $data-status={show().status}
@@ -148,9 +140,6 @@ export default function List(props: ListProps) {
           on:dblclick={(e) => selectAll(e, filtered())}
           aria-disabled
         >
-          <Tooltip visible={ctrlPressed()}>
-            <ShowSummary show={show()} />
-          </Tooltip>
           <ListCell show={show()} key="name">
             <button
               class:details
@@ -225,11 +214,17 @@ function EpisodeCell(props: EpisodeCellProps) {
     return p === props.key || (p.startsWith(props.key) && p.endsWith("released"));
   }
 
+  function epChanged(p: string) {
+    return p.startsWith(props.key) && (p.endsWith("season") || p.endsWith("number") || p.includes("released"));
+  }
+
   return (
     <span class:list-cell class:g-horizontal>
       <strong>{formatEp(ep())}</strong>
       <em>{formatDate(ep()?.released)}</em>
-      <mark $if={!!change()?.paths.some(p => p.startsWith(props.key))}>
+      <mark
+        $if={!!change()?.paths.some(epChanged)}
+      >
         <Tooltip>
           <p $if={!!change()?.paths.some(epNumsChanged)}>
             Changed from {formatEp(

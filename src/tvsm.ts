@@ -69,7 +69,7 @@ function toTvShowPreview(show: TvMaze.ShowMatch, out = {} as TvShowPreview): TvS
   out.network = toNetwork(show);
   out.status = STATUS[show.status];
   out.rating = show.rating.average || undefined;
-  out.image = show.image?.medium;
+  out.image = { medium: show.image?.medium, original: show.image?.original };
   out.summary = show.summary && stripHTML(show.summary);
 
   return out;
@@ -80,6 +80,7 @@ function toTvShow(show: TvMaze.ShowResponse, out = {} as TvShow): TvShow {
   out.nextEp = show._embedded.nextepisode && toEpisode(show._embedded.nextepisode);
   out.prevEp = show._embedded.previousepisode && toEpisode(show._embedded.previousepisode);
   out.seasons = show._embedded.seasons.length;
+  out.episodes = show._embedded.episodes.map(toEpisode);
 
   return out;
 }
@@ -92,6 +93,8 @@ function toEpisode(ep: TvMaze.Episode): Episode {
   return {
     name: ep.name,
     summary: ep.summary && stripHTML(ep.summary),
+    image: { medium: ep.image?.medium, original: ep.image?.original },
+    rating: ep.rating.average,
     number: ep.number || 0,
     season: ep.season,
     released: new Date(ep.airstamp),
@@ -109,6 +112,11 @@ export type Status = "TBD" | "Running" | "Ended" | "In Dev";
 
 export const STATUS_VALUES = Object.values(STATUS);
 
+export type Image = {
+  medium: Option<string>,
+  original: Option<string>,
+};
+
 export type TvShowPreview = {
   id: number,
   name: string,
@@ -116,7 +124,7 @@ export type TvShowPreview = {
   network: string,
   status: Status,
   rating: Option<number>,
-  image: Option<string>,
+  image: Image,
   summary: Option<string>,
 };
 
@@ -124,11 +132,14 @@ export type TvShow = TvShowPreview & {
   nextEp: Option<Episode>,
   prevEp: Option<Episode>,
   seasons: number,
+  episodes: Episode[],
 };
 
 export type Episode = {
   name: string,
   summary: string,
+  image: Image,
+  rating: Option<number>,
   season: number,
   number: number,
   released: Date,

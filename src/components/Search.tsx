@@ -165,7 +165,7 @@ export function ShowSummary(props: { show: TvShowPreview }) {
     <div class:ShowSearch-preview>
       <div
         class:img
-        style:background-image={props.show.image && `url(${props.show.image})`}
+        style:background-image={props.show.image?.medium && `url(${props.show.image.medium})`}
       />
       <strong>{props.show.name}</strong>
       <em>{props.show.summary}</em>

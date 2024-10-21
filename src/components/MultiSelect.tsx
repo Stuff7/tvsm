@@ -29,7 +29,7 @@ export default function MultiSelect<T extends string>(props: MultiSelectProps<T>
   watchFn(selected, () => props["on:change"](selected()));
 
   function close(e: Event) {
-    if (!(e.target instanceof HTMLElement && (
+    if (expanded() && !(e.target instanceof HTMLElement && (
       e.target.dataset.item != null ||
       isTargetElement(e.target, button)
     ))) {
@@ -38,7 +38,10 @@ export default function MultiSelect<T extends string>(props: MultiSelectProps<T>
   }
 
   function toggle(e: Event) {
-    if (e.target instanceof HTMLElement && e.target.dataset.item == null && !isTargetElement(e.target, content)) {
+    if (!content) {
+      setExpanded(true);
+    }
+    else if (e.target instanceof HTMLElement && e.target.dataset.item == null && !isTargetElement(e.target, content)) {
       setExpanded(!expanded());
     }
   }
