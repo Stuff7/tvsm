@@ -1,7 +1,7 @@
 @use "../media.scss";
 $tlen: 300ms;
 
-.ImportExport {
+.ImportExport, .Settings {
   display: grid;
   grid-auto-flow: row;
   gap: var(--spacing-nm);
@@ -21,7 +21,7 @@ $tlen: 300ms;
   width: 100%;
   padding: var(--spacing-nm);
   display: grid;
-  grid-template-columns: max-content repeat(7, auto) 1fr auto auto;
+  grid-template-columns: max-content repeat(8, auto) 1fr auto auto;
   color: var(--color-light);
   align-items: center;
   column-gap: var(--spacing-nm);

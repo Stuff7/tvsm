@@ -91,6 +91,7 @@ function toNetwork(show: TvMaze.Show): string {
 
 function toEpisode(ep: TvMaze.Episode): Episode {
   return {
+    id: ep.id,
     name: ep.name,
     summary: ep.summary && stripHTML(ep.summary),
     image: { medium: ep.image?.medium, original: ep.image?.original },
@@ -102,10 +103,10 @@ function toEpisode(ep: TvMaze.Episode): Episode {
 }
 
 const STATUS: Record<TvMaze.Status, Status> = {
-  "To Be Determined": "TBD",
+  "Ended": "Ended",
   "In Development": "In Dev",
   "Running": "Running",
-  "Ended": "Ended",
+  "To Be Determined": "TBD",
 };
 
 export type Status = "TBD" | "Running" | "Ended" | "In Dev";
@@ -119,28 +120,29 @@ export type Image = {
 
 export type TvShowPreview = {
   id: number,
-  name: string,
-  premiered: Option<Date>,
-  network: string,
-  status: Status,
-  rating: Option<number>,
   image: Image,
+  name: string,
+  network: string,
+  premiered: Option<Date>,
+  rating: Option<number>,
+  status: Status,
   summary: Option<string>,
 };
 
 export type TvShow = TvShowPreview & {
+  episodes: Episode[],
   nextEp: Option<Episode>,
   prevEp: Option<Episode>,
   seasons: number,
-  episodes: Episode[],
 };
 
 export type Episode = {
-  name: string,
-  summary: string,
+  id: number,
   image: Image,
-  rating: Option<number>,
-  season: number,
+  name: string,
   number: number,
+  rating: Option<number>,
   released: Date,
+  season: number,
+  summary: string,
 };

@@ -6,6 +6,7 @@ import { selected, setSelected } from "./List";
 import Tooltip from "./Tooltip";
 import Dialog from "./Dialog";
 import { delayCall } from "~/utils";
+import { supabase } from "~/supabase";
 
 type HeaderProps = {
   expanded: boolean,
@@ -49,11 +50,35 @@ export default function Header(props: HeaderProps) {
     }
   }
 
+  const settingsDialog = reactive({ open: false });
+
   return (
     <>
       <header class:Header class:expanded={props.expanded}>
         <p class:logo>TVSM</p>
         <div class:g-divider />
+        <button
+          class:g-icon-btn
+          on:click={() => settingsDialog.open = !settingsDialog.open}
+        >
+          <i></i>
+          <Tooltip>
+            <strong>Settings</strong>
+          </Tooltip>
+          <Dialog $open={settingsDialog.open} center>
+            <strong slot="header">Settings</strong>
+            <form slot="content" class:Settings>
+              <input
+                placeholder="Supabase URL"
+                on:input={e => supabase.url = e.currentTarget.value}
+              />
+              <input
+                placeholder="Supabase key"
+                on:input={e => supabase.key = e.currentTarget.value}
+              />
+            </form>
+          </Dialog>
+        </button>
         <Search />
         <button
           class:g-icon-btn
@@ -67,7 +92,6 @@ export default function Header(props: HeaderProps) {
             <strong slot="header">Import / Export</strong>
             <form slot="content" class:ImportExport on:submit={importShows}>
               <input
-                slot="content"
                 readonly
                 placeholder="Select shows to export"
                 $value={importExportDialog.open ? [...selected()].join(" ") : ""}
