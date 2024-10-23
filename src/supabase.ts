@@ -77,3 +77,11 @@ export async function insertShow(show: tvsm.TvShow) {
     prev_ep_id: show.prevEp?.id,
   });
 }
+
+export function getShowById(id: number) {
+  return fetch(`${API()}/rpc/show_by_id`, {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify({ param_id: id }),
+  });
+}
