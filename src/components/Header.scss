@@ -19,6 +19,12 @@ $tlen: 300ms;
 .Settings {
   --input-bg: var(--color-dark-2);
   background: var(--input-bg);
+
+  & > .option {
+    display: flex;
+    gap: var(--spacing-nm);
+    align-items: center;
+  }
 }
 
 .Header {

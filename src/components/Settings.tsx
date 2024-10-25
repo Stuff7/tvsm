@@ -26,7 +26,7 @@ export default function Settings() {
         <strong slot="header">Settings</strong>
         <fieldset slot="content" class:Settings on:change={updateStorageOption}>
           <legend>Select an storage option</legend>
-          <label>
+          <label class:option>
             <input
               type="radio"
               value="postgrest"
@@ -55,7 +55,7 @@ export default function Settings() {
               <em class:placeholder>Supabase Key</em>
             </label>
           </div>
-          <label>
+          <label class:option>
             <input
               type="radio"
               value="browser"
