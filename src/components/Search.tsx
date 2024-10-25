@@ -157,7 +157,7 @@ export async function addShow(id: number) {
     return;
   }
 
-  Storage.local.insert(show);
+  Storage.local.insertShow(show);
 }
 
 export function ShowSummary(props: { show: TvShowPreview }) {

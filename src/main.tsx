@@ -1,30 +1,22 @@
 import { ref } from "jsx";
 import List from "~/components/List";
 import Header from "~/components/Header";
-import { getShowById, insertShow, supabase } from "./supabase";
+import { db, insertShows, supabase } from "./supabase";
 import { showList } from "./storage";
 
 let insertId!: HTMLInputElement;
-let getId!: HTMLInputElement;
 const [isRightSidebarExpanded, setIsRightSidebarExpanded] = ref(false);
 const [err, setErr] = ref("");
 
 function insertDb(e: SubmitEvent) {
   e.preventDefault();
-  insertShow(showList()[+insertId.value || 0])
+  db.insertShow(showList()[+insertId.value || 0]);
+}
+
+function getDb() {
+  db.loadShows()
     .then(async (r) => {
-      if (r.ok) {
-        console.log(r);
-      }
-      else {
-        const e = await r.json();
-        if (e?.message) {
-          throw e.message;
-        }
-        else {
-          throw e;
-        }
-      }
+      console.log(r);
     })
     .catch(e => {
       setErr(`${e}`);
@@ -32,27 +24,8 @@ function insertDb(e: SubmitEvent) {
     });
 }
 
-function getDb(e: SubmitEvent) {
-  e.preventDefault();
-  getShowById(+getId.value || 0)
-    .then(async (r) => {
-      if (r.ok) {
-        console.log(await r.json());
-      }
-      else {
-        const e = await r.json();
-        if (e?.message) {
-          throw e.message;
-        }
-        else {
-          throw e;
-        }
-      }
-    })
-    .catch(e => {
-      setErr(`${e}`);
-      console.error(e);
-    });
+function getTags() {
+  db.loadTags().then(console.log);
 }
 
 document.body.append(<div data-layer="modals" />, <div data-layer="tooltips" />);
@@ -67,10 +40,36 @@ document.body.prepend(
       <pre>{err()}</pre>
       <button style:display="none" />
     </form>
-    <form on:submit={getDb}>
-      <input $ref={getId} placeholder="Get show from supabase" />
+    <div>
+      <button on:click={getDb}>Get all shows</button>
+      <button on:click={() => insertShows(showList().slice(0, 2))}>Save shows</button>
+      <button on:click={getTags}>Get all tags</button>
+      <button on:click={db.saveTags}>Save tags</button>
       <pre>{err()}</pre>
-      <button style:display="none" />
-    </form>
+    </div>
   </div>,
 );
+
+// import jsx, { ref } from "jsx";
+// import NumberRange from "./components/NumberRange";
+//
+// const [min, setMin] = ref(20);
+// const [max, setMax] = ref(80);
+//
+// document.body.append(<div data-layer="modals" />, <div data-layer="tooltips" />);
+// document.body.prepend(
+//   <main
+//     style:grid-template-columns="1fr"
+//     style:grid-template-rows="auto"
+//     style:padding="200px"
+//   >
+//     <NumberRange
+//       min={min()}
+//       max={max()}
+//       formatter={(n) => `${n}%`}
+//       on:min-change={setMin}
+//       on:max-change={setMax}
+//     />
+//     <p>MIN: {min()} MAX: {max()}</p>
+//   </main>,
+// );

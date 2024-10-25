@@ -1,5 +1,6 @@
 import { reactive, watch } from "jsx";
 import type * as tvsm from "./tvsm";
+import { parseShowList, StorageAPI, tags } from "./storage";
 
 // SQL through URL query params: https://postgrest.org/en/stable/references/api/tables_views.html
 const API = () => supabase.url && `${supabase.url}/rest/v1`;
@@ -40,48 +41,88 @@ export async function updateShow(showId: number, show: Partial<TvShow>) {
   });
 }
 
-export async function insertShow(show: tvsm.TvShow) {
-  {
-    const r = await fetch(`${API()}/shows`, {
-      method: "POST",
-      headers: headers(),
-      body: JSON.stringify({
-        ...show,
-        image_medium: show.image.medium,
-        image_original: show.image.original,
-      }, (k, v) => (
-        k === "episodes" || k === "image" || k === "nextEp" || k === "prevEp"
-      ) ? undefined : v),
-    });
-
-    if (!r.ok) { return r }
-  }
-
-  {
-    const r = await fetch(`${API()}/episodes`, {
-      method: "POST",
-      headers: headers(),
-      body: JSON.stringify(show.episodes.map(ep => ({
-        ...ep,
-        show_id: show.id,
-        image_medium: ep.image.medium,
-        image_original: ep.image.original,
-      })), (k, v) => k === "image" ? undefined : v),
-    });
-
-    if (!r.ok) { return r }
-  }
-
-  return updateShow(show.id, {
-    next_ep_id: show.nextEp?.id,
-    prev_ep_id: show.prevEp?.id,
+export async function updateShows(shows: Partial<TvShow>[]) {
+  return fetch(`${API()}/rpc/update_show_episodes`, {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify({ param_updates: shows }),
   });
 }
 
-export function getShowById(id: number) {
-  return fetch(`${API()}/rpc/show_by_id`, {
+export const db: StorageAPI = {
+  async loadShows() {
+    const r = await fetch(`${API()}/rpc/all_shows`, {
+      method: "POST",
+      headers: headers(),
+    });
+
+    if (!r.ok) { return [] }
+
+    return parseShowList(await r.text());
+  },
+  async loadTags() {
+    const r = await fetch(`${API()}/tags?id=eq.1`, {
+      method: "GET",
+      headers: headers(),
+    });
+
+    if (!r.ok) { return {} }
+    const data = JSON.stringify((await r.json())?.[0]?.data);
+
+    return JSON.parse(data, (_, v) => (
+      v instanceof Array ? new Set(v) : v
+    ));
+  },
+  saveTags() {
+    return fetch(`${API()}/tags?id=eq.1`, {
+      method: "PATCH",
+      headers: headers(),
+      body: JSON.stringify({ data: tags() }, (_, v) => (
+        v instanceof Set ? [...v] : v
+      )),
+    });
+  },
+  async insertShow(show) {
+    if (show instanceof Array) {
+      insertShows(show);
+    }
+    else {
+      insertShows([show]);
+      // insertToList(show);
+    }
+  },
+};
+
+
+export async function insertShows(shows: tvsm.TvShow[]) {
+  // insertToList(show);
+
+  await fetch(`${API()}/shows`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify({ param_id: id }),
+    body: JSON.stringify(shows.map(show => ({
+      ...show,
+      image_medium: show.image.medium,
+      image_original: show.image.original,
+    })), (k, v) => (
+      k === "episodes" || k === "image" || k === "nextEp" || k === "prevEp"
+    ) ? undefined : v),
   });
+
+  await fetch(`${API()}/episodes`, {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify(shows.flatMap(show => show.episodes.map(ep => ({
+      ...ep,
+      show_id: show.id,
+      image_medium: ep.image.medium,
+      image_original: ep.image.original,
+    }))), (k, v) => k === "image" ? undefined : v),
+  });
+
+  updateShows(shows.map(show => ({
+    id: show.id,
+    next_ep_id: show.nextEp?.id,
+    prev_ep_id: show.prevEp?.id,
+  })));
 }
