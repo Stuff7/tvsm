@@ -1,8 +1,8 @@
 import { reactive, ref } from "jsx";
 import For from "jsx/components/For";
-import * as Storage from "~/storage";
-import { findShowByID, findShows, TvShowPreview } from "~/tvsm";
-import { debounced, delayCall, formatDate, formatOption, isAnyInputFocused } from "~/utils";
+import { insertToList, parseShowList, selectedStorage, showList } from "~/storage";
+import { findShowByID, findShows, TvShow, TvShowPreview } from "~/tvsm";
+import { debounced, formatDate, formatOption, isAnyInputFocused } from "~/utils";
 import Dialog from "./Dialog";
 import Tooltip from "./Tooltip";
 import FixedFor from "jsx/components/FixedFor";
@@ -19,7 +19,7 @@ const HEADERS = [
 function initSearch() {
   let list: string | null;
   if (location.search && (list = new URL(location.href).searchParams.get("searchList"))) {
-    return Storage.parseShowList<TvShowPreview>(list);
+    return parseShowList<TvShowPreview>(list);
   }
 
   return [];
@@ -62,7 +62,7 @@ export default function Search() {
     setAdded.byRef(added => {
       added.clear();
       shows().forEach(a => {
-        if (Storage.showList().some(b => a.id === b.id)) {
+        if (showList().some(b => a.id === b.id)) {
           added.add(a.id);
         }
       });
@@ -72,12 +72,6 @@ export default function Search() {
   function onInput(this: HTMLInputElement) {
     setText(this.value);
     search();
-  }
-
-  async function addShows() {
-    for (const id of selected()) {
-      await delayCall(async () => await addShow(id));
-    }
   }
 
   return (
@@ -107,7 +101,7 @@ export default function Search() {
             var:button-bg="var(--color-ok)"
             var:button-bg-2="var(--color-ok-2)"
             style:padding-block="0.07em"
-            on:click={addShows}
+            on:click={() => addShows(...selected())}
           >Add <strong>{selected().size}</strong> show/s</button>
         </label>
         <ul
@@ -149,15 +143,24 @@ export default function Search() {
   );
 }
 
-export async function addShow(id: number) {
-  const show = await findShowByID(id);
+export async function addShows(...ids: number[]) {
+  if (!ids.length) { return }
 
-  if (!show) {
-    console.warn("Show with id", id, "not found");
-    return;
+  const shows: TvShow[] = [];
+
+  for (const id of ids) {
+    const show = await findShowByID(id);
+
+    if (!show) {
+      console.warn("Show with id", id, "not found");
+      return;
+    }
+
+    insertToList(show);
+    shows.push(show);
   }
 
-  Storage.local.insertShow(show);
+  selectedStorage().upsertShows(shows);
 }
 
 export function ShowSummary(props: { show: TvShowPreview }) {

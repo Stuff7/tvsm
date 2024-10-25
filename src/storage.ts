@@ -2,6 +2,7 @@ import { ref, watchFn } from "jsx";
 import { TvShow, TvShowPreview } from "~/tvsm";
 import { objCmp, ObjectCmpResult } from "./utils";
 import { listElem } from "./components/List";
+import { db, supabase } from "./supabase";
 
 export type Tags = Record<string, Set<number>>;
 
@@ -9,7 +10,7 @@ export type StorageAPI = {
   loadShows(): Promise<TvShow[]>,
   loadTags(): Promise<Tags>,
   saveTags(): void,
-  insertShow(show: TvShow | TvShow[]): void,
+  upsertShows(show: TvShow[]): void,
 };
 
 function isDateField(k: string) {
@@ -45,10 +46,7 @@ export const local: StorageAPI = {
       v instanceof Set ? [...v] : v
     )));
   },
-  insertShow(show) {
-    if (!(show instanceof Array)) {
-      insertToList(show);
-    }
+  upsertShows() {
     localStorage.setItem(SHOWS_LOCAL_KEY, JSON.stringify(showList()));
   },
 };
@@ -67,13 +65,37 @@ export function insertToList(show: TvShow) {
   listElem.dispatchEvent(ShowUpdate);
 }
 
+export const STORAGE_BROWSER = "browser";
+export const STORAGE_POSTGREST = "postgrest";
+export type StorageOption = typeof STORAGE_BROWSER | typeof STORAGE_POSTGREST;
+
+const SELECTED_STORAGE_LOCAL_KEY = "TVSM__selectedStorage";
+export const [storageOption, setStorageOption] = ref(
+  localStorage.getItem(SELECTED_STORAGE_LOCAL_KEY) as StorageOption || STORAGE_BROWSER,
+);
+export const [selectedStorage, setSelectedStorage] = ref<StorageAPI>(getSelectedStorage());
+
+watchFn(storageOption, () => {
+  setSelectedStorage(getSelectedStorage());
+  localStorage.setItem(SELECTED_STORAGE_LOCAL_KEY, storageOption());
+});
+
+export function getSelectedStorage() {
+  if (storageOption() === STORAGE_POSTGREST && supabase.url && supabase.key) {
+    return db;
+  }
+  else {
+    return local;
+  }
+}
+
 export const [showList, setShowList] = ref<TvShow[]>([]);
 export const [tags, setTags] = ref<Tags>({});
 
 queueMicrotask(() => {
-  local.loadShows().then(setShowList);
-  local.loadTags().then(setTags);
-  watchFn(tags, () => local.saveTags());
+  selectedStorage().loadShows().then(setShowList);
+  selectedStorage().loadTags().then(setTags);
+  watchFn(tags, () => selectedStorage().saveTags());
 });
 
 console.log(setShowList, changes);

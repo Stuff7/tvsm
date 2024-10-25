@@ -41,14 +41,6 @@ export async function updateShow(showId: number, show: Partial<TvShow>) {
   });
 }
 
-export async function updateShows(shows: Partial<TvShow>[]) {
-  return fetch(`${API()}/rpc/update_show_episodes`, {
-    method: "POST",
-    headers: headers(),
-    body: JSON.stringify({ param_updates: shows }),
-  });
-}
-
 export const db: StorageAPI = {
   async loadShows() {
     const r = await fetch(`${API()}/rpc/all_shows`, {
@@ -82,47 +74,32 @@ export const db: StorageAPI = {
       )),
     });
   },
-  async insertShow(show) {
-    if (show instanceof Array) {
-      insertShows(show);
-    }
-    else {
-      insertShows([show]);
-      // insertToList(show);
-    }
+  async upsertShows(shows) {
+    insertShows(shows);
   },
 };
 
 
 export async function insertShows(shows: tvsm.TvShow[]) {
-  // insertToList(show);
-
-  await fetch(`${API()}/shows`, {
+  await fetch(`${API()}/rpc/upsert_show_and_episodes`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify(shows.map(show => ({
-      ...show,
-      image_medium: show.image.medium,
-      image_original: show.image.original,
-    })), (k, v) => (
+    body: JSON.stringify({
+      param_updates: shows.map(show => ({
+        ...show,
+        image_medium: show.image.medium,
+        image_original: show.image.original,
+        next_ep_id: show.nextEp?.id,
+        prev_ep_id: show.prevEp?.id,
+      })),
+      param_episodes: shows.flatMap(show => show.episodes.map(ep => ({
+        ...ep,
+        show_id: show.id,
+        image_medium: ep.image.medium,
+        image_original: ep.image.original,
+      }))),
+    }, (k, v) => (
       k === "episodes" || k === "image" || k === "nextEp" || k === "prevEp"
     ) ? undefined : v),
   });
-
-  await fetch(`${API()}/episodes`, {
-    method: "POST",
-    headers: headers(),
-    body: JSON.stringify(shows.flatMap(show => show.episodes.map(ep => ({
-      ...ep,
-      show_id: show.id,
-      image_medium: ep.image.medium,
-      image_original: ep.image.original,
-    }))), (k, v) => k === "image" ? undefined : v),
-  });
-
-  updateShows(shows.map(show => ({
-    id: show.id,
-    next_ep_id: show.nextEp?.id,
-    prev_ep_id: show.prevEp?.id,
-  })));
 }

@@ -293,6 +293,11 @@ i, i::before, i::after {
   z-index: -1;
 }
 
+.g-rows {
+  display: grid;
+  grid-auto-flow: row;
+}
+
 [data-layer] {
   position: fixed;
   top: 0;

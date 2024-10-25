@@ -1,5 +1,5 @@
 import type * as TvMaze from "~/tvmaze.d.ts";
-import { stripHTML } from "./utils";
+import { sleep, stripHTML } from "./utils";
 
 export async function findShows(search: string): Promise<TvShowPreview[]> {
   if (!search) {
@@ -29,7 +29,8 @@ export async function findSingleShow(search: string): Promise<Option<TvShow>> {
 }
 
 export async function findShowByID(id: number): Promise<Option<TvShow>> {
-  const r = await fetchJSON<Option<TvMaze.ShowResponse>>(`/shows/${id}`, true);
+  const r = (await Promise.all([fetchJSON<Option<TvMaze.ShowResponse>>(`/shows/${id}`, true), sleep()]))[0];
+
   if ("err" in r) {
     return;
   }

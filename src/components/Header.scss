@@ -16,6 +16,11 @@ $tlen: 300ms;
   }
 }
 
+.Settings {
+  --input-bg: var(--color-dark-2);
+  background: var(--input-bg);
+}
+
 .Header {
   position: relative;
   width: 100%;

@@ -35,6 +35,10 @@ export function delayCall<T>(fn: () => T, delay = 300) {
   return new Promise(res => setTimeout(async () => res(await fn()), delay));
 }
 
+export function sleep(delay = 300) {
+  return new Promise(res => setTimeout(res, delay));
+}
+
 export function debounced<T extends unknown[]>(fn: (...params: T) => void, ms = 0) {
   let timeoutID = -1;
 

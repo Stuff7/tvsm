@@ -1,12 +1,12 @@
 import { reactive, ref } from "jsx";
 import { showList, setShowList } from "~/storage";
 import Filter from "~/components/Filter";
-import Search, { addShow } from "./Search";
+import Search, { addShows } from "./Search";
 import { selected, setSelected } from "./List";
 import Tooltip from "./Tooltip";
 import Dialog from "./Dialog";
-import { delayCall } from "~/utils";
 import { supabase } from "~/supabase";
+import Settings from "./Settings";
 
 type HeaderProps = {
   expanded: boolean,
@@ -31,54 +31,18 @@ export default function Header(props: HeaderProps) {
     });
   }
 
-  async function updateShow() {
-    if (!selected().size) { return }
-
-    for (const s of selected()) {
-      await addShow(s);
-    }
-  }
-
   let importInput!: HTMLInputElement;
   async function importShows(e: SubmitEvent) {
     e.preventDefault();
-    const ids = importInput.value.split(" ");
-    for (const i of ids) {
-      const id = +i;
-      if (isNaN(id)) { continue }
-      await delayCall(async () => await addShow(id));
-    }
+    await addShows(...importInput.value.split(" ").map(Number));
   }
-
-  const settingsDialog = reactive({ open: false });
 
   return (
     <>
       <header class:Header class:expanded={props.expanded}>
         <p class:logo>TVSM</p>
         <div class:g-divider />
-        <button
-          class:g-icon-btn
-          on:click={() => settingsDialog.open = !settingsDialog.open}
-        >
-          <i></i>
-          <Tooltip>
-            <strong>Settings</strong>
-          </Tooltip>
-          <Dialog $open={settingsDialog.open} center>
-            <strong slot="header">Settings</strong>
-            <form slot="content" class:Settings>
-              <input
-                placeholder="Supabase URL"
-                on:input={e => supabase.url = e.currentTarget.value}
-              />
-              <input
-                placeholder="Supabase key"
-                on:input={e => supabase.key = e.currentTarget.value}
-              />
-            </form>
-          </Dialog>
-        </button>
+        <Settings />
         <Search />
         <button
           class:g-icon-btn
@@ -116,7 +80,7 @@ export default function Header(props: HeaderProps) {
         <button
           class:g-icon-btn
           $disabled={!selected().size}
-          on:click={updateShow}
+          on:click={() => addShows(...selected())}
           var:button-bg="var(--color-ok)"
           var:button-bg-2="var(--color-ok-2)"
         >
