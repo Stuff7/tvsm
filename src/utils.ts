@@ -32,7 +32,7 @@ export function syncFrame<T>(fn: () => T) {
 }
 
 export function delayCall<T>(fn: () => T, delay = 300) {
-  return new Promise(res => setTimeout(async () => res(await fn()), delay));
+  return new Promise<T>(res => setTimeout(async () => res(await fn()), delay));
 }
 
 export function sleep(delay = 300) {

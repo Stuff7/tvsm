@@ -3,6 +3,7 @@ import { TvShow, TvShowPreview } from "~/tvsm";
 import { objCmp, ObjectCmpResult } from "./utils";
 import { listElem } from "./components/List";
 import { db, supabase } from "./supabase";
+import { dropbox, dropboxApp } from "./dropbox";
 
 export type Tags = Record<string, Set<number>>;
 
@@ -67,7 +68,8 @@ export function insertToList(show: TvShow) {
 
 export const STORAGE_BROWSER = "browser";
 export const STORAGE_POSTGREST = "postgrest";
-export type StorageOption = typeof STORAGE_BROWSER | typeof STORAGE_POSTGREST;
+export const STORAGE_DROPBOX = "dropbox";
+export type StorageOption = typeof STORAGE_BROWSER | typeof STORAGE_POSTGREST | typeof STORAGE_DROPBOX;
 
 const SELECTED_STORAGE_LOCAL_KEY = "TVSM__selectedStorage";
 export const [storageOption, setStorageOption] = ref(
@@ -81,8 +83,12 @@ watchFn(storageOption, () => {
 });
 
 export function getSelectedStorage() {
-  if (storageOption() === STORAGE_POSTGREST && supabase.url && supabase.key) {
+  const option = storageOption();
+  if (option === STORAGE_POSTGREST && supabase.url && supabase.key) {
     return db;
+  }
+  else if (option === STORAGE_DROPBOX && dropboxApp.name && dropboxApp.token) {
+    return dropbox;
   }
   else {
     return local;
@@ -95,10 +101,15 @@ export const [tags, setTags] = ref<Tags>({});
 queueMicrotask(() => {
   selectedStorage().loadShows().then(setShowList);
   selectedStorage().loadTags().then(setTags);
-  watchFn(tags, () => selectedStorage().saveTags());
+  let first = true;
+  watchFn(tags, () => {
+    if (first) {
+      first = false;
+      return;
+    }
+    selectedStorage().saveTags();
+  });
 });
-
-console.log(setShowList, changes);
 
 const list = showList();
 if (!list.length && location.search) {
