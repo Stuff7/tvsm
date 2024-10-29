@@ -62,7 +62,7 @@ function getOAuthURL() {
     }${clientSecret ? "" : "client secret"}`);
   }
 
-  const url = new URL("https://api.dropboxapi.com/oauth2/token?grant_type=authorization_code");
+  const url = new URL("https://api.dropboxapi.com/oauth2/token");
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("client_secret", clientSecret);
 
