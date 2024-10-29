@@ -177,7 +177,12 @@ input {
   }
 }
 
-button, select {
+.g-btn {
+  text-decoration: none;
+  text-align: center;
+}
+
+button, select, .g-btn {
   cursor: pointer;
   padding: var(--spacing-nm);
   border: 0;

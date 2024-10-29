@@ -3,7 +3,7 @@ import { TvShow, TvShowPreview } from "~/tvsm";
 import { objCmp, ObjectCmpResult } from "./utils";
 import { listElem } from "./components/List";
 import { db, supabase } from "./supabase";
-import { dropbox, dropboxApp } from "./dropbox";
+import { dropbox, dropboxApp, fetchDropboxToken } from "./dropbox";
 
 export type Tags = Record<string, Set<number>>;
 
@@ -115,6 +115,7 @@ const list = showList();
 if (!list.length && location.search) {
   const url = new URL(location.href);
   const testData = url.searchParams.get("showList");
+  const dropboxCode = url.searchParams.get("code");
 
   if (testData) {
     try {
@@ -123,5 +124,9 @@ if (!list.length && location.search) {
     catch (e) {
       console.warn("Failed to load test data");
     }
+  }
+
+  if (dropboxCode) {
+    fetchDropboxToken(dropboxCode);
   }
 }

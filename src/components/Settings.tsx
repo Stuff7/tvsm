@@ -10,7 +10,7 @@ import {
   storageOption,
   StorageOption,
 } from "~/storage";
-import { dropboxApp } from "~/dropbox";
+import { dropboxApp, dropboxOauth, setDropboxOauth } from "~/dropbox";
 
 export default function Settings() {
   const open = reactive({ value: false });
@@ -89,12 +89,23 @@ export default function Settings() {
               <i class:input-icn></i>
               <input
                 class:g-delegated
-                value={dropboxApp.token}
-                placeholder="Access token"
-                on:input={e => dropboxApp.token = e.currentTarget.value}
+                value={dropboxApp.secret}
+                placeholder="App secret"
+                on:input={e => dropboxApp.secret = e.currentTarget.value}
               />
-              <em class:placeholder>Access token</em>
+              <em class:placeholder>App secret</em>
             </label>
+            <label class:Input>
+              <i class:input-icn></i>
+              <input
+                class:g-delegated
+                value={dropboxOauth().searchParams.get("client_id")}
+                placeholder="App Key"
+                on:input={e => setDropboxOauth.byRef(u => u.searchParams.set("client_id", e.currentTarget.value))}
+              />
+              <em class:placeholder>App Key</em>
+            </label>
+            <a class:g-btn $href={dropboxOauth().href}>Connect</a>
           </div>
           <label class:option>
             <input
