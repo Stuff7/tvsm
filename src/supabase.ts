@@ -77,8 +77,18 @@ export const db: StorageAPI = {
   async upsertShows(shows) {
     insertShows(shows);
   },
+  async removeShows(shows) {
+    deleteShows(shows);
+  },
 };
 
+export async function deleteShows(shows: number[]) {
+  await fetch(`${API()}/rpc/delete_shows`, {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify({ param_ids: shows }),
+  });
+}
 
 export async function insertShows(shows: tvsm.TvShow[]) {
   await fetch(`${API()}/rpc/upsert_show_and_episodes`, {

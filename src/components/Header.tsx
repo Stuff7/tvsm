@@ -1,11 +1,10 @@
 import { reactive, ref } from "jsx";
-import { showList, setShowList } from "~/storage";
+import { setShowList, selectedStorage } from "~/storage";
 import Filter from "~/components/Filter";
 import Search, { addShows } from "./Search";
 import { selected, setSelected } from "./List";
 import Tooltip from "./Tooltip";
 import Dialog from "./Dialog";
-import { supabase } from "~/supabase";
 import Settings from "./Settings";
 
 type HeaderProps = {
@@ -20,15 +19,17 @@ export default function Header(props: HeaderProps) {
   function removeShow() {
     if (!selected().size) { return }
 
-    setSelected.byRef(selected => {
-      selected.forEach(id => {
-        selected.delete(id);
-        const idx = showList().findIndex(s => s.id === id);
+    const ids = [...selected()];
+    setSelected.byRef(selected => selected.clear());
+    setShowList.byRef(list => {
+      ids.forEach(id => {
+        const idx = list.findIndex(s => s.id === id);
         if (idx !== -1) {
-          setShowList.byRef(list => list.splice(idx, 1));
+          list.splice(idx, 1);
         }
       });
     });
+    selectedStorage().removeShows(ids);
   }
 
   let importInput!: HTMLInputElement;

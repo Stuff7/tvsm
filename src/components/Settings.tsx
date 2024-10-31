@@ -44,25 +44,34 @@ export default function Settings() {
             <span>Postgrest</span>
           </label>
           <div $if={storageOption() === STORAGE_POSTGREST} class:g-rows style:gap="var(--spacing-md)">
+            <a
+              class:g-btn
+              href={location.pathname.endsWith("/") ? "queries/init.sql" : `${location.pathname}/queries/init.sql`}
+            >
+              Download queries
+              <Tooltip>
+                <em>You'll need to run these queries in your database</em>
+              </Tooltip>
+            </a>
             <label class:Input>
               <i class:input-icn></i>
               <input
                 class:g-delegated
                 value={supabase.url}
-                placeholder="Supabase URL"
+                placeholder="URL"
                 on:input={e => supabase.url = e.currentTarget.value}
               />
-              <em class:placeholder>Supabase URL</em>
+              <em class:placeholder>URL</em>
             </label>
             <label class:Input>
               <i class:input-icn></i>
               <input
                 class:g-delegated
                 value={supabase.key}
-                placeholder="Supabase Key"
+                placeholder="Key"
                 on:input={e => supabase.key = e.currentTarget.value}
               />
-              <em class:placeholder>Supabase Key</em>
+              <em class:placeholder>Key</em>
             </label>
           </div>
           <label class:option>

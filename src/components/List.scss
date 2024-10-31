@@ -170,7 +170,7 @@
     }
 
     &:has(:hover) > .list-cell > .details {
-      display: block;
+      display: flex;
     }
 
     &:not(.header) {

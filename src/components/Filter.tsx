@@ -34,6 +34,12 @@ export default function Filter(props: FilterProps) {
   const [minRating, setMinRating] = ref(0);
   const [maxRating, setMaxRating] = ref(10);
 
+  watchFn(seasonsLimit, () => {
+    if (!isNaN(seasonsLimit().max)) {
+      setMaxSeasons(seasonsLimit().max);
+    }
+  });
+
   watchFn(() => [showList(), networksOpen(), props.isExpanded], () => {
     if (networksOpen() && props.isExpanded) {
       setNetworks([...new Set(showList().map(s => s.network).sort())]);
@@ -234,20 +240,18 @@ function useRangeLimits(getter: (s: TvShow) => number, isExpanded: () => boolean
   const [limit, setLimit] = ref({ min: NaN, max: NaN });
 
   watchFn(() => [showList(), isExpanded()], () => {
-    if (isExpanded()) {
-      setLimit.byRef(limit => {
-        const list = showList();
-        for (const s of list) {
-          const n = getter(s);
-          if (isNaN(limit.min) || n < limit.min) {
-            limit.min = n;
-          }
-          if (isNaN(limit.max) || n > limit.max) {
-            limit.max = n;
-          }
+    setLimit.byRef(limit => {
+      const list = showList();
+      for (const s of list) {
+        const n = getter(s);
+        if (isNaN(limit.min) || n < limit.min) {
+          limit.min = n;
         }
-      });
-    }
+        if (isNaN(limit.max) || n > limit.max) {
+          limit.max = n;
+        }
+      }
+    });
   });
 
   return limit;

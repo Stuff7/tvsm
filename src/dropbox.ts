@@ -51,6 +51,9 @@ export const dropbox: StorageAPI = {
   upsertShows() {
     uploadData(JSON.stringify(showList()), "showList.json");
   },
+  removeShows() {
+    uploadData(JSON.stringify(showList()), "showList.json");
+  },
 };
 
 function getOAuthURL() {
@@ -58,8 +61,7 @@ function getOAuthURL() {
   const clientSecret = dropboxApp.secret;
 
   if (!clientId || !clientSecret) {
-    throw new Error(`Dropbox OAuth missing fields: ${clientId ? "" : "client id "
-    }${clientSecret ? "" : "client secret"}`);
+    throw new Error(`Dropbox OAuth missing fields: ${clientId ? "" : "client id "}${clientSecret ? "" : "client secret"}`);
   }
 
   const url = new URL("https://api.dropboxapi.com/oauth2/token");
@@ -70,13 +72,15 @@ function getOAuthURL() {
 }
 
 type RefreshTokenResponse = {
-  refresh_token: string,
+  refresh_token?: string,
   access_token: string,
   expires_in: number,
 };
 
 function setRefreshToken(data: RefreshTokenResponse) {
-  dropboxApp.refresh = data.refresh_token;
+  if (data.refresh_token) {
+    dropboxApp.refresh = data.refresh_token;
+  }
   dropboxApp.token = data.access_token;
   dropboxApp.expiration = new Date(Date.now() + data.expires_in * 1000);
 }

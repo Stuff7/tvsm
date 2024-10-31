@@ -21,7 +21,6 @@ else
   mkdir -p dist
   rm -rf dist/*
 
-  # ~/dev/rust/jsx/target/debug/jsx src
   $npmBin/jsx src
   cp -r public/* dist & $sass & $esbuild & wait
 fi

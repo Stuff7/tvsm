@@ -11,7 +11,8 @@ export type StorageAPI = {
   loadShows(): Promise<TvShow[]>,
   loadTags(): Promise<Tags>,
   saveTags(): void,
-  upsertShows(show: TvShow[]): void,
+  upsertShows(shows: TvShow[]): void,
+  removeShows(shows: number[]): void,
 };
 
 function isDateField(k: string) {
@@ -48,6 +49,9 @@ export const local: StorageAPI = {
     )));
   },
   upsertShows() {
+    localStorage.setItem(SHOWS_LOCAL_KEY, JSON.stringify(showList()));
+  },
+  removeShows() {
     localStorage.setItem(SHOWS_LOCAL_KEY, JSON.stringify(showList()));
   },
 };

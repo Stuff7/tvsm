@@ -20,6 +20,10 @@ $tlen: 300ms;
   --input-bg: var(--color-dark-2);
   background: var(--input-bg);
 
+  > legend {
+    white-space: nowrap;
+    color: yellow;
+  }
   & > .option {
     display: flex;
     gap: var(--spacing-nm);
