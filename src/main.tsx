@@ -11,27 +11,3 @@ document.body.prepend(
     <List expanded={isRightSidebarExpanded()} />
   </main>,
 );
-
-// import jsx, { ref } from "jsx";
-// import NumberRange from "./components/NumberRange";
-//
-// const [min, setMin] = ref(20);
-// const [max, setMax] = ref(80);
-//
-// document.body.append(<div data-layer="modals" />, <div data-layer="tooltips" />);
-// document.body.prepend(
-//   <main
-//     style:grid-template-columns="1fr"
-//     style:grid-template-rows="auto"
-//     style:padding="200px"
-//   >
-//     <NumberRange
-//       min={min()}
-//       max={max()}
-//       formatter={(n) => `${n}%`}
-//       on:min-change={setMin}
-//       on:max-change={setMax}
-//     />
-//     <p>MIN: {min()} MAX: {max()}</p>
-//   </main>,
-// );
