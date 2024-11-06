@@ -1,0 +1,87 @@
+.DateRange {
+  min-width: max-content;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-nm);
+  position: relative;
+  color: var(--color-light-2);
+
+  > i {
+    padding: var(--spacing-nm) calc(var(--spacing-nm) * 1.5);
+    font-weight: bold;
+    font-size: 0.5em;
+    transition: font-size 250ms, padding 250ms;
+  }
+
+  &:hover {
+    color: var(--color-light);
+  }
+
+  &:has(:focus) {
+    color: var(--color-accent);
+    background: var(--color-dark-2);
+    border-style: dashed;
+
+    > i {
+      font-size: 1em;
+      padding: 0;
+    }
+  }
+
+  > .g-border, > .preset-select > .g-border {
+    --button-bg: var(--color-light);
+    --button-fg-2: var(--color-accent);
+    display: grid;
+    gap: var(--spacing-nm);
+    outline: 0;
+    border: 0;
+
+    > * {
+      pointer-events: none;
+    }
+
+    &:first-child {
+      grid-template-columns: auto 1fr;
+    }
+
+    &:not(:first-child) {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  > .preset-select {
+    grid-column: 1 / 4;
+    display: grid;
+    grid-template-columns: auto 1fr max-content;
+    gap: var(--spacing-nm);
+    align-items: center;
+    padding-left: var(--spacing-nm);
+
+    > select.g-border {
+      border: 0;
+    }
+  }
+
+  > .preset-select > .content {
+    border-radius: var(--radius-nm);
+    box-shadow: 0px 0px 0px 1px #5556;
+    position: absolute;
+    z-index: 1;
+    top: calc(100% + var(--spacing-nm));
+    right: 0;
+    background: var(--color-dark);
+    transition: margin-top 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s;
+
+    &.slide-enter-active, &.slide-leave-active {
+      margin-top: 0;
+      opacity: 1;
+    }
+
+    &.slide-enter-from, &.slide-leave-to {
+      margin-top: -50px;
+      opacity: 0;
+    }
+  }
+}

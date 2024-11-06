@@ -1,0 +1,108 @@
+@use "../media.scss";
+$tlen: 300ms;
+
+.ImportExport, .Settings {
+  display: grid;
+  grid-auto-flow: row;
+  gap: var(--spacing-nm);
+  width: 25em;
+
+  > input {
+    padding: var(--spacing-nm) var(--spacing-md);
+  }
+
+  > button {
+    display: none;
+  }
+}
+
+.Settings {
+  --input-bg: var(--color-dark-2);
+  background: var(--input-bg);
+
+  > legend {
+    white-space: nowrap;
+    color: yellow;
+  }
+  & > .option {
+    display: flex;
+    gap: var(--spacing-nm);
+    align-items: center;
+  }
+}
+
+.Header {
+  position: relative;
+  width: 100%;
+  padding: var(--spacing-nm);
+  display: grid;
+  grid-template-columns: max-content repeat(8, auto) 1fr auto auto;
+  color: var(--color-light);
+  align-items: center;
+  column-gap: var(--spacing-nm);
+  grid-template-rows: min-content;
+  transition: background $tlen;
+  border-bottom: 1px solid transparent;
+
+  &.expanded {
+    background: var(--color-dark-2);
+    border-color: var(--color-light-3);
+  }
+
+  > .logo {
+    font-size: 1rem;
+    padding: var(--spacing-nm);
+    font-weight: bold;
+    color: var(--color-accent);
+    margin: 0;
+    text-transform: full-width;
+  }
+}
+
+.RightSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-nm);
+  border-left: 1px solid var(--color-light-3);
+  height: 100%;
+  transition: opacity $tlen;
+  grid-row: 1 / 3;
+  grid-column: 2 / 4;
+  background: var(--color-dark-2);
+  isolation: isolate;
+
+  > .DateRange.open {
+    z-index: 3;
+  }
+
+  > .close {
+    position: absolute;
+    top: var(--spacing-nm);
+    right: var(--spacing-nm);
+    border: 0;
+    padding: var(--spacing-md);
+    --button-bg: var(--color-light);
+  }
+
+  > .title {
+    padding: var(--spacing-nm);
+    font-size: 1.1em;
+  }
+
+  &.expanded {
+    padding: var(--spacing-nm);
+  }
+
+  &:not(.expanded) {
+    transition: opacity $tlen, visibility $tlen $tlen, background $tlen, padding $tlen;
+    padding: 0;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  @include media.smaller-than(tablet) {
+    position: absolute;
+    right: 0;
+  }
+}

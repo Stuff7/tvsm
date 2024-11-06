@@ -1,0 +1,56 @@
+@use "sass:math";
+
+@function unitless($name, $value, $unit) {
+  @if math.is-unitless($value) {
+    @return $value + $unit;
+  }
+  @error "#{$unit} function only takes unitless types";
+}
+
+@mixin border-radius {
+  border-radius: var(--radius-nm-100);
+}
+
+@function em($px) {
+  @return unitless(em, math.div($px, 16), em);
+}
+
+@function rem($px) {
+  @return unitless(rem, math.div($px, 16), rem);
+}
+
+@mixin scrollbar($color) {
+  scrollbar-width: thin;
+  scrollbar-color: $color #0003;
+  &::-webkit-scrollbar-thumb {
+    background: $color;
+    border-radius: rem(20);
+  }
+  &::-webkit-scrollbar-track {
+    background: #0003;
+  }
+  &::-webkit-scrollbar {
+    width: rem(3);
+  }
+}
+
+@mixin range-thumb {
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @content;
+  }
+
+  &::-moz-range-thumb {
+    @content;
+  }
+
+  &::-ms-thumb {
+    @content;
+  }
+}
+
+@mixin range-track {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}

@@ -1,0 +1,21 @@
+@use "sass:map";
+@use "sass:list";
+
+$fonts-dir: "./fonts/";
+
+@mixin load-font($file-prefix, $italic, $font-type: "ttf", $font-family: $file-prefix, $font-weight: 100 900) {
+  @font-face {
+    font-family: $font-family;
+    src: url($fonts-dir + $file-prefix + "/" + $file-prefix + "." + $font-type);
+    font-weight: $font-weight;
+  }
+
+  @if $italic {
+    @font-face {
+      font-family: $font-family;
+      src: url($fonts-dir + $file-prefix + "/" + $file-prefix + "-Italic." + $font-type);
+      font-weight: $font-weight;
+      font-style: italic;
+    }
+  }
+}

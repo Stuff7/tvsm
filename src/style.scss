@@ -1,0 +1,318 @@
+@use "./media.scss";
+@use "./components/Debug.scss";
+@use "./components/NumberRange.scss";
+@use "./components/MultiSelect.scss";
+@use "./components/DatePicker.scss";
+@use "./components/DateRange.scss";
+@use "./components/Carousel.scss";
+@use "./components/Tooltip.scss";
+@use "./components/Dialog.scss";
+@use "./components/Header.scss";
+@use "./components/Search.scss";
+@use "./components/Filter.scss";
+@use "./components/Details.scss";
+@use "./components/List.scss";
+@use "./misc.scss";
+@use "./font.scss";
+
+@include font.load-font($file-prefix: "icon", $font-type: "woff2", $italic: false);
+@include font.load-font($file-prefix: "JetBrainsMono", $font-family: "JetBrains Mono", $font-weight: 100 800, $italic: true);
+
+:root {
+  --color-bg: linear-gradient(to bottom right, #081010, #2f0f2f, #091111 120%);
+  --color-dark-2: #141414;
+  --color-dark: #222;
+  --color-light: #ddd;
+  --color-light-2: #fff6;
+  --color-light-3: #fff4;
+  --color-accent: #ffd400;
+  --color-accent-2: #ffa700;
+  --color-danger: #ff7a7a;
+  --color-danger-2: #ff4a9a;
+  --color-ok: #83cae6;
+  --color-ok-2: #83ca86;
+  --color-disabled: #a5a5a5;
+  --color-disabled-2: #cbcbcb;
+
+  --spacing-sm: 0.2em;
+  --spacing-nm: 0.5em;
+  --spacing-md: 0.75em;
+  --radius-nm: 0.4em;
+
+  --button-fg: var(--color-dark);
+  --button-bg: var(--color-accent);
+  --button-bg-2: var(--color-accent-2);
+}
+
+*, *::before, *::after {
+  font-family: "JetBrains Mono", "SF Mono", "Roboto Mono", "Menlo", "Consolas", "Liberation Mono", "Courier New", monospace;
+  box-sizing: border-box;
+  line-height: normal;
+
+  @include misc.scrollbar(var(--color-accent));
+}
+
+*::selection {
+  background-color: var(--color-accent);
+  color: var(--color-dark);
+}
+
+body, :root {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  min-height: 100vh;
+  background: var(--color-bg);
+  background-attachment: fixed;
+  color: var(--color-light);
+}
+
+main {
+  isolation: isolate;
+  display: grid;
+  --right-sidebar: 0fr;
+  grid-template-columns: 1fr var(--right-sidebar);
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  align-items: start;
+  transition: grid-template-columns 300ms;
+  overflow-x: hidden;
+
+  @include media.smaller-than(tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  &:has(.RightSidebar.expanded) {
+    @include media.larger-than(desktop-lg) {
+      --right-sidebar: 0.25fr;
+    }
+
+    @include media.smaller-than(desktop-lg) {
+      --right-sidebar: 0.33fr;
+    }
+
+    @include media.smaller-than(desktop) {
+      --right-sidebar: 0.4fr;
+    }
+
+    @include media.smaller-than(desktop-sm) {
+      --right-sidebar: 0.5fr;
+    }
+
+    @include media.smaller-than(tablet) {
+      --right-sidebar: 0.6fr;
+    }
+  }
+}
+
+em {
+  font-style: normal;
+  font-size: 0.9em;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+strong {
+  font-weight: bold;
+}
+
+input {
+  margin: 0;
+
+  &.g-delegated{
+    background: transparent;
+    border: 0;
+    color: currentColor;
+
+    &:focus {
+      outline: 1px solid transparent;
+    }
+  }
+
+  &[type=checkbox] {
+    width: 1.2em;
+    height: 1.2em;
+    color: var(--color-light-2);
+    appearance: none;
+    background: transparent;
+    border: 2px solid currentColor;
+    border-radius: 0.2em;
+    transition: background 300ms;
+    cursor: pointer;
+    display: inline-grid;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      width: 0em;
+      height: 0em;
+      display: block;
+      background: currentColor;
+      transition: opacity 200ms, width 300ms, height 300ms;
+      opacity: 0;
+    }
+
+    &:checked {
+      color: var(--color-accent);
+      box-shadow: 0px 0px 5px 0px currentColor;
+
+      &::before {
+        opacity: 1;
+        width: 1.2em;
+        height: 1.2em;
+      }
+    }
+
+    &:hover {
+      color: var(--color-light);
+    }
+
+    &:disabled {
+      background: var(--color-disabled);
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.g-btn {
+  text-decoration: none;
+  text-align: center;
+}
+
+button, select, .g-btn {
+  cursor: pointer;
+  padding: var(--spacing-nm);
+  border: 0;
+  border-radius: var(--radius-nm);
+  font-weight: 500;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+
+    &:active {
+      pointer-events: none;
+    }
+  }
+
+  &.g-border {
+    background: transparent;
+    color: var(--button-bg);
+    border: 1px solid currentColor;
+
+    &:hover {
+      color: var(--button-bg-2);
+    }
+
+    &:active, &:focus {
+      color: var(--button-fg-2);
+    }
+
+    &:disabled {
+      color: var(--color-disabled);
+    }
+  }
+
+  &:not(.g-border) {
+    background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
+    color: var(--button-fg);
+
+    &:hover {
+      background: var(--button-bg-2);
+    }
+
+    &:active, &:focus {
+      background: var(--button-bg);
+    }
+
+    &:disabled {
+      background: linear-gradient(to top right, var(--color-disabled) 1%, var(--color-disabled-2));
+    }
+  }
+
+  &.g-transparent {
+    background: transparent;
+    color: var(--button-bg);
+
+    &:hover {
+      background: var(--button-bg);
+      color: var(--button-fg);
+    }
+
+    &:active, &:focus {
+      background: linear-gradient(to top right, var(--button-bg) 1%, var(--button-bg-2));
+      color: var(--button-fg);
+    }
+
+    &:disabled {
+      background: linear-gradient(to top right, var(--color-disabled) 1%, var(--color-disabled-2));
+    }
+  }
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+}
+
+i, i::before, i::after {
+  font-family: icon;
+  font-style: normal;
+}
+
+.g-divider {
+  border-radius: var(--radius-nm);
+
+  &:not(.g-horizontal) {
+    height: 100%;
+    border-right: 2px solid var(--color-light-3);
+  }
+
+  &.g-horizontal {
+    width: 100%;
+    border-top: 2px solid var(--color-light-3);
+  }
+}
+
+.g-icon-btn {
+  width: 2em;
+  height: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.g-active-hidden {
+  position: absolute;
+  left: -100%;
+  top: -100%;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  outline: 0;
+  z-index: -1;
+}
+
+.g-rows {
+  display: grid;
+  grid-auto-flow: row;
+}
+
+[data-layer] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2;
+
+  &:not([data-layer=tooltips]) > * {
+    pointer-events: all;
+  }
+}

@@ -1,0 +1,119 @@
+.DatePicker {
+  padding: var(--spacing-nm);
+  background: var(--color-dark);
+  width: min-content;
+  font-size: 1.2rem;
+
+  &, > section {
+    display: grid;
+  }
+
+  > .controls {
+    display: grid;
+    grid-template-columns: 0.15fr 1fr 0.15fr;
+    gap: var(--spacing-nm);
+    justify-content: space-between;
+    align-items: center;
+
+    > .nav {
+      border: 0;
+      padding: 0;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+
+    > .select {
+      --button-bg: var(--color-light);
+      font-size: 0.8em;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+
+      > i {
+        transition: rotate 250ms;
+      }
+
+      &.selecting > i {
+        rotate: 180deg;
+      }
+
+      > span > strong {
+        font-size: 1.1em;
+        color: var(--color-accent);
+      }
+
+      &:hover > span > strong, &:active > span > strong {
+        color: currentColor;
+      }
+    }
+  }
+
+  > section > .Carousel > .month, > .week {
+    display: grid;
+    grid-template-columns: repeat(7, min-content);
+    grid-auto-rows: min-content;
+    gap: var(--spacing-nm);
+    justify-items: center;
+    justify-content: space-between;
+    color: var(--color-light);
+
+    > * {
+      font-size: 0.8em;
+      padding: var(--spacing-nm);
+      width: 100%;
+      aspect-ratio: 1 / 1;
+    }
+
+    > span {
+      border: 1px solid transparent;
+    }
+
+    > button {
+      --button-bg: currentColor;
+
+      &.g-border {
+        border-color: transparent;
+      }
+
+      &:hover {
+        border-color: currentColor;
+      }
+
+      &.offset-days {
+        opacity: 0.6;
+      }
+
+      &:not(.g-border) {
+        --button-bg: var(--color-accent);
+      }
+    }
+  }
+
+  > .week {
+    font-weight: bold;
+  }
+
+  > section > .Carousel > .month > .g-border.weekend:not(:hover) {
+    color: var(--color-danger);
+  }
+}
+
+.ScrollSelector {
+  background: var(--color-dark);
+  padding-block: var(--spacing-nm);
+  width: min-content;
+  padding: var(--spacing-nm);
+  margin-inline: auto;
+
+  button {
+    font-size: 1.07em;
+    --button-bg: var(--color-light);
+
+    &.selected {
+      --button-bg: var(--color-accent);
+      --button-bg-2: var(--color-accent-2);
+      --button-fg: var(--color-dark);
+    }
+  }
+}
