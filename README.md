@@ -1,3 +1,0 @@
-# TVSM
-
-TvShowManager
