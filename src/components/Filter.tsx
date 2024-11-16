@@ -34,8 +34,10 @@ export default function Filter(props: FilterProps) {
   const [minRating, setMinRating] = ref(0);
   const [maxRating, setMaxRating] = ref(10);
 
+  let lastMax = seasonsLimit().max;
   watchFn(seasonsLimit, () => {
-    if (!isNaN(seasonsLimit().max)) {
+    if (lastMax !== seasonsLimit().max) {
+      lastMax = seasonsLimit().max;
       setMaxSeasons(seasonsLimit().max);
     }
   });
